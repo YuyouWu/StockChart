@@ -18,16 +18,6 @@ app.get('/portfolio', function (req, res) {
 app.post('/addStock', function (req, res) {
 	var body = _.pick(req.body, 'ticker');
 
-	if (!_.isString(body.ticker) || body.ticker.trim().length === 0) {
-		return res.status(400).send();
-	}
-
-	body.description = body.description.trim();
-	body.id = todoNextId++;
-
-	todos.push(body);
-
-	res.json(body);
 });
 
 
