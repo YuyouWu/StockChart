@@ -2,7 +2,7 @@ const express = require('express');
 const _ = require('lodash');
 
 const bodyParser = require('body-parser');
-const yahooFinance = require('yahoo-finance');
+// const yahooFinance = require('yahoo-finance');
 
 const {mongoose} = require('./db/mongoose');
 const {ObjectID} = require('mongodb');
@@ -88,27 +88,27 @@ app.delete('/portfolio/:id', authenticate, (req, res) => {
 });
 
 //Get stock price 
-app.get('/portfolio/:id/price', (req, res) => {
-  var id = req.params.id;
-  if (!ObjectID.isValid(id)) {
-    return res.status(404).send();
-  }
-  Ticker.findById(id).then((ticker) => {
-    if (!ticker) {
-      return res.status(404).send();
-    }
+// app.get('/portfolio/:id/price', (req, res) => {
+//   var id = req.params.id;
+//   if (!ObjectID.isValid(id)) {
+//     return res.status(404).send();
+//   }
+//   Ticker.findById(id).then((ticker) => {
+//     if (!ticker) {
+//       return res.status(404).send();
+//     }
 
-    //TODO - yahoo finance is pretty slow, might need to switch to another api 
-    yahooFinance.quote({
-      symbol: ticker.ticker,
-      modules: [ 'price', 'summaryDetail' ] // see the docs for the full list
-    }, function (err, quotes) {
-      res.send('$' + quotes.summaryDetail.ask);
-    });
-  }).catch((e) => {
-    res.status(400).send();
-  });
-})
+//     //TODO - yahoo finance is pretty slow, might need to switch to another api 
+//     yahooFinance.quote({
+//       symbol: ticker.ticker,
+//       modules: [ 'price', 'summaryDetail' ] // see the docs for the full list
+//     }, function (err, quotes) {
+//       res.send('$' + quotes.summaryDetail.ask);
+//     });
+//   }).catch((e) => {
+//     res.status(400).send();
+//   });
+// })
 
 ///////////////////
 //USER MANAGEMENT//
