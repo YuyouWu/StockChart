@@ -2,6 +2,7 @@ const express = require('express');
 const _ = require('lodash');
 
 const bodyParser = require('body-parser');
+const yahooFinance = require('yahoo-finance');
 
 const {mongoose} = require('./db/mongoose');
 const {ObjectID} = require('mongodb');
@@ -20,7 +21,7 @@ app.get('/', (req, res) => {
 	res.send('StockChart API');
 });
 
-//Get a list of tickers
+//Get a list of tickers inside portfolio
 app.get('/portfolio', authenticate, (req, res) =>{
 	Ticker.find({
     _creator: req.user._id
@@ -31,8 +32,27 @@ app.get('/portfolio', authenticate, (req, res) =>{
 	});
 });
 
+//Get a specific ticker
+app.get('/portfolio/:id', (req, res) => {
+  var id = req.params.id;
+
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send();
+  }
+
+  Ticker.findById(id).then((ticker) => {
+    if (!ticker) {
+      return res.status(404).send();
+    }
+
+    res.send({ticker});
+  }).catch((e) => {
+    res.status(400).send();
+  });
+});
+
 //Add ticker to portfolio
-app.post('/addTicker', authenticate, (req, res) => {
+app.post('/portfolio/add', authenticate, (req, res) => {
 	var ticker = new Ticker({
     ticker: req.body.ticker,
     _creator: req.user._id
@@ -67,7 +87,34 @@ app.delete('/portfolio/:id', authenticate, (req, res) => {
   });
 });
 
-// POST /users - Add new users
+//Get stock price 
+app.get('/portfolio/:id/price', (req, res) => {
+  var id = req.params.id;
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send();
+  }
+  Ticker.findById(id).then((ticker) => {
+    if (!ticker) {
+      return res.status(404).send();
+    }
+
+    //TODO - yahoo finance is pretty slow, might need to switch to another api 
+    yahooFinance.quote({
+      symbol: ticker.ticker,
+      modules: [ 'price', 'summaryDetail' ] // see the docs for the full list
+    }, function (err, quotes) {
+      res.send('$' + quotes.summaryDetail.ask);
+    });
+  }).catch((e) => {
+    res.status(400).send();
+  });
+})
+
+///////////////////
+//USER MANAGEMENT//
+///////////////////
+
+// Add New User
 app.post('/users', (req, res) => {
   var body = _.pick(req.body, ['email', 'password']);
   var user = new User(body);
@@ -81,7 +128,7 @@ app.post('/users', (req, res) => {
   })
 });
 
-// POST /users/login {email, password}
+//User Login
 app.post('/users/login', (req, res) => {
   var body = _.pick(req.body, ['email', 'password']);
 
@@ -94,7 +141,7 @@ app.post('/users/login', (req, res) => {
   });
 });
 
-//Log out user by deleting token
+//User Logout
 app.delete('/users/me/token', authenticate, (req, res) => {
   req.user.removeToken(req.token).then(() => {
     res.status(200).send();
@@ -103,7 +150,7 @@ app.delete('/users/me/token', authenticate, (req, res) => {
   });
 });
 
-//Get /users/me
+//Get a specific user
 app.get('/users/me', authenticate, (req, res) => {
   res.send(req.user);
 });

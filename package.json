@@ -22,6 +22,7 @@
     "mongodb": "^3.1.4",
     "mongoose": "^5.2.13",
     "underscore": "^1.9.1",
-    "validator": "^10.7.1"
+    "validator": "^10.7.1",
+    "yahoo-finance": "^0.3.5"
   }
 }
