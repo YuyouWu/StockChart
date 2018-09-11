@@ -7,6 +7,10 @@ var Ticker = mongoose.model('Ticker', {
     minlength: 1,
     trim: true
   },
+  _creator: {
+  	type: mongoose.Schema.Types.ObjectId,
+  	required: true
+  }
 });
 
 module.exports = {Ticker};

@@ -21,8 +21,10 @@ app.get('/', (req, res) => {
 });
 
 //Get a list of tickers
-app.get('/portfolio', (req, res) =>{
-	Ticker.find().then((tickers) =>{
+app.get('/portfolio', authenticate, (req, res) =>{
+	Ticker.find({
+    _creator: req.user._id
+  }).then((tickers) =>{
 		res.send({tickers});
 	}, (e) => {
 		res.status(400).send(e);
@@ -30,9 +32,10 @@ app.get('/portfolio', (req, res) =>{
 });
 
 //Add ticker to portfolio
-app.post('/addTicker', (req, res) => {
+app.post('/addTicker', authenticate, (req, res) => {
 	var ticker = new Ticker({
-    ticker: req.body.ticker
+    ticker: req.body.ticker,
+    _creator: req.user._id
   });
 
 	ticker.save().then((doc) => {
@@ -42,14 +45,18 @@ app.post('/addTicker', (req, res) => {
 	});
 });
 
-app.delete('/portfolio/:id', (req, res) => {
+//Delete ticker inside portfolio
+app.delete('/portfolio/:id', authenticate, (req, res) => {
   var id = req.params.id;
 
   if (!ObjectID.isValid(id)) {
     return res.status(404).send();
   }
 
-  Ticker.findByIdAndRemove(id).then((ticker) => {
+  Ticker.findOneAndRemove({
+    _id: id,
+    _creator: req.user._id
+  }).then((ticker) => {
     if (!ticker) {
       return res.status(404).send();
     }
