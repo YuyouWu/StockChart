@@ -21,15 +21,24 @@ app.get('/', (req, res) => {
 	res.send('StockChart API');
 });
 
-//Get a list of tickers inside portfolio
-app.get('/portfolio', authenticate, (req, res) =>{
-	Ticker.find({
-    _creator: req.user._id
-  }).then((tickers) =>{
-		res.send({tickers});
-	}, (e) => {
-		res.status(400).send(e);
-	});
+//Get a list of tickers inside portfolio with authentication
+// app.get('/portfolio', authenticate, (req, res) =>{
+// 	Ticker.find({
+//     _creator: req.user._id
+//   }).then((tickers) =>{
+// 		res.send({tickers});
+// 	}, (e) => {
+// 		res.status(400).send(e);
+// 	});
+// });
+
+//Get a list of tickers inside portfolio without authentication
+app.get('/portfolio', (req, res) =>{
+  Ticker.find().then((tickers) =>{
+    res.send({tickers});
+  }, (e) => {
+    res.status(400).send(e);
+  });
 });
 
 //Get a specific ticker
