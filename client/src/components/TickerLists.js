@@ -1,30 +1,40 @@
 import React, { Component } from 'react';
+import Ticker from './Ticker'
 import axios from 'axios';
 
 class TickerList extends Component{
 	constructor(props) {
 	    super(props);
-	    const tickers = [];
-	    this.state = {tickers};
+	    this.state = {
+	    	tickers: ['one','two', 'three']
+	    };
 	}
 	
-	getTickers(){
+	componentDidMount(){
 		var that = this;
 		axios.get('/portfolio').then(function (res){
-			that.setState({
-				tickers: res.data.tickers[0].ticker
-			});
+			var temp = [];
+			for (var i = res.data.tickers.length - 1; i >= 0; i--) {
+				temp[i] = res.data.tickers[i].ticker;
+			}
+	    	//return(Object.values(res.data.tickers));
+	    	that.setState({
+	    		tickers: temp
+	    	});
 		}).catch(function(err){
-			return(err);
+			console.log(err);
 		});
 	}
 
 	render() { 
-		const {tickers} = this.state
-		this.getTickers();
+		//const tickers = this.getTickers();
+		//console.log(tickers);
+		//console.log(this.getTickers());
 		return(
 			<div>
-				Ticker: {tickers}
+		        {
+		          this.state.tickers.map((ticker) => <Ticker key={ticker} tickerText={ticker} />)
+		        }
 			</div>
 		);
 	}
