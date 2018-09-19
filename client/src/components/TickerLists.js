@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import Ticker from './Ticker'
+import AddTickers from './AddTickers'
 import axios from 'axios';
 
+//Class for rendering list of tickers
 class TickerList extends Component{
 	constructor(props) {
 	    super(props);
 	    this.state = {
-	    	tickers: ['one','two', 'three']
+	    	tickers: ['Loading']
 	    };
 	}
 	
@@ -17,7 +19,6 @@ class TickerList extends Component{
 			for (var i = res.data.tickers.length - 1; i >= 0; i--) {
 				temp[i] = res.data.tickers[i].ticker;
 			}
-	    	//return(Object.values(res.data.tickers));
 	    	that.setState({
 	    		tickers: temp
 	    	});
@@ -27,11 +28,9 @@ class TickerList extends Component{
 	}
 
 	render() { 
-		//const tickers = this.getTickers();
-		//console.log(tickers);
-		//console.log(this.getTickers());
 		return(
 			<div>
+				<AddTickers />
 		        {
 		          this.state.tickers.map((ticker) => <Ticker key={ticker} tickerText={ticker} />)
 		        }
