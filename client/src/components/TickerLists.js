@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Ticker from './Ticker'
-import AddTickers from './AddTickers'
+//import AddTickers from './AddTickers'
 import axios from 'axios';
 
 //Class for rendering list of tickers
@@ -14,6 +14,7 @@ class TickerList extends Component{
 	
 	componentDidMount(){
 		var that = this;
+		//API to get the list of tickers
 		axios.get('/portfolio').then(function (res){
 			var temp = [];
 			for (var i = res.data.tickers.length - 1; i >= 0; i--) {
@@ -27,10 +28,32 @@ class TickerList extends Component{
 		});
 	}
 
+	handleAddTicker = (e) => {
+		var that = this;
+		var temp = [];
+	    const ticker = e.target.elements.ticker.value.trim();
+
+	    temp = that.state.tickers;
+		temp.push(ticker);
+
+		var tickerObj = {
+			"ticker": ticker
+		}
+		//API to post new ticker
+		axios.post('/portfolio/add', tickerObj).then(function (res){
+		}).catch(function(err){
+			console.log(err);
+		});
+	}
+
+
 	render() { 
 		return(
 			<div>
-				<AddTickers />
+		        <form onSubmit={this.handleAddTicker}>
+		          <input type="text" name="ticker" />
+		          <button>Add Ticker</button>
+		        </form>
 		        {
 		          this.state.tickers.map((ticker) => <Ticker key={ticker} tickerText={ticker} />)
 		        }

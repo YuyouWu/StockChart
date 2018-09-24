@@ -61,18 +61,30 @@ app.get('/portfolio/:id', (req, res) => {
 });
 
 //Add ticker to portfolio
-app.post('/portfolio/add', authenticate, (req, res) => {
-	var ticker = new Ticker({
+// app.post('/portfolio/add', authenticate, (req, res) => {
+// 	var ticker = new Ticker({
+//     ticker: req.body.ticker,
+//     _creator: req.user._id
+//   });
+
+// 	ticker.save().then((doc) => {
+// 		res.send(doc);
+// 	}, (e) => {
+// 		res.status(400).send(e);
+// 	});
+// });
+app.post('/portfolio/add', (req, res) => {
+  var ticker = new Ticker({
     ticker: req.body.ticker,
-    _creator: req.user._id
   });
 
-	ticker.save().then((doc) => {
-		res.send(doc);
-	}, (e) => {
-		res.status(400).send(e);
-	});
+  ticker.save().then((doc) => {
+    res.send(doc);
+  }, (e) => {
+    res.status(400).send(e);
+  });
 });
+
 
 //Delete ticker inside portfolio
 app.delete('/portfolio/:id', authenticate, (req, res) => {
