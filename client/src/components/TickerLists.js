@@ -50,6 +50,7 @@ class TickerList extends Component{
 	render() { 
 		return(
 			<div>
+				<br />
 		        <form onSubmit={this.handleAddTicker}>
 		          <input type="text" name="ticker" />
 		          <button>Add Ticker</button>

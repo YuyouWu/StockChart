@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 
 class Register extends React.Component {
   	constructor() {
@@ -14,11 +15,22 @@ class Register extends React.Component {
 	render() {
 		return(
 			<div className="container">
-		        <form noValidate>
-					<input type="text" name="Email"/>
-					<input type="text" name="Password"/>
-	                <input type="submit"/>
-		        </form>
+      			<Form>
+      				<br />
+        			<FormGroup>
+          				<Label for="email">Email</Label>
+			        	<Input type="email" name="email" id="email" placeholder="Email" />
+			        </FormGroup>
+        			<FormGroup>
+        				<Label for="password">Password</Label>
+          				<Input type="password" name="password" id="password" placeholder="Password" />
+        			</FormGroup>
+        			<FormGroup>
+        				<Label for="confirmPassword">Confirm Password</Label>
+          				<Input type="password" name="password" id="confirmPassword" placeholder="Confirm Password" />
+        			</FormGroup>
+	                <Button>Submit</Button>
+		        </Form>
 			</div>
 		);
 	}
