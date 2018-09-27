@@ -38,6 +38,11 @@ class AppNavbar extends Component{
                                 </NavLink>
                             </NavItem>
                             <NavItem>
+                                <NavLink href="/login">
+                                    Login
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
                                 <NavLink href="/register">
                                     Register
                                 </NavLink>

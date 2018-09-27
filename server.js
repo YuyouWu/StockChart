@@ -22,23 +22,14 @@ app.get('/', (req, res) => {
 });
 
 //Get a list of tickers inside portfolio with authentication
-// app.get('/portfolio', authenticate, (req, res) =>{
-// 	Ticker.find({
-//     _creator: req.user._id
-//   }).then((tickers) =>{
-// 		res.send({tickers});
-// 	}, (e) => {
-// 		res.status(400).send(e);
-// 	});
-// });
-
-//Get a list of tickers inside portfolio without authentication
-app.get('/portfolio', (req, res) =>{
-  Ticker.find().then((tickers) =>{
-    res.send({tickers});
-  }, (e) => {
-    res.status(400).send(e);
-  });
+app.get('/portfolio', authenticate, (req, res) => {
+	Ticker.find({
+    _creator: req.user._id
+  }).then((tickers) =>{
+		res.send({tickers});
+	}, (e) => {
+		res.status(400).send(e);
+	});
 });
 
 //Get a specific ticker
@@ -61,30 +52,18 @@ app.get('/portfolio/:id', (req, res) => {
 });
 
 //Add ticker to portfolio
-// app.post('/portfolio/add', authenticate, (req, res) => {
-// 	var ticker = new Ticker({
-//     ticker: req.body.ticker,
-//     _creator: req.user._id
-//   });
-
-// 	ticker.save().then((doc) => {
-// 		res.send(doc);
-// 	}, (e) => {
-// 		res.status(400).send(e);
-// 	});
-// });
-app.post('/portfolio/add', (req, res) => {
-  var ticker = new Ticker({
+app.post('/portfolio/add', authenticate, (req, res) => {
+	var ticker = new Ticker({
     ticker: req.body.ticker,
+    _creator: req.user._id
   });
 
-  ticker.save().then((doc) => {
-    res.send(doc);
-  }, (e) => {
-    res.status(400).send(e);
-  });
+	ticker.save().then((doc) => {
+		res.send(doc);
+	}, (e) => {
+		res.status(400).send(e);
+	});
 });
-
 
 //Delete ticker inside portfolio
 app.delete('/portfolio/:id', authenticate, (req, res) => {
@@ -143,7 +122,7 @@ app.post('/users', (req, res) => {
   user.save().then(() => {
     return user.generateAuthToken();
   }).then((token) => {
-    res.header('x-auth', token).send(user);
+    res.header('xauth', token).send(user);
   }).catch((e) => {
     res.status(400).send(e);
   })
@@ -155,7 +134,7 @@ app.post('/users/login', (req, res) => {
 
   User.findByCredentials(body.email, body.password).then((user) => {
     return user.generateAuthToken().then((token) => {
-      res.header('x-auth', token).send(user);
+      res.header('xauth', token).send(user);
     });
   }).catch((e) => {
     res.status(400).send();
