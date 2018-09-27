@@ -17,8 +17,17 @@ class TickerList extends Component{
 
 	componentDidMount(){
 		//API to get the list of tickers
-		var test = this.props.getTickers();
-		console.log(test);
+		this.props.getTickers().then((res) => {
+			var temp = [];
+			for (var i = res.payload.length - 1; i >= 0; i--) {
+				temp[i] = res.payload[i].ticker;
+			}
+	    	this.setState({
+	    		tickers: temp
+	    	});
+		}).catch(function(err){
+			console.log(err);
+		});
 	}
 
 	handleAddTicker = (e) => {
@@ -32,7 +41,9 @@ class TickerList extends Component{
 			"ticker": ticker
 		}
 
-		this.props.addTicker(tickerObj);
+		this.props.addTicker(tickerObj).then((res) => {
+			console.log("Here");
+		});
 	}
 
 
