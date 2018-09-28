@@ -6,12 +6,11 @@ import { connect } from 'react-redux';
 
 //Class for rendering list of tickers
 class TickerList extends Component{
-	constructor(props) {
-	    super(props);
+	constructor() {
+	    super();
 	    this.state = {
 	    	tickers: ['Loading']
 	    };
-    	this.componentDidMount = this.componentDidMount.bind(this);
     	this.handleAddTicker = this.handleAddTicker.bind(this);
 	}
 
@@ -41,11 +40,8 @@ class TickerList extends Component{
 			"ticker": ticker
 		}
 
-		this.props.addTicker(tickerObj).then((res) => {
-			console.log("Here");
-		});
+		this.props.addTicker(tickerObj);
 	}
-
 
 	render() { 
 		return(
@@ -64,7 +60,6 @@ class TickerList extends Component{
 }
 
 const mapStateToProps = state => ({
-  item: state.item
+  tickers: state.tickers
 });
-
 export default connect(mapStateToProps,{getTickers, addTicker})(TickerList);

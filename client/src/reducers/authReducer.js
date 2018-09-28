@@ -1,21 +1,23 @@
-import { LOGIN, REGISTER } from '../actions/types';
+import { LOGIN, REGISTER, LOGOUT } from '../actions/types';
 
-const initialState = {
-  token: '',
-  loading: false
+var initialState = {
+  token: ''
+
 };
-
 export default function(state = initialState, action) {
   switch (action.type) {
     case LOGIN:
       return {
         ...state,
-        items: [action.payload, ...state.token]
+        token: action.payload
+      };
+    case LOGOUT:
+      return {
+        ...state
       };
     case REGISTER:
       return {
-        ...state,
-        items: [action.payload, ...state.token]
+        ...state
       };
     default:
       return state;

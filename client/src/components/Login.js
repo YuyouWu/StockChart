@@ -6,12 +6,6 @@ import { connect } from 'react-redux';
 class Login extends React.Component {
   	constructor() {
     	super();
-    	this.state = {
-	      	email: '',
-	      	password: '',
-	      	token: []
-	    };
-
     	this.handleLogin = this.handleLogin.bind(this);
 	}
 
@@ -24,15 +18,10 @@ class Login extends React.Component {
 	    	password: e.target.elements.userPassword.value
 	    };
 
-	    this.props.loginAction(user);
-
-		// axios.post('/users/login', currentUser).then(function (res){
-		// 	//save user token here
-		// 	console.log(res.headers.xauth);
-		// }).catch(function(err){
-		// 	console.log(err);
-		// });
-
+	    this.props.loginAction(user).then((res) => {
+		}).catch(function(err){
+			console.log(err);
+		});
 	}
 
 	render() {
@@ -56,7 +45,7 @@ class Login extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  item: state.item
+  token: state.token
 });
 
 export default connect(mapStateToProps,{loginAction})(Login);

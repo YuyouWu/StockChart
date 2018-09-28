@@ -1,8 +1,7 @@
 import { GET_TICKERS, ADD_TICKER } from '../actions/types';
 
-const initialState = {
-  tickers: '',
-  loading: false
+var initialState = {
+  tickers: []
 };
 
 export default function(state = initialState, action) {
@@ -10,12 +9,12 @@ export default function(state = initialState, action) {
     case GET_TICKERS:
       return {
         ...state,
-        items: [action.payload, ...state.tickers]
+        tickers: [action.payload, ...state.tickers]
       };
     case ADD_TICKER:
       return {
         ...state,
-        items: [action.payload, ...state.tickers]
+        tickers: [action.payload, ...state.tickers]
       };
     default:
       return state;
