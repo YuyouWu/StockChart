@@ -1,5 +1,9 @@
 import axios from 'axios';
-import { LOGIN, REGISTER, LOGOUT } from './types';
+import { LOGIN, REGISTER, LOGOUT, SET_CURRENT_USER } from './types';
+
+var headers = {
+  'xauth': localStorage.getItem('jwtToken')
+}
 
 export const loginAction = user => (dispatch, getState) => {
   return(
@@ -14,10 +18,10 @@ export const loginAction = user => (dispatch, getState) => {
   )
 };
 
-export const logoutAction = user => (dispatch, getState) => {
+export const logoutAction = () => (dispatch, getState) => {
+  localStorage.removeItem('jwtToken');
   return(
-    axios.delete('/users/me/token', localStorage.getItem('jwtToken')).then(res =>{
-        localStorage.removeItem('jwtToken'),
+    axios.delete('/users/me/token', {headers: headers}).then(res =>{
         dispatch({
           type: LOGOUT,
           payload: res.data
@@ -27,11 +31,15 @@ export const logoutAction = user => (dispatch, getState) => {
   )
 };
 
-export const register = user => dispatch => {
-  axios.post('/users', user).then(res =>
-    dispatch({
-      type: REGISTER,
-      payload: res.data
-    })
-  );
+export const setCurrentUser = () => dispatch => {
+  return(
+    axios.get('/users/me', {headers: headers}).then(res =>
+      dispatch({
+        type: SET_CURRENT_USER,
+        payload: res.data
+      })
+    )
+  )
 };
+
+

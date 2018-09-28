@@ -19,6 +19,8 @@ class Login extends React.Component {
 	    };
 
 	    this.props.loginAction(user).then((res) => {
+	    	//TODO
+	    	this.props.history.push('/portfolio');
 		}).catch(function(err){
 			console.log(err);
 		});
@@ -27,7 +29,7 @@ class Login extends React.Component {
 	render() {
 		return(
 			<div className="container">
-      			<Form onSubmit={this.handleLogin}>
+      			<Form onSubmit={this.handleLogin} href="/portfolio">
       				<br />
         			<FormGroup>
           				<Label for="email">Email</Label>
@@ -37,7 +39,9 @@ class Login extends React.Component {
         				<Label for="password">Password</Label>
           				<Input type="password" name="userPassword" id="userPassword" placeholder="Password" />
         			</FormGroup>
-	                <Button>Login</Button>
+	                <Button>
+	                	Login
+	                </Button>
 		        </Form>
 			</div>
 		);

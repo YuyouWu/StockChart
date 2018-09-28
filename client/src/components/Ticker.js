@@ -1,12 +1,13 @@
 import React from 'react';
+import { ListGroup, ListGroupItem } from 'reactstrap';
 
 //Class for rendering each individual tickerson portfolio
 class Ticker extends React.Component {
   render() {
     return (
-      <div>
+      <ListGroupItem>
         {this.props.tickerText}
-      </div>
+      </ListGroupItem>
     );
   }
 }

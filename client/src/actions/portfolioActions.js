@@ -6,8 +6,11 @@ var headers = {
 }
 
 export const getTickers = () => (dispatch,getState) => {
+  var header = {
+    'xauth': localStorage.getItem('jwtToken')
+  }
   return(
-    axios.get('/portfolio', {headers: headers}).then(res =>
+    axios.get('/portfolio', {headers: header}).then(res =>
      	dispatch({
         type: GET_TICKERS,
         payload: res.data.tickers

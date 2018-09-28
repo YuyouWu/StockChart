@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { logoutAction, setCurrentUser } from '../actions/authActions';
+import { connect } from 'react-redux';
 import {
     Collapse,
     Navbar,
@@ -14,21 +16,37 @@ class AppNavbar extends Component{
         super(props);
         
         this.toggle = this.toggle.bind(this);
+        this.handleLogout = this.handleLogout.bind(this);
         this.state = {
-          isOpen: false
-        };        
+            isOpen: false,
+            currentUser: null
+        };
+        // this.props.setCurrentUser().then((res) =>{
+        //     this.setState({
+        //       currentUser: res.payload._id
+        //     });
+        // });
     }
     toggle() {
         this.setState({
           isOpen: !this.state.isOpen
         });
     }
+    handleLogout(){
+        this.props.logoutAction();
+    }
     render() {
+
+        if (this.state.currentUser !== null){
+
+        } else {
+
+        }
         return (
           <div>
             <Navbar color="dark" dark expand="md">
                 <Container>
-                    <NavbarBrand href="/">Portfolio</NavbarBrand>
+                    <NavbarBrand href="/">InvestmentNow</NavbarBrand>
                     <NavbarToggler onClick={this.toggle}/>
                     <Collapse isOpen={this.state.isOpen} navbar>
                         <Nav className="ml-auto" navbar>
@@ -37,6 +55,11 @@ class AppNavbar extends Component{
                                     Portfolio
                                 </NavLink>
                             </NavItem>
+                            <NavItem>
+                                <NavLink onClick={this.handleLogout} href="/">
+                                    Logout
+                                </NavLink>
+                            </NavItem>                        
                             <NavItem>
                                 <NavLink href="/login">
                                     Login
@@ -56,4 +79,7 @@ class AppNavbar extends Component{
     }    
 }
 
-export default AppNavbar;
+const mapStateToProps = state => ({
+  tickers: state.tickers
+});
+export default connect(mapStateToProps,{logoutAction,setCurrentUser})(AppNavbar);
