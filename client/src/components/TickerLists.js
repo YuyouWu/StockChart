@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
 import Ticker from './Ticker'
+import TabsView from './TabsView'
 import { getTickers, addTicker } from '../actions/portfolioActions';
 import { ListGroup, Col, Row, Button, Form, Input, InputGroup, InputGroupAddon} from 'reactstrap';
+import { Layout, Menu } from 'antd';
 import { connect } from 'react-redux';
+
+const { Content, Sider } = Layout;
+const { SubMenu, MenuItemGroup } = Menu;
 
 //Class for rendering list of tickers
 class TickerList extends Component{
@@ -45,11 +50,12 @@ class TickerList extends Component{
 
 	render() { 
 		return(
-			<div>
+			<Layout>
+				<Sider width={200} style={{ background: '#fff' }}>
 				<br />
 		        <Form onSubmit={this.handleAddTicker}>
 		        	<Row>
-		        		<Col xs="3">
+		        		<Col>
 					        <InputGroup>
 						        <Input type="text" name="ticker"/>
 						        <InputGroupAddon addonType="append">
@@ -61,15 +67,22 @@ class TickerList extends Component{
 			    </Form>
 				<br />
 				<Row>
-			        <Col xs="3">
-						<ListGroup>
-				        {
-				          this.state.tickers.map((ticker) => <Ticker key={ticker} tickerText={ticker} />)
-				        }
-				        </ListGroup>
+			        <Col>
+						<Menu defaultSelectedKeys={['Summary']}>
+							<Menu.Item key='Summary'> 
+								Summary 
+							</Menu.Item>
+					        {
+					          this.state.tickers.map((ticker) => <Menu.Item key={ticker}> {ticker} </Menu.Item>)
+					        }
+				        </Menu>
 			        </Col>
 			    </Row>
-			</div>
+			    </Sider>
+        		<Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
+				    <TabsView/>
+			    </Content>
+			</Layout>
 		);
 	}
 }

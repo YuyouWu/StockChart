@@ -1,13 +1,14 @@
 import React from 'react';
-import { ListGroup, ListGroupItem } from 'reactstrap';
+import { ListGroupItem } from 'reactstrap';
+import { Menu } from 'antd';
 
 //Class for rendering each individual tickerson portfolio
 class Ticker extends React.Component {
   render() {
     return (
-      <ListGroupItem>
+      <Menu.Item key={this.props.key}>
         {this.props.tickerText}
-      </ListGroupItem>
+      </Menu.Item>
     );
   }
 }

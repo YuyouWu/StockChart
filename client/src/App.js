@@ -11,6 +11,7 @@ import Login from './components/Login';
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css';
+import 'antd/dist/antd.css';
 
 class App extends Component {
   render() {

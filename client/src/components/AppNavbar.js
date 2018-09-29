@@ -36,17 +36,11 @@ class AppNavbar extends Component{
         this.props.logoutAction();
     }
     render() {
-
-        if (this.state.currentUser !== null){
-
-        } else {
-
-        }
         return (
           <div>
             <Navbar color="dark" dark expand="md">
                 <Container>
-                    <NavbarBrand href="/">InvestmentNow</NavbarBrand>
+                    <NavbarBrand href="/">Provest</NavbarBrand>
                     <NavbarToggler onClick={this.toggle}/>
                     <Collapse isOpen={this.state.isOpen} navbar>
                         <Nav className="ml-auto" navbar>
