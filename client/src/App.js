@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import store from './store';
 
 import AppNavbar from './components/AppNavbar'
-import TickerList from './components/TickerLists'
+import MainScreen from './components/MainScreen'
 import Register from './components/Register';
 import Login from './components/Login';
 
@@ -22,7 +22,7 @@ class App extends Component {
           <div className="container">
             <Router>
               <div>
-                <Route exact path="/portfolio" component={TickerList} />
+                <Route exact path="/portfolio" component={MainScreen} />
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/register" component={Register} />
               </div>

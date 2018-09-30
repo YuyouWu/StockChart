@@ -1,10 +1,11 @@
 import React from 'react';
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
-import axios from 'axios';
+import { registerAction } from '../actions/authActions';
+import { connect } from 'react-redux';
 
 class Register extends React.Component {
-  	constructor() {
-    	super();
+  	constructor(props) {
+    	super(props);
     	this.state = {
 	      	email: '',
 	      	password: '',
@@ -27,11 +28,7 @@ class Register extends React.Component {
 	    	password: e.target.elements.userPassword.value
 	    };
 
-		axios.post('/users', newUser).then(function (res){
-			console.log(newUser);
-		}).catch(function(err){
-			console.log(err);
-		});
+		this.props.registerAction(newUser);
 	}
 
 	render() {
@@ -58,4 +55,8 @@ class Register extends React.Component {
 	}
 }
 
-export default Register;
+const mapStateToProps = state => ({
+  token: state.token
+});
+
+export default connect(mapStateToProps,{registerAction})(Register);

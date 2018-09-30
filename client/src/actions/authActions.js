@@ -31,6 +31,19 @@ export const logoutAction = () => (dispatch, getState) => {
   )
 };
 
+export const registerAction = newUser => (dispatch, getState) => {
+  return(
+    axios.post('/users', newUser).then(res =>{
+        localStorage.setItem('jwtToken', res.headers.xauth);
+        dispatch({
+          type: REGISTER,
+          payload: res.headers.xauth
+        })
+      }
+    )
+  )
+}
+
 export const setCurrentUser = () => dispatch => {
   return(
     axios.get('/users/me', {headers: headers}).then(res =>
