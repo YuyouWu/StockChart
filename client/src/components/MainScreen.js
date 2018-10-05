@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import ContentView from './ContentView';
 import { getTickers, addTicker } from '../actions/portfolioActions';
-import { Col, Row, Button, Form, Input, InputGroup, InputGroupAddon} from 'reactstrap';
-import { Layout, Menu } from 'antd';
+import { Col, Row, Form, Input, Button, InputGroup, InputGroupAddon} from 'reactstrap';
+import { Layout, Menu, Modal } from 'antd';
 import { connect } from 'react-redux';
 
 const { Content, Sider } = Layout;
@@ -13,7 +13,8 @@ class TickerList extends Component{
 	    super();
 	    this.state = {
 	    	tickers: ['Loading'],
-	    	currentTicker: 'Overview'
+	    	currentTicker: 'Overview',
+	    	visible: false
 	    };
     	this.handleAddTicker = this.handleAddTicker.bind(this);
     	this.setCurrentTicker = this.setCurrentTicker.bind(this);
@@ -35,6 +36,7 @@ class TickerList extends Component{
 	}
 
 	handleAddTicker = (e) => {
+		console.log("here");
 		var temp = [];
 	    const ticker = e.target.elements.ticker.value.trim();
 
@@ -46,6 +48,7 @@ class TickerList extends Component{
 		}
 
 		this.props.addTicker(tickerObj);
+		this.handleOk();
 	}
 
 	setCurrentTicker = (e) => {
@@ -54,23 +57,51 @@ class TickerList extends Component{
 		});
 	}
 
+	//Handle Modal Logic
+	showModal = () => {
+    	this.setState({
+      		visible: true,
+    	});
+  	}
+
+  	handleOk = (e) => {
+	    this.setState({
+	      visible: false,
+	    });
+	}
+
+  	handleCancel = (e) => {
+	    this.setState({
+	      visible: false,
+	    });
+	}
+
+
 	render() { 
 		return(
 			<Layout>
 				<Sider width={200} style={{ background: '#fff' }}>
 				<br />
-		        <Form onSubmit={this.handleAddTicker}>
-		        	<Row>
-		        		<Col>
-					        <InputGroup>
-						        <Input type="text" name="ticker"/>
-						        <InputGroupAddon addonType="append">
-						        	<Button color="secondary">Add Ticker</Button>
-						        </InputGroupAddon>
-						    </InputGroup>
-				    	</Col>
-				    </Row>
-			    </Form>
+				<Button size= "large" color="secondary" onClick={this.showModal}>Add Ticker</Button>
+				<br />
+				<Modal
+		          title="Add New Ticker"
+		          visible={this.state.visible}
+		          onOk={this.handleOk}
+		          onCancel={this.handleCancel}
+		          footer={null}
+				>	
+		          	<Form onSubmit={this.handleAddTicker}>
+		          		<InputGroup>
+		          			<Input placeholder="Ticker" type="text" name="ticker"/>
+		          			<Input placeholder="Quantity" type="number"/>
+		          		</InputGroup>
+			          	<br/>
+			          	<h5>Total Cost: </h5>
+			          	<br/>
+		          		<Button>Add Ticker</Button>
+			    	</Form>
+		        </Modal>
 				<br />
 				<Menu defaultSelectedKeys={['Overview']}  onClick={this.setCurrentTicker}>
 					<Menu.Item key='Overview'> 
