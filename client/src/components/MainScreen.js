@@ -82,7 +82,7 @@ class TickerList extends Component{
 			<Layout>
 				<Sider width={200} style={{ background: '#fff' }}>
 				<br />
-				<Button size= "large" color="secondary" onClick={this.showModal}>Add Ticker</Button>
+				<Button size= "large" onClick={this.showModal}>Add Ticker</Button>
 				<br />
 				<Modal
 		          title="Add New Ticker"

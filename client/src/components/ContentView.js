@@ -20,6 +20,7 @@ class ContentView extends Component{
 						</div>
 					</TabPane>
 					<TabPane tab='News' key="2">Content of {this.props.ticker} News</TabPane>
+					<TabPane tab='Financial' key="3">Financial information of {this.props.ticker}</TabPane>
 				</Tabs>
 			</div>
 		);
