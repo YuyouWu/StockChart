@@ -25,6 +25,7 @@ export const getTickers = () => (dispatch,getState) => {
 };
 
 export const addTicker = ticker => dispatch => {
+  console.log(ticker);
   axios.post('/portfolio/add', ticker, {headers: headers}).then(res =>
     dispatch({
       type: ADD_TICKER,

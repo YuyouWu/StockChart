@@ -36,15 +36,18 @@ class TickerList extends Component{
 	}
 
 	handleAddTicker = (e) => {
-		console.log("here");
 		var temp = [];
 	    const ticker = e.target.elements.ticker.value.trim();
+	    const quantity = parseInt(e.target.elements.quantity.value.trim());
+
+	    //TODO: if state to set default quanity as 0
 
 	    temp = this.state.tickers;
 		temp.push(ticker);
 
 		var tickerObj = {
-			"ticker": ticker
+			"ticker": ticker,
+			"quantity": quantity
 		}
 
 		this.props.addTicker(tickerObj);
@@ -82,7 +85,7 @@ class TickerList extends Component{
 			<Layout>
 				<Sider width={200} style={{ background: '#fff' }}>
 				<br />
-				<Button size= "large" onClick={this.showModal}>Add Ticker</Button>
+				<Button outline color="primary" onClick={this.showModal}>Add Ticker</Button>
 				<br />
 				<Modal
 		          title="Add New Ticker"
@@ -94,12 +97,12 @@ class TickerList extends Component{
 		          	<Form onSubmit={this.handleAddTicker}>
 		          		<InputGroup>
 		          			<Input placeholder="Ticker" type="text" name="ticker"/>
-		          			<Input placeholder="Quantity" type="number"/>
+		          			<Input placeholder="Quantity" type="number" name="quantity"/>
 		          		</InputGroup>
 			          	<br/>
 			          	<h5>Total Cost: </h5>
 			          	<br/>
-		          		<Button>Add Ticker</Button>
+		          		<Button outline color="primary">Add Ticker</Button>
 			    	</Form>
 		        </Modal>
 				<br />

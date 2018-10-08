@@ -55,6 +55,7 @@ app.get('/portfolio/:id', (req, res) => {
 app.post('/portfolio/add', authenticate, (req, res) => {
 	var ticker = new Ticker({
     ticker: req.body.ticker,
+    quantity: req.body.quantity,
     _creator: req.user._id
   });
 

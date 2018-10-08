@@ -7,6 +7,10 @@ var Ticker = mongoose.model('Ticker', {
     minlength: 1,
     trim: true
   },
+  quantity: {
+    type: Number,
+    required: false
+  },
   _creator: {
   	type: mongoose.Schema.Types.ObjectId,
   	required: true
