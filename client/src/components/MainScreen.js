@@ -6,6 +6,7 @@ import { Layout, Menu, Modal } from 'antd';
 import { connect } from 'react-redux';
 
 const { Content, Sider } = Layout;
+const SubMenu = Menu.SubMenu;
 
 //Class for rendering list of tickers
 class TickerList extends Component{
@@ -106,17 +107,41 @@ class TickerList extends Component{
 			    	</Form>
 		        </Modal>
 				<br />
-				<Menu defaultSelectedKeys={['Overview']}  onClick={this.setCurrentTicker}>
+				<Menu 
+					defaultSelectedKeys={['Overview']} 
+					mode="inline" 
+					defaultOpenKeys={['holding']}
+					onClick={this.setCurrentTicker}
+				>
 					<Menu.Item key='Overview' name='Overview'>  
 						Overview
 					</Menu.Item>
-					{
-						this.state.tickers.map((tickers, index) => 
-							<Menu.Item key={index} name={tickers.ticker}> 
-								{tickers.ticker} - {tickers.quantity} shares
-							</Menu.Item>
-						)
-					}
+					<SubMenu key="holding" title={<span>Holding</span>}>
+						{
+							this.state.tickers.map((tickers, index) => {
+								if (tickers.quantity > 0){
+									return(
+										<Menu.Item key={index} name={tickers.ticker}> 
+											{tickers.ticker} - {tickers.quantity} shares
+										</Menu.Item>
+									)
+								}
+							})
+						}
+					</SubMenu>
+					<SubMenu key="watchlist" title={<span>Watch List</span>}>
+						{
+							this.state.tickers.map((tickers, index) => {
+								if (tickers.quantity === 0){
+									return(
+										<Menu.Item key={index} name={tickers.ticker}> 
+											{tickers.ticker}
+										</Menu.Item>
+									)
+								}
+							})
+						}
+					</SubMenu>
 				</Menu>
 			    </Sider>
         		<Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
