@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ContentView from './ContentView';
 import { getTickers, addTicker } from '../actions/portfolioActions';
-import { Col, Row, Form, Input, Button, InputGroup, InputGroupAddon} from 'reactstrap';
+import { Form, Input, Button, InputGroup } from 'reactstrap';
 import { Layout, Menu, Modal } from 'antd';
 import { connect } from 'react-redux';
 
@@ -23,12 +23,12 @@ class TickerList extends Component{
 	componentDidMount(){
 		//API to get the list of tickers
 		this.props.getTickers().then((res) => {
-			var temp = [];
-			for (var i = res.payload.length - 1; i >= 0; i--) {
-				temp[i] = res.payload[i].ticker;
-			}
+			// var temp = [];
+			// for (var i = res.payload.length - 1; i >= 0; i--) {
+			// 	temp[i] = res.payload[i].ticker;
+			// }
 	    	this.setState({
-	    		tickers: temp
+	    		tickers: res.payload
 	    	});
 		}).catch(function(err){
 			console.log(err);
@@ -38,7 +38,7 @@ class TickerList extends Component{
 	handleAddTicker = (e) => {
 		var temp = [];
 	    const ticker = e.target.elements.ticker.value.trim();
-	    const quantity = parseInt(e.target.elements.quantity.value.trim());
+	    const quantity = Number(e.target.elements.quantity.value.trim());
 
 	    //TODO: if state to set default quanity as 0
 
@@ -108,10 +108,14 @@ class TickerList extends Component{
 				<br />
 				<Menu defaultSelectedKeys={['Overview']}  onClick={this.setCurrentTicker}>
 					<Menu.Item key='Overview'> 
-						Overview 
+						Overview
 					</Menu.Item>
 					{
-						this.state.tickers.map((ticker) => <Menu.Item key={ticker}> {ticker} </Menu.Item>)
+						this.state.tickers.map((tickers, index) => 
+							<Menu.Item key={index}> 
+								{tickers.ticker} - {tickers.quantity} shares
+							</Menu.Item>
+						)
 					}
 				</Menu>
 			    </Sider>
