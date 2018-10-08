@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ContentView from './ContentView';
 import { getTickers, addTicker } from '../actions/portfolioActions';
 import { Form, Input, Button, InputGroup } from 'reactstrap';
-import { Layout, Menu, Modal } from 'antd';
+import { Layout, Menu, Modal, Icon } from 'antd';
 import { connect } from 'react-redux';
 
 const { Content, Sider } = Layout;
@@ -114,9 +114,10 @@ class TickerList extends Component{
 					onClick={this.setCurrentTicker}
 				>
 					<Menu.Item key='Overview' name='Overview'>  
-						Overview
+						<Icon type="pie-chart" />
+						<span>Overview</span>
 					</Menu.Item>
-					<SubMenu key="holding" title={<span>Holding</span>}>
+					<SubMenu key="holding" title={<span><Icon type="line-chart"/><span>Holding</span></span>}>
 						{
 							this.state.tickers.map((tickers, index) => {
 								if (tickers.quantity > 0){
@@ -129,7 +130,7 @@ class TickerList extends Component{
 							})
 						}
 					</SubMenu>
-					<SubMenu key="watchlist" title={<span>Watch List</span>}>
+					<SubMenu key="watchlist" title={<span><Icon type="bars"/><span>Watch List</span></span>}>
 						{
 							this.state.tickers.map((tickers, index) => {
 								if (tickers.quantity === 0){
