@@ -56,7 +56,7 @@ class TickerList extends Component{
 
 	setCurrentTicker = (e) => {
 		this.setState({
-			currentTicker: e.key
+			currentTicker: e.item.props.name
 		});
 	}
 
@@ -107,12 +107,12 @@ class TickerList extends Component{
 		        </Modal>
 				<br />
 				<Menu defaultSelectedKeys={['Overview']}  onClick={this.setCurrentTicker}>
-					<Menu.Item key='Overview'> 
+					<Menu.Item key='Overview' name='Overview'>  
 						Overview
 					</Menu.Item>
 					{
 						this.state.tickers.map((tickers, index) => 
-							<Menu.Item key={index}> 
+							<Menu.Item key={index} name={tickers.ticker}> 
 								{tickers.ticker} - {tickers.quantity} shares
 							</Menu.Item>
 						)
