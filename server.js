@@ -2,6 +2,8 @@ const express = require('express');
 const _ = require('lodash');
 
 const bodyParser = require('body-parser');
+const request = require('request');
+const CircularJSON = require('circular-json');
 // const yahooFinance = require('yahoo-finance');
 
 const {mongoose} = require('./db/mongoose');
@@ -14,6 +16,7 @@ var {authenticate} = require('./middleware/authenticate');
 
 var app = express();
 var PORT = process.env.PORT || 5000;
+var AlphaVantageAPI = process.env.AlphaVantageAPI;
 
 app.use(bodyParser.json());
 
@@ -88,28 +91,29 @@ app.delete('/portfolio/:id', authenticate, (req, res) => {
   });
 });
 
-//Get stock price 
-// app.get('/portfolio/:id/price', (req, res) => {
-//   var id = req.params.id;
-//   if (!ObjectID.isValid(id)) {
-//     return res.status(404).send();
-//   }
-//   Ticker.findById(id).then((ticker) => {
-//     if (!ticker) {
-//       return res.status(404).send();
-//     }
-
-//     //TODO - yahoo finance is pretty slow, might need to switch to another api 
-//     yahooFinance.quote({
-//       symbol: ticker.ticker,
-//       modules: [ 'price', 'summaryDetail' ] // see the docs for the full list
-//     }, function (err, quotes) {
-//       res.send('$' + quotes.summaryDetail.ask);
-//     });
-//   }).catch((e) => {
-//     res.status(400).send();
-//   });
-// })
+//Get stock price - Daily
+app.get('/portfolio/:id/price', (req, res) => {
+  var id = req.params.id;
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send();
+  }
+  Ticker.findById(id).then((ticker) => {
+    if (!ticker) {
+      return res.status(404).send();
+    }
+    reqString = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol='+ticker.ticker+'&apikey=' + AlphaVantageAPI;
+    console.log(reqString);
+    request(reqString, { json: true }, (err, response, body) => {
+      if (err) { 
+        return console.log(err); 
+      }
+      let priceData = body["Time Series (Daily)"];
+      res.send(priceData[Object.keys(priceData)[0]]["4. close"]);
+    });
+  }).catch((e) => {
+    res.status(400).send();
+  });
+});
 
 ///////////////////
 //USER MANAGEMENT//
