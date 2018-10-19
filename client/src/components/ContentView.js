@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Tabs } from 'antd';
 import { connect } from 'react-redux';
 import { getCurrentPrice } from '../actions/portfolioActions';
+import Financial from './Financial';
 import axios from 'axios';
 const TabPane = Tabs.TabPane;
 
@@ -44,7 +45,7 @@ class ContentView extends Component{
 				marketcap: statData.marketcap,
 				week52high: statData.week52high,
   				week52low: statData.week52low,
-  				latestEPS: statData.latestEPS,
+  				latestEPS: statData.latestEPS
 	    	});
 	  	}).catch(error => {
 	    	console.log(error);
@@ -67,7 +68,9 @@ class ContentView extends Component{
 						}
 					</TabPane>
 					<TabPane tab='News' key="2">Content of {this.props.ticker} News</TabPane>
-					<TabPane tab='Financial' key="3">Financial information of {this.props.ticker}</TabPane>
+					<TabPane tab='Financial' key="3">
+						<Financial ticker = {this.props.ticker}/>
+					</TabPane>
 				</Tabs>
 			</div>
 		);
