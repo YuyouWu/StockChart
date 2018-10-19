@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { getCompanyFinancial } from '../actions/portfolioActions';
+import { connect } from 'react-redux';
 import axios from 'axios';
 
 class Financial extends Component{
@@ -14,50 +16,33 @@ class Financial extends Component{
 	    	operatingIncome: '',
 	    	netIncome: ''
 	    };
+
+	    this.getFinancial = this.getFinancial.bind(this);
 	}
 
 	componentDidMount(){
-		//Get Company Financial 
-	  	let reqString = 'https://api.iextrading.com/1.0/stock/' + this.props.ticker + '/financials';
-	  	axios.get(reqString)
-	    .then(response => {
-	    	this.setState({
-	    		reportDate: response.data.financials[0].reportDate,
-	    		totalRevenue: response.data.financials[0].totalRevenue,
-	    		costOfRevenue: response.data.financials[0].costOfRevenue,
-	    		grossProfit: response.data.financials[0].grossProfit,
-	    		operatingExpense: response.data.financials[0].operatingExpense,
-	    		researchAndDevelopment: response.data.financials[0].researchAndDevelopment,
-	    		operatingIncome: response.data.financials[0].operatingIncome,
-	    		netIncome: response.data.financials[0].netIncome
-	    	});
-
-	    	console.log("1st: "+this.state.reportDate);
-	  	}).catch(error => {
-	    	console.log(error);
-	    });
+		this.getFinancial(this.props.ticker);
 	}
 
 	componentWillReceiveProps(newProps) {
-		//Get Company Financial 
-	  	let reqString = 'https://api.iextrading.com/1.0/stock/' + newProps.ticker + '/financials';
-	  	axios.get(reqString)
-	    .then(response => {
-	    	this.setState({
-	    		reportDate: response.data.financials[0].reportDate,
-	    		totalRevenue: response.data.financials[0].totalRevenue,
-	    		costOfRevenue: response.data.financials[0].costOfRevenue,
-	    		grossProfit: response.data.financials[0].grossProfit,
-	    		operatingExpense: response.data.financials[0].operatingExpense,
-	    		researchAndDevelopment: response.data.financials[0].researchAndDevelopment,
-	    		operatingIncome: response.data.financials[0].operatingIncome,
-	    		netIncome: response.data.financials[0].netIncome
-	    	});
+		this.getFinancial(newProps.ticker);
+	}
 
-	    	console.log("2nd: "+this.state.reportDate);
-	  	}).catch(error => {
+	getFinancial(ticker) {
+		this.props.getCompanyFinancial(ticker).then((res) =>{
+			this.setState({
+	    		reportDate: res.payload.financials[0].reportDate,
+	    		totalRevenue: res.payload.financials[0].totalRevenue,
+	    		costOfRevenue: res.payload.financials[0].costOfRevenue,
+	    		grossProfit: res.payload.financials[0].grossProfit,
+	    		operatingExpense: res.payload.financials[0].operatingExpense,
+	    		researchAndDevelopment: res.payload.financials[0].researchAndDevelopment,
+	    		operatingIncome: res.payload.financials[0].operatingIncome,
+	    		netIncome: res.payload.financials[0].netIncome
+	    	});
+		}).catch(error => {
 	    	console.log(error);
-	    });
+	   	});
 	}
 
 	render() {
@@ -76,4 +61,7 @@ class Financial extends Component{
 	}
 }
 
-export default Financial;
+const mapStateToProps = state => ({
+  tickers: state.tickers
+});
+export default connect(mapStateToProps,{getCompanyFinancial})(Financial);

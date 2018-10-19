@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { Tabs } from 'antd';
 import { connect } from 'react-redux';
-import { getCurrentPrice } from '../actions/portfolioActions';
+import { getCurrentPrice, getCompanyStat } from '../actions/portfolioActions';
 import Financial from './Financial';
-import axios from 'axios';
 const TabPane = Tabs.TabPane;
 
 class ContentView extends Component{
@@ -23,33 +22,29 @@ class ContentView extends Component{
 	    	return(null);
 		}
 
-		//Get stock price 
-		let reqString = 'https://api.iextrading.com/1.0/stock/'+ newProps.ticker + '/delayed-quote';
-		axios.get(reqString)
-	    .then(response => {
-	    	let priceData = response.data.delayedPrice;
-	    	this.setState({
+	  	//Get current price for ticker 
+		this.props.getCurrentPrice(newProps.ticker).then((res) => {
+	   		let priceData = res.payload.delayedPrice;
+			this.setState({
 				currentPrice: '$' + priceData
-	    	});
-	  	}).catch(error => {
+	    	});	
+		}).catch(error => {
 	    	console.log(error);
-	    });
-		
-	  	//Get company stat 
-	  	let reqString2 = 'https://api.iextrading.com/1.0/stock/' + newProps.ticker + '/stats';
-	  	axios.get(reqString2)
-	    .then(response => {
-	    	let statData = response.data;
-		    this.setState({
+	   	});
+
+	   	//Get company stat 
+		this.props.getCompanyStat(newProps.ticker).then((res) => {
+	   		let statData = res.payload;
+			this.setState({
 				companyName: statData.companyName,
 				marketcap: statData.marketcap,
 				week52high: statData.week52high,
   				week52low: statData.week52low,
   				latestEPS: statData.latestEPS
 	    	});
-	  	}).catch(error => {
+		}).catch(error => {
 	    	console.log(error);
-	    });
+	   	});
 	}
 
 	render() {
@@ -80,5 +75,5 @@ class ContentView extends Component{
 const mapStateToProps = state => ({
   tickers: state.tickers
 });
-export default connect(mapStateToProps,{getCurrentPrice})(ContentView);
+export default connect(mapStateToProps,{getCurrentPrice, getCompanyStat})(ContentView);
 
