@@ -9,27 +9,46 @@ class ContentView extends Component{
 	constructor(props) {
 	    super(props);
 	    this.state = {
-	    	currentPrice: 'Loading'
+	    	currentPrice: 'Loading...',
 	    }
-    	console.log(this.props);
 	}
 	
 
 	componentWillReceiveProps(newProps){
-		let reqString = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol='+newProps.ticker+'&apikey=R4VG3S712X7PFH2U';
+		if (newProps.ticker === 'Overview'){
+			this.setState({
+				currentPrice: 'Loading...'
+	    	});
+	    	return(null);
+		}
+
+		//Get stock price 
+		let reqString = 'https://api.iextrading.com/1.0/stock/'+ newProps.ticker + '/delayed-quote';
 		axios.get(reqString)
 	    .then(response => {
-	    	let priceData = response.data["Time Series (Daily)"];
-	      	//res.send(priceData[Object.keys(priceData)[0]]["4. close"]);    
+	    	let priceData = response.data.delayedPrice;
 	    	this.setState({
-				currentPrice: priceData[Object.keys(priceData)[0]]["4. close"]
-	    	})
+				currentPrice: '$' + priceData
+	    	});
 	  	}).catch(error => {
 	    	console.log(error);
 	    });
-		// this.props.getCurrentPrice(newProps.ticker).then (res => this.setState({
-		// 	currentPrice: res.payload
-		// }));
+		
+	  	//Get company stat 
+	  	let reqString2 = 'https://api.iextrading.com/1.0/stock/' + newProps.ticker + '/stats';
+	  	axios.get(reqString2)
+	    .then(response => {
+	    	let statData = response.data;
+		    this.setState({
+				companyName: statData.companyName,
+				marketcap: statData.marketcap,
+				week52high: statData.week52high,
+  				week52low: statData.week52low,
+  				latestEPS: statData.latestEPS,
+	    	});
+	  	}).catch(error => {
+	    	console.log(error);
+	    });
 	}
 
 	render() {
@@ -37,18 +56,15 @@ class ContentView extends Component{
 			<div>
 				<Tabs defaultActiveKey="1">
 					<TabPane tab={this.props.ticker} key="1">
-						<h3>
-							${this.state.currentPrice}
-						</h3>
-						<div>
-							Daily Return
-						</div>
-						<div>
-							Monthly Return
-						</div>
-						<div>
-							Annual Return
-						</div>
+						{this.props.ticker !== 'Overview' && 
+							<div>
+								<h4>{this.state.companyName}</h4>
+								<h3>{this.state.currentPrice}</h3>
+								<p>Market Cap: ${this.state.marketcap}</p>
+								<p>52 weeks range: {this.state.week52low} - {this.state.week52high}</p>
+								<p>EPS: {this.state.latestEPS}</p>
+							</div>	
+						}
 					</TabPane>
 					<TabPane tab='News' key="2">Content of {this.props.ticker} News</TabPane>
 					<TabPane tab='Financial' key="3">Financial information of {this.props.ticker}</TabPane>
