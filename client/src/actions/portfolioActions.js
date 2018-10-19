@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_TICKERS, ADD_TICKER,  GET_ERRORS } from './types';
+import { GET_TICKERS, ADD_TICKER,  GET_ERRORS, GET_CURRENT_PRICE } from './types';
 
 var headers = {
   'xauth': localStorage.getItem('jwtToken')
@@ -25,11 +25,21 @@ export const getTickers = () => (dispatch,getState) => {
 };
 
 export const addTicker = ticker => dispatch => {
-  console.log(ticker);
   axios.post('/portfolio/add', ticker, {headers: headers}).then(res =>
     dispatch({
       type: ADD_TICKER,
       payload: res.data
     })
   );
+};
+
+export const getCurrentPrice = ticker => dispatch => {
+  return (
+    axios.get('/portfolio/' + ticker +'/price').then(res =>
+      dispatch({
+        type: GET_CURRENT_PRICE,
+        payload: res.data
+      })
+    )
+  )
 };

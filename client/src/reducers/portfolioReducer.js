@@ -1,4 +1,4 @@
-import { GET_TICKERS, ADD_TICKER } from '../actions/types';
+import { GET_TICKERS, ADD_TICKER, GET_CURRENT_PRICE } from '../actions/types';
 
 var initialState = {
   tickers: []
@@ -12,6 +12,11 @@ export default function(state = initialState, action) {
         tickers: [action.payload, ...state.tickers]
       };
     case ADD_TICKER:
+      return {
+        ...state,
+        tickers: [action.payload, ...state.tickers]
+      };
+    case GET_CURRENT_PRICE:
       return {
         ...state,
         tickers: [action.payload, ...state.tickers]

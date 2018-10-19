@@ -126,6 +126,8 @@ class TickerList extends Component{
 											{tickers.ticker} - {tickers.quantity} shares
 										</Menu.Item>
 									)
+								} else {
+									return(null)
 								}
 							})
 						}
@@ -139,6 +141,8 @@ class TickerList extends Component{
 											{tickers.ticker}
 										</Menu.Item>
 									)
+								} else {
+									return(null)
 								}
 							})
 						}

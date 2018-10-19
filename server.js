@@ -3,7 +3,7 @@ const _ = require('lodash');
 
 const bodyParser = require('body-parser');
 const request = require('request');
-const CircularJSON = require('circular-json');
+const axios = require('axios');
 // const yahooFinance = require('yahoo-finance');
 
 const {mongoose} = require('./db/mongoose');
@@ -16,7 +16,7 @@ var {authenticate} = require('./middleware/authenticate');
 
 var app = express();
 var PORT = process.env.PORT || 5000;
-var AlphaVantageAPI = process.env.AlphaVantageAPI;
+var AlphaVantageAPI = 'R4VG3S712X7PFH2U';
 
 app.use(bodyParser.json());
 
@@ -91,29 +91,52 @@ app.delete('/portfolio/:id', authenticate, (req, res) => {
   });
 });
 
-//Get stock price - Daily
+//Get stock price with ID - Daily
+// app.get('/portfolio/:id/price', (req, res) => {
+//   var id = req.params.id;
+//   if (!ObjectID.isValid(id)) {
+//     return res.status(404).send();
+//   }
+//   Ticker.findById(id).then((ticker) => {
+//     if (!ticker) {
+//       return res.status(404).send();
+//     }
+//     reqString = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol='+ticker.ticker+'&apikey=' + AlphaVantageAPI;
+//     console.log(reqString);
+//     request(reqString, { json: true }, (err, response, body) => {
+//       if (err) { 
+//         return console.log(err); 
+//       }
+//       let priceData = body["Time Series (Daily)"];
+//       res.send(priceData[Object.keys(priceData)[0]]["4. close"]);
+//     });
+//   }).catch((e) => {
+//     res.status(400).send();
+//   });
+// });
+
+//Get stock price with Ticker - Daily
 app.get('/portfolio/:id/price', (req, res) => {
-  var id = req.params.id;
-  if (!ObjectID.isValid(id)) {
-    return res.status(404).send();
-  }
-  Ticker.findById(id).then((ticker) => {
-    if (!ticker) {
-      return res.status(404).send();
-    }
-    reqString = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol='+ticker.ticker+'&apikey=' + AlphaVantageAPI;
-    console.log(reqString);
-    request(reqString, { json: true }, (err, response, body) => {
-      if (err) { 
-        return console.log(err); 
-      }
-      let priceData = body["Time Series (Daily)"];
-      res.send(priceData[Object.keys(priceData)[0]]["4. close"]);
+  var ticker = req.params.id;
+  reqString = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol='+ticker+'&apikey=' + AlphaVantageAPI;
+  // console.log(reqString);
+  // request(reqString, { json: true }, (err, response, body) => {
+  //   if (err) { 
+  //     console.log(err); 
+  //   }
+  //   let priceData = body["Time Series (Daily)"];
+  //   res.send(priceData[Object.keys(priceData)[0]]["4. close"]);
+  // });
+  console.log(reqString);
+  axios.get(reqString)
+    .then(response => {
+      let priceData = response.data["Time Series (Daily)"];
+      res.send(priceData[Object.keys(priceData)[0]]["4. close"]);    
+    }).catch(error => {
+      console.log(error);
     });
-  }).catch((e) => {
-    res.status(400).send();
-  });
 });
+
 
 ///////////////////
 //USER MANAGEMENT//

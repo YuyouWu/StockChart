@@ -1,5 +1,6 @@
 export const GET_TICKERS = 'GET_TICKERS';
 export const ADD_TICKER = 'ADD_TICKER';
+export const GET_CURRENT_PRICE = 'GET_CURRENT_PRICE';
 
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';
