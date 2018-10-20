@@ -10,7 +10,7 @@ export const getTickers = () => (dispatch,getState) => {
     'xauth': localStorage.getItem('jwtToken')
   }
   return(
-    axios.get('/portfolio', {headers: header}).then(res =>
+    axios.get('/api/portfolio', {headers: header}).then(res =>
      	dispatch({
         type: GET_TICKERS,
         payload: res.data.tickers
@@ -25,12 +25,12 @@ export const getTickers = () => (dispatch,getState) => {
 };
 
 export const addTicker = ticker => dispatch => {
-  axios.post('/portfolio/add', ticker, {headers: headers}).then(res =>
+  axios.post('/api/portfolio/add', ticker, {headers: headers}).then(res =>
     dispatch({
       type: ADD_TICKER,
       payload: res.data
     })
-  );
+  )
 };
 
 export const getCurrentPrice = ticker => dispatch => {
@@ -59,7 +59,7 @@ export const getCompanyFinancial = ticker => dispatch => {
   return (
     axios.get('https://api.iextrading.com/1.0/stock/' + ticker +'/financials').then(res =>
       dispatch({
-        type: GET_COMPANY_STAT,
+        type: GET_COMPANY_FINANCIAL,
         payload: res.data
       })
     )

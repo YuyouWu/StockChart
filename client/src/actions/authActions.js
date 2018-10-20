@@ -7,7 +7,7 @@ var headers = {
 
 export const loginAction = user => (dispatch, getState) => {
   return(
-    axios.post('/users/login', user).then(res =>{
+    axios.post('/api/users/login', user).then(res =>{
         localStorage.setItem('jwtToken', res.headers.xauth);
         dispatch({
           type: LOGIN,
@@ -21,7 +21,7 @@ export const loginAction = user => (dispatch, getState) => {
 export const logoutAction = () => (dispatch, getState) => {
   localStorage.removeItem('jwtToken');
   return(
-    axios.delete('/users/me/token', {headers: headers}).then(res =>{
+    axios.delete('/api/users/me/token', {headers: headers}).then(res =>{
         dispatch({
           type: LOGOUT,
           payload: res.data
@@ -33,7 +33,7 @@ export const logoutAction = () => (dispatch, getState) => {
 
 export const registerAction = newUser => (dispatch, getState) => {
   return(
-    axios.post('/users', newUser).then(res =>{
+    axios.post('/api/users', newUser).then(res =>{
         localStorage.setItem('jwtToken', res.headers.xauth);
         dispatch({
           type: REGISTER,
@@ -42,11 +42,11 @@ export const registerAction = newUser => (dispatch, getState) => {
       }
     )
   )
-}
+};
 
 export const setCurrentUser = () => dispatch => {
   return(
-    axios.get('/users/me', {headers: headers}).then(res =>
+    axios.get('/api/users/me', {headers: headers}).then(res =>
       dispatch({
         type: SET_CURRENT_USER,
         payload: res.data

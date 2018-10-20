@@ -1,5 +1,6 @@
 const express = require('express');
 const _ = require('lodash');
+const path = require("path");
 
 const bodyParser = require('body-parser');
 const request = require('request');
@@ -20,12 +21,14 @@ var AlphaVantageAPI = 'R4VG3S712X7PFH2U';
 
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => {
-	res.send('StockChart API');
-});
+app.use(express.static(path.join(__dirname, "client", "build")))
+
+// app.get('/', (req, res) => {
+// 	res.send('StockChart API');
+// });
 
 //Get a list of tickers inside portfolio with authentication
-app.get('/portfolio', authenticate, (req, res) => {
+app.get('/api/portfolio', authenticate, (req, res) => {
 	Ticker.find({
     _creator: req.user._id
   }).then((tickers) =>{
@@ -36,7 +39,7 @@ app.get('/portfolio', authenticate, (req, res) => {
 });
 
 //Get a specific ticker
-app.get('/portfolio/:id', (req, res) => {
+app.get('/api/portfolio/:id', (req, res) => {
   var id = req.params.id;
 
   if (!ObjectID.isValid(id)) {
@@ -55,7 +58,7 @@ app.get('/portfolio/:id', (req, res) => {
 });
 
 //Add ticker to portfolio
-app.post('/portfolio/add', authenticate, (req, res) => {
+app.post('/api/portfolio/add', authenticate, (req, res) => {
 	var ticker = new Ticker({
     ticker: req.body.ticker,
     quantity: req.body.quantity,
@@ -70,7 +73,7 @@ app.post('/portfolio/add', authenticate, (req, res) => {
 });
 
 //Delete ticker inside portfolio
-app.delete('/portfolio/:id', authenticate, (req, res) => {
+app.delete('/api/portfolio/:id', authenticate, (req, res) => {
   var id = req.params.id;
 
   if (!ObjectID.isValid(id)) {
@@ -116,7 +119,7 @@ app.delete('/portfolio/:id', authenticate, (req, res) => {
 // });
 
 //Get stock price with Ticker - Daily
-app.get('/portfolio/:id/price', (req, res) => {
+app.get('/api/portfolio/:id/price', (req, res) => {
   var ticker = req.params.id;
   reqString = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol='+ticker+'&apikey=' + AlphaVantageAPI;
   // console.log(reqString);
@@ -143,7 +146,7 @@ app.get('/portfolio/:id/price', (req, res) => {
 ///////////////////
 
 // Add New User
-app.post('/users', (req, res) => {
+app.post('/api/users', (req, res) => {
   var body = _.pick(req.body, ['email', 'password']);
   var user = new User(body);
 
@@ -157,7 +160,7 @@ app.post('/users', (req, res) => {
 });
 
 //User Login
-app.post('/users/login', (req, res) => {
+app.post('/api/users/login', (req, res) => {
   var body = _.pick(req.body, ['email', 'password']);
 
   User.findByCredentials(body.email, body.password).then((user) => {
@@ -170,7 +173,7 @@ app.post('/users/login', (req, res) => {
 });
 
 //User Logout
-app.delete('/users/me/token', authenticate, (req, res) => {
+app.delete('/api/users/me/token', authenticate, (req, res) => {
   req.user.removeToken(req.token).then(() => {
     res.status(200).send();
   }, () => {
@@ -179,8 +182,12 @@ app.delete('/users/me/token', authenticate, (req, res) => {
 });
 
 //Get a specific user
-app.get('/users/me', authenticate, (req, res) => {
+app.get('/api/users/me', authenticate, (req, res) => {
   res.send(req.user);
+});
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "client", "build", "index.html"));
 });
 
 app.listen(PORT, () => {

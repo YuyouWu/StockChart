@@ -17,7 +17,6 @@ class Login extends React.Component {
 	    	email: e.target.elements.email.value,
 	    	password: e.target.elements.userPassword.value
 	    };
-
 	    this.props.loginAction(user).then((res) => {
 	    	//TODO
 	    	this.props.history.push('/portfolio');

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { getCompanyFinancial } from '../actions/portfolioActions';
 import { connect } from 'react-redux';
-import axios from 'axios';
 
 class Financial extends Component{
 	constructor(props) {
