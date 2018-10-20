@@ -28,9 +28,11 @@ class TickerList extends Component{
 			// for (var i = res.payload.length - 1; i >= 0; i--) {
 			// 	temp[i] = res.payload[i].ticker;
 			// }
-	    	this.setState({
-	    		tickers: res.payload
-	    	});
+			if(res.payload) {
+		    	this.setState({
+		    		tickers: res.payload
+		    	});
+	    	}
 		}).catch(function(err){
 			console.log(err);
 		});
