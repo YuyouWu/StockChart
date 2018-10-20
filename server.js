@@ -20,10 +20,6 @@ var PORT = process.env.PORT || 5000;
 
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => {
-	res.send('StockChart API');
-});
-
 //Get a list of tickers inside portfolio with authentication
 app.get('/api/portfolio', authenticate, (req, res) => {
 	Ticker.find({
