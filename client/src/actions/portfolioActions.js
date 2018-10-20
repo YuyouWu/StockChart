@@ -6,11 +6,8 @@ var headers = {
 }
 
 export const getTickers = () => (dispatch,getState) => {
-  var header = {
-    'xauth': localStorage.getItem('jwtToken')
-  }
   return(
-    axios.get('/api/portfolio', {headers: header}).then(res =>
+    axios.get('/api/portfolio', {headers: headers}).then(res =>
      	dispatch({
         type: GET_TICKERS,
         payload: res.data.tickers
@@ -25,11 +22,13 @@ export const getTickers = () => (dispatch,getState) => {
 };
 
 export const addTicker = ticker => dispatch => {
-  axios.post('/api/portfolio/add', ticker, {headers: headers}).then(res =>
-    dispatch({
-      type: ADD_TICKER,
-      payload: res.data
-    })
+  return(
+    axios.post('/api/portfolio/add', ticker, {headers: headers}).then(res =>
+      dispatch({
+        type: ADD_TICKER,
+        payload: res.data
+      })
+    )
   )
 };
 

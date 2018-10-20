@@ -17,15 +17,12 @@ var {authenticate} = require('./middleware/authenticate');
 
 var app = express();
 var PORT = process.env.PORT || 5000;
-var AlphaVantageAPI = 'R4VG3S712X7PFH2U';
 
 app.use(bodyParser.json());
 
-// app.use(express.static(path.join(__dirname, "client", "build")))
-
-// app.get('/', (req, res) => {
-// 	res.send('StockChart API');
-// });
+app.get('/', (req, res) => {
+	res.send('StockChart API');
+});
 
 //Get a list of tickers inside portfolio with authentication
 app.get('/api/portfolio', authenticate, (req, res) => {
@@ -94,52 +91,6 @@ app.delete('/api/portfolio/:id', authenticate, (req, res) => {
   });
 });
 
-//Get stock price with ID - Daily
-// app.get('/portfolio/:id/price', (req, res) => {
-//   var id = req.params.id;
-//   if (!ObjectID.isValid(id)) {
-//     return res.status(404).send();
-//   }
-//   Ticker.findById(id).then((ticker) => {
-//     if (!ticker) {
-//       return res.status(404).send();
-//     }
-//     reqString = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol='+ticker.ticker+'&apikey=' + AlphaVantageAPI;
-//     console.log(reqString);
-//     request(reqString, { json: true }, (err, response, body) => {
-//       if (err) { 
-//         return console.log(err); 
-//       }
-//       let priceData = body["Time Series (Daily)"];
-//       res.send(priceData[Object.keys(priceData)[0]]["4. close"]);
-//     });
-//   }).catch((e) => {
-//     res.status(400).send();
-//   });
-// });
-
-//Get stock price with Ticker - Daily
-app.get('/api/portfolio/:id/price', (req, res) => {
-  var ticker = req.params.id;
-  reqString = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol='+ticker+'&apikey=' + AlphaVantageAPI;
-  // console.log(reqString);
-  // request(reqString, { json: true }, (err, response, body) => {
-  //   if (err) { 
-  //     console.log(err); 
-  //   }
-  //   let priceData = body["Time Series (Daily)"];
-  //   res.send(priceData[Object.keys(priceData)[0]]["4. close"]);
-  // });
-  console.log(reqString);
-  axios.get(reqString)
-    .then(response => {
-      let priceData = response.data["Time Series (Daily)"];
-      res.send(priceData[Object.keys(priceData)[0]]["4. close"]);    
-    }).catch(error => {
-      console.log(error);
-    });
-});
-
 
 ///////////////////
 //USER MANAGEMENT//
@@ -186,15 +137,11 @@ app.get('/api/users/me', authenticate, (req, res) => {
   res.send(req.user);
 });
 
-// app.get("*", (req, res) => {
-//     res.sendFile(path.join(__dirname, "client", "build", "index.html"));
-// });
-  app.use(express.static('client/build')); // serve the static react app
-  app.get(/^\/(?!api).*/, (req, res) => { // don't serve api routes to react app
-    res.sendFile(path.join(__dirname, './client/build/index.html'));
-  });
-  console.log('Serving React App...');
+app.use(express.static(path.join(__dirname, "client", "build")))
 
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "client", "build", "index.html"));
+});
 
 app.listen(PORT, () => {
 	console.log('Express listening on port ' + PORT + '!');
