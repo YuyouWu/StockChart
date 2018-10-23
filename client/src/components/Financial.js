@@ -1,19 +1,17 @@
 import React, { Component } from 'react';
 import { getCompanyFinancial } from '../actions/portfolioActions';
+import FinancialField from './FinancialField';
 import { connect } from 'react-redux';
+import { Row, Col } from 'antd';
 
 class Financial extends Component{
 	constructor(props) {
 	    super(props);
 	    this.state ={
-	    	reportDate: '',
-	    	totalRenevue: '',
-	    	costOfRevenue: '',
-	    	grossProfit: '',
-	    	operatingExpense: '',
-	    	researchAndDevelopment: '',
-	    	operatingIncome: '',
-	    	netIncome: ''
+	    	mostRecentQuarter: '',
+	    	mostRecentQuarter2: '',
+	    	mostRecentQuarter3: '',
+	    	mostRecentQuarter4: ''
 	    };
 
 	    this.getFinancial = this.getFinancial.bind(this);
@@ -30,14 +28,10 @@ class Financial extends Component{
 	getFinancial(ticker) {
 		this.props.getCompanyFinancial(ticker).then((res) =>{
 			this.setState({
-	    		reportDate: res.payload.financials[0].reportDate,
-	    		totalRevenue: res.payload.financials[0].totalRevenue,
-	    		costOfRevenue: res.payload.financials[0].costOfRevenue,
-	    		grossProfit: res.payload.financials[0].grossProfit,
-	    		operatingExpense: res.payload.financials[0].operatingExpense,
-	    		researchAndDevelopment: res.payload.financials[0].researchAndDevelopment,
-	    		operatingIncome: res.payload.financials[0].operatingIncome,
-	    		netIncome: res.payload.financials[0].netIncome
+	    		mostRecentQuarter: res.payload.financials[0],
+	    		mostRecentQuarter2: res.payload.financials[1],
+	    		mostRecentQuarter3: res.payload.financials[2],
+	    		//mostRecentQuarter4: res.payload.financials[3]
 	    	});
 		}).catch(error => {
 	    	console.log(error);
@@ -47,14 +41,48 @@ class Financial extends Component{
 	render() {
 		return (
 			<div>
-				<p>{this.state.reportDate}</p>
-				<p>Total Revenue: {this.state.totalRevenue}</p>
-				<p>Cost of Revenue: {this.state.costOfRevenue}</p>
-				<p>Gross Profit: {this.state.grossProfit}</p>
-				<p>Operating Expense: {this.state.operatingExpense}</p>
-				<p>Research and Development: {this.state.researchAndDevelopment}</p>
-				<p>Operating Income: {this.state.operatingIncome}</p>
-				<p>Net Income: {this.state.netIncome}</p>
+			<Row gutter={16}>
+			  <Col span={6}>
+			  	<p>Report Date</p>
+			  	<p>Total Revenue</p>
+			  	<p>Cost of Revenue</p>
+			  	<p>Gross Profit</p>
+			  	<p>Operating Expense</p>
+			  	<p>Research Development</p>
+			  	<p>Operating Income</p>
+			  	<p>Net Income</p>
+			  </Col>
+			  <Col span={6}>
+			  	<FinancialField data = {this.state.mostRecentQuarter.reportDate} />
+			  	<FinancialField data = {this.state.mostRecentQuarter.totalRevenue} />
+			  	<FinancialField data = {this.state.mostRecentQuarter.costOfRevenue} />
+			  	<FinancialField data = {this.state.mostRecentQuarter.grossProfit} />
+			  	<FinancialField data = {this.state.mostRecentQuarter.operatingExpense} />
+			  	<FinancialField data = {this.state.mostRecentQuarter.researchAndDevelopment} />
+			  	<FinancialField data = {this.state.mostRecentQuarter.operatingIncome} />
+			  	<FinancialField data = {this.state.mostRecentQuarter.netIncome} />
+			  </Col>
+			  <Col span={6}>
+			  	<FinancialField data = {this.state.mostRecentQuarter2.reportDate} />
+			  	<FinancialField data = {this.state.mostRecentQuarter2.totalRevenue} />
+			  	<FinancialField data = {this.state.mostRecentQuarter2.costOfRevenue} />
+			  	<FinancialField data = {this.state.mostRecentQuarter2.grossProfit} />
+			  	<FinancialField data = {this.state.mostRecentQuarter2.operatingExpense} />
+			  	<FinancialField data = {this.state.mostRecentQuarter2.researchAndDevelopment} />
+			  	<FinancialField data = {this.state.mostRecentQuarter2.operatingIncome} />
+			  	<FinancialField data = {this.state.mostRecentQuarter2.netIncome} />
+			  </Col>
+			  <Col span={6}>
+			  	<FinancialField data = {this.state.mostRecentQuarter3.reportDate} />
+			  	<FinancialField data = {this.state.mostRecentQuarter3.totalRevenue} />
+			  	<FinancialField data = {this.state.mostRecentQuarter3.costOfRevenue} />
+			  	<FinancialField data = {this.state.mostRecentQuarter3.grossProfit} />
+			  	<FinancialField data = {this.state.mostRecentQuarter3.operatingExpense} />
+			  	<FinancialField data = {this.state.mostRecentQuarter3.researchAndDevelopment} />
+			  	<FinancialField data = {this.state.mostRecentQuarter3.operatingIncome} />
+			  	<FinancialField data = {this.state.mostRecentQuarter3.netIncome} />
+			  </Col>
+			</Row>
 			</div>
 		);
 	}
