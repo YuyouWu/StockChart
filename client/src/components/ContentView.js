@@ -37,7 +37,7 @@ class ContentView extends Component{
 	   		let statData = res.payload;
 			this.setState({
 				companyName: statData.companyName,
-				marketcap: statData.marketcap,
+				marketcap: statData.marketcap.toLocaleString(undefined),
 				week52high: statData.week52high,
   				week52low: statData.week52low,
   				latestEPS: statData.latestEPS

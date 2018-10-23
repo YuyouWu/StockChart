@@ -5,7 +5,7 @@ class FinancialField extends Component{
 		return (
 			<div>
 				{this.props.data ? (
-					<p> {this.props.data} </p>
+					<p> {this.props.data.toLocaleString(undefined)} </p>
 				) : (
 					<p> - </p>
 				)}
