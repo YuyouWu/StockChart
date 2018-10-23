@@ -2,7 +2,7 @@ import React from 'react';
 import { ListGroupItem } from 'reactstrap';
 import { Menu } from 'antd';
 
-//Class for rendering each individual tickerson portfolio
+//Class for rendering each individual tickers on portfolio
 class Ticker extends React.Component {
   render() {
     return (
