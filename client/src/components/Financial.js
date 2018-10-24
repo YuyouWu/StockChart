@@ -27,7 +27,6 @@ class Financial extends Component{
 
 	getFinancial(ticker) {
 		this.props.getCompanyFinancial(ticker).then((res) =>{
-			console.log(res.payload)
 			this.setState({
 	    		mostRecentQuarter: res.payload.financials[0],
 	    		mostRecentQuarter2: res.payload.financials[1],

@@ -34,7 +34,7 @@ export const addTicker = ticker => dispatch => {
 
 export const getCurrentPrice = ticker => dispatch => {
   return (
-    axios.get('https://api.iextrading.com/1.0/stock/' + ticker +'/delayed-quote').then(res =>
+    axios.get('https://api.iextrading.com/1.0/stock/' + ticker +'/quote').then(res =>
       dispatch({
         type: GET_CURRENT_PRICE,
         payload: res.data
