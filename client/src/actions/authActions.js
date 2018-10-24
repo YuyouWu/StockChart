@@ -5,14 +5,14 @@ var headers = {
   'xauth': localStorage.getItem('jwtToken')
 }
 
-export const loginAction = user => (dispatch, getState) => {
+export const loginAction = user => dispatch => {
   return(
     axios.post('/api/users/login', user).then(res =>{
         localStorage.setItem('jwtToken', res.headers.xauth);
         dispatch({
           type: LOGIN,
-          payload: res.headers.xauth
-        })
+          payload: res.data
+        });
       }
     )
   )

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Tabs } from 'antd';
 import { connect } from 'react-redux';
-import { getCurrentPrice, getCompanyStat } from '../actions/portfolioActions';
+import { setCurrentUser } from '../actions/authActions';
 import Summary from './Summary';
 import Financial from './Financial';
 import NewsList from './NewsList';
@@ -31,7 +31,6 @@ class ContentView extends Component{
 }
 
 const mapStateToProps = state => ({
-  tickers: state.tickers
 });
-export default connect(mapStateToProps,{getCurrentPrice, getCompanyStat})(ContentView);
+export default connect(mapStateToProps,{setCurrentUser})(ContentView);
 

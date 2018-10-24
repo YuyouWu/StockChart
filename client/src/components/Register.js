@@ -2,6 +2,9 @@ import React from 'react';
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import { registerAction } from '../actions/authActions';
 import { connect } from 'react-redux';
+import { Alert } from 'reactstrap';
+import { Icon } from 'antd';
+import axios from 'axios';
 
 class Register extends React.Component {
   	constructor(props) {
@@ -9,7 +12,8 @@ class Register extends React.Component {
     	this.state = {
 	      	email: '',
 	      	password: '',
-	      	password2: ''
+	      	password2: '',
+	      	successAlert: false
 	    };
 
     	this.handleAddUser = this.handleAddUser.bind(this);
@@ -28,12 +32,25 @@ class Register extends React.Component {
 	    	password: e.target.elements.userPassword.value
 	    };
 
-		this.props.registerAction(newUser);
+		// this.props.registerAction(newUser).then((res)=>{
+		// 	console.log(res);
+		// });
+
+		axios.post('/api/users', newUser).then(res =>{
+	        localStorage.setItem('jwtToken', res.headers.xauth);
+	        this.setState({
+	        	successAlert: true
+	        });
+	        setTimeout(() => this.props.history.push('/portfolio'), 3000);
+	    });
 	}
 
 	render() {
 		return(
 			<div className="container">
+				<Alert style={{marginTop: 25+'px'}} color="success" isOpen={this.state.successAlert}>
+			        <Icon type="loading" theme="outlined" /> Registration Successful. Redirecting to Portfolio... 
+			    </Alert>
       			<Form onSubmit={this.handleAddUser}>
       				<br />
         			<FormGroup>

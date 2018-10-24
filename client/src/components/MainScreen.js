@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ContentView from './ContentView';
 import { getTickers, addTicker } from '../actions/portfolioActions';
+import { setCurrentUser } from '../actions/authActions';
 import { Form, Input, Button, InputGroup } from 'reactstrap';
 import { Layout, Menu, Modal, Icon } from 'antd';
 import { connect } from 'react-redux';
@@ -15,7 +16,8 @@ class TickerList extends Component{
 	    this.state = {
 	    	tickers: ['Loading'],
 	    	currentTicker: 'Overview',
-	    	visible: false
+	    	visible: false,
+	    	currentUser: ''
 	    };
     	this.handleAddTicker = this.handleAddTicker.bind(this);
     	this.setCurrentTicker = this.setCurrentTicker.bind(this);
@@ -24,10 +26,6 @@ class TickerList extends Component{
 	componentDidMount(){
 		//API to get the list of tickers
 		this.props.getTickers().then((res) => {
-			// var temp = [];
-			// for (var i = res.payload.length - 1; i >= 0; i--) {
-			// 	temp[i] = res.payload[i].ticker;
-			// }
 			if(res.payload) {
 		    	this.setState({
 		    		tickers: res.payload
@@ -164,4 +162,4 @@ class TickerList extends Component{
 const mapStateToProps = state => ({
   tickers: state.tickers
 });
-export default connect(mapStateToProps,{getTickers, addTicker})(TickerList);
+export default connect(mapStateToProps,{getTickers, addTicker, setCurrentUser})(TickerList);

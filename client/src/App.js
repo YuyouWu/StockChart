@@ -8,6 +8,7 @@ import AppNavbar from './components/AppNavbar'
 import MainScreen from './components/MainScreen'
 import Register from './components/Register';
 import Login from './components/Login';
+import LandingPage from './components/LandingPage/LandingPage';
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css';
@@ -22,6 +23,7 @@ class App extends Component {
           <div className="container">
             <Router>
               <div>
+                <Route exact path="/" component={LandingPage} />
                 <Route exact path="/portfolio" component={MainScreen} />
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/register" component={Register} />

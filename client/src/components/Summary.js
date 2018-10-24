@@ -53,7 +53,7 @@ class Summary extends React.Component {
 							</Col>
 						</Row>
 						<Row>
-							<Col span={3}>
+							<Col span={4}>
 								<h4>{this.state.priceData.delayedPrice}</h4>
 							</Col>
 							<Col span={3}>
