@@ -5,7 +5,6 @@ import { setCurrentUser } from '../actions/authActions';
 import { Form, Input, Button, InputGroup } from 'reactstrap';
 import { Layout, Menu, Modal, Icon } from 'antd';
 import { connect } from 'react-redux';
-
 const { Content, Sider } = Layout;
 const SubMenu = Menu.SubMenu;
 
@@ -17,7 +16,8 @@ class TickerList extends Component{
 	    	tickers: ['Loading'],
 	    	currentTicker: 'Overview',
 	    	visible: false,
-	    	currentUser: ''
+	    	currentUser: '',
+	    	selectedOption: null
 	    };
     	this.handleAddTicker = this.handleAddTicker.bind(this);
     	this.setCurrentTicker = this.setCurrentTicker.bind(this);
@@ -37,14 +37,14 @@ class TickerList extends Component{
 	}
 
 	handleAddTicker = (e) => {
-		var temp = [];
-	    const ticker = e.target.elements.ticker.value.trim();
-	    const quantity = Number(e.target.elements.quantity.value.trim());
+		var ticker =  e.target.elements.ticker.value.trim();
+		var quantity = 0;
 
-	    //TODO: if state to set default quanity as 0
-
-	    temp = this.state.tickers;
-		temp.push(ticker);
+	    //Set default quantity to 0
+	    if(e.target.elements.quantity.value !== null){
+	    	quantity = Number(e.target.elements.quantity.value.trim());
+	    }
+	    console.log(quantity);
 
 		var tickerObj = {
 			"ticker": ticker,
@@ -80,7 +80,6 @@ class TickerList extends Component{
 	    });
 	}
 
-
 	render() { 
 		return(
 			<Layout>
@@ -97,11 +96,9 @@ class TickerList extends Component{
 				>	
 		          	<Form onSubmit={this.handleAddTicker}>
 		          		<InputGroup>
-		          			<Input placeholder="Ticker" type="text" name="ticker"/>
-		          			<Input placeholder="Quantity" type="number" name="quantity"/>
+		          			<Input placeholder="Ticker" type="string" name="ticker"/>
+		          			<Input placeholder="Quantity - default 0" type="number" name="quantity"/>
 		          		</InputGroup>
-			          	<br/>
-			          	<h5>Total Cost: </h5>
 			          	<br/>
 		          		<Button outline color="primary">Add Ticker</Button>
 			    	</Form>

@@ -133,6 +133,21 @@ app.get('/api/users/me', authenticate, (req, res) => {
   res.send(req.user);
 });
 
+//Find user by email
+app.post('/api/users/email', (req, res) => {
+  var body = req.body;
+  User.findOne({email: body.email}).then((user) => {
+    if (!user) {
+      return res.status(404).send();
+    }
+
+    res.send(body.email);
+  }).catch((e) => {
+    res.status(400).send();
+  });
+});
+
+
 app.use(express.static(path.join(__dirname, "client", "build")))
 
 app.get("*", (req, res) => {

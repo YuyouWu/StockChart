@@ -13,7 +13,10 @@ class Register extends React.Component {
 	      	email: '',
 	      	password: '',
 	      	password2: '',
-	      	successAlert: false
+	      	successAlert: false,
+	      	passwordAlert: false,
+	      	passLengthAlert: false,
+	      	emailAlert: false,
 	    };
 
     	this.handleAddUser = this.handleAddUser.bind(this);
@@ -22,9 +25,25 @@ class Register extends React.Component {
 
 	handleAddUser = (e) => {
 		e.preventDefault();
+
+		this.setState({
+			successAlert: false,
+			passwordAlert: false,
+			passLengthAlert: false,
+			emailAlert: false
+		});
+		//Check both passwords match
 		if(e.target.elements.confirmPassword.value !== e.target.elements.userPassword.value){
-			console.log("Passwords do not match");
-			return;
+			this.setState({
+	        	passwordAlert: true
+	        });
+		}
+
+		//Check if password is longer than 6 characters
+		if (e.target.elements.confirmPassword.value.trim().length < 6){
+			this.setState({
+	        	passLengthAlert: true
+	        });
 		}
 
 		const newUser = {
@@ -32,18 +51,33 @@ class Register extends React.Component {
 	    	password: e.target.elements.userPassword.value
 	    };
 
-		//TODO Check if email is in database
-		//Check if password is longer than 6 characters
-
-		axios.post('/api/users', newUser).then(res =>{
-	        localStorage.setItem('jwtToken', res.headers.xauth);
-	        this.setState({
-	        	successAlert: true
+		//Check if email is in database/registered
+		axios.post('/api/users/email', newUser).then((res) => {
+			if(res.data){
+				this.setState({
+		        	emailAlert: true
+	        	});
+			} 
+		}).catch(err => {
+	    	this.setState({
+		        emailAlert: false
 	        });
-	    	setTimeout(() => window.location.href = '/portfolio', 3000);
-	    }).catch(err => {
-	    	console.log(err);
 	    });
+
+	    if(!this.state.passwordAlert && !this.state.passLengthAlert && !this.state.emailAlert) {
+	    	axios.post('/api/users', newUser).then(res =>{
+		        localStorage.setItem('jwtToken', res.headers.xauth);
+		        this.setState({
+		        	passwordAlert: false,
+		        	passLengthAlert: false,
+		        	emailAlert: false,
+		        	successAlert: true
+		        });
+		    	setTimeout(() => window.location.href = '/portfolio', 3000);
+		    }).catch(err => {
+		    	console.log(err);
+		    });
+	    }
 	}
 
 	render() {
@@ -52,7 +86,16 @@ class Register extends React.Component {
 				<Alert style={{marginTop: 25+'px'}} color="success" isOpen={this.state.successAlert}>
 			        <Icon type="loading" theme="outlined" /> Registration Successful. Redirecting to Portfolio... 
 			    </Alert>
-			    
+			    <Alert style={{marginTop: 25+'px'}} color="danger" isOpen={this.state.passwordAlert}>
+			    	Passwords do not match.
+			    </Alert>
+			    <Alert style={{marginTop: 25+'px'}} color="danger" isOpen={this.state.passLengthAlert}>
+			    	Password needs to be longer than 6 characters.
+			    </Alert>
+			    <Alert style={{marginTop: 25+'px'}} color="danger" isOpen={this.state.emailAlert}>
+			    	This email has already been registered
+			    </Alert>
+
       			<Form onSubmit={this.handleAddUser}>
       				<br />
         			<FormGroup>
