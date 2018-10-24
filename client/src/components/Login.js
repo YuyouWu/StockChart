@@ -14,8 +14,13 @@ class Login extends React.Component {
     		failedAlert: false,
     	}
     	this.handleLogin = this.handleLogin.bind(this);
-	}
 
+    	this.props.setCurrentUser().then((res) => {
+			if(res.payload._id){
+				window.location.href = '/portfolio'
+			}
+		});
+	}
 
 	handleLogin = (e) => {
 		e.preventDefault();
