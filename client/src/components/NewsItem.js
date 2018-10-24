@@ -1,11 +1,7 @@
 import React from 'react';
-import { ListGroupItem, ListGroupItemHeading, ListGroupItemText } from 'reactstrap';
+import { ListGroupItem } from 'reactstrap';
 
 class NewsItem extends React.Component {
-	constructor(props) {
-		super(props);
-	}
-
 	render() {
 		return (
 			<ListGroupItem>
