@@ -32,9 +32,8 @@ class Register extends React.Component {
 	    	password: e.target.elements.userPassword.value
 	    };
 
-		// this.props.registerAction(newUser).then((res)=>{
-		// 	console.log(res);
-		// });
+		//TODO Check if email is in database
+		//Check if password is longer than 6 characters
 
 		axios.post('/api/users', newUser).then(res =>{
 	        localStorage.setItem('jwtToken', res.headers.xauth);
@@ -42,6 +41,8 @@ class Register extends React.Component {
 	        	successAlert: true
 	        });
 	        setTimeout(() => this.props.history.push('/portfolio'), 3000);
+	    }).catch(err => {
+	    	console.log(err);
 	    });
 	}
 
@@ -51,6 +52,7 @@ class Register extends React.Component {
 				<Alert style={{marginTop: 25+'px'}} color="success" isOpen={this.state.successAlert}>
 			        <Icon type="loading" theme="outlined" /> Registration Successful. Redirecting to Portfolio... 
 			    </Alert>
+			    
       			<Form onSubmit={this.handleAddUser}>
       				<br />
         			<FormGroup>
@@ -58,7 +60,7 @@ class Register extends React.Component {
 			        	<Input type="email" name="email" id="email" placeholder="Email" />
 			        </FormGroup>
         			<FormGroup>
-        				<Label for="password">Password</Label>
+        				<Label for="password">Password - minimum 6 characters</Label>
           				<Input type="password" name="userPassword" id="userPassword" placeholder="Password" />
         			</FormGroup>
         			<FormGroup>

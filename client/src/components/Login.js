@@ -10,7 +10,8 @@ class Login extends React.Component {
   	constructor(props) {
     	super(props);
     	this.state = {
-    		successAlert: false
+    		successAlert: false,
+    		failedAlert: false,
     	}
     	this.handleLogin = this.handleLogin.bind(this);
 	}
@@ -31,18 +32,29 @@ class Login extends React.Component {
 	    axios.post('/api/users/login', user).then(res =>{
 	    	localStorage.setItem('jwtToken', res.headers.xauth);
 	    	this.setState({
-	        	successAlert: true
+	        	successAlert: true,
+	        	failedAlert: false
 	        });
 	    	setTimeout(() => this.props.history.push('/portfolio'), 3000);
+	    }).catch(err => {
+			this.setState({
+				successAlert: false,
+	        	failedAlert: true
+	        });
 	    });
 	}
 
 	render() {
 		return(
 			<div className="container">
+
 				<Alert style={{marginTop: 25+'px'}} color="success" isOpen={this.state.successAlert}>
 			        <Icon type="loading" theme="outlined" /> Login Successful. Redirecting to Portfolio...
 			    </Alert>
+			    <Alert style={{marginTop: 25+'px'}} color="danger" isOpen={this.state.failedAlert}>
+			        Email or password incorrect. 
+			    </Alert>
+
       			<Form onSubmit={this.handleLogin} href="/portfolio">
       				<br />
         			<FormGroup>
