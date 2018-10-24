@@ -10,6 +10,7 @@ import {
     NavItem,
     NavLink,
     Container } from 'reactstrap';
+import { Row, Col } from 'antd';
 
 class AppNavbar extends Component{
     constructor(props){
@@ -21,11 +22,11 @@ class AppNavbar extends Component{
             isOpen: false,
             currentUser: null
         };
-        // this.props.setCurrentUser().then((res) =>{
-        //     this.setState({
-        //       currentUser: res.payload._id
-        //     });
-        // });
+        this.props.setCurrentUser().then((res) =>{
+            this.setState({
+              currentUser: res.payload._id
+            });
+        });
     }
     toggle() {
         this.setState({
@@ -44,26 +45,41 @@ class AppNavbar extends Component{
                     <NavbarToggler onClick={this.toggle}/>
                     <Collapse isOpen={this.state.isOpen} navbar>
                         <Nav className="ml-auto" navbar>
-                            <NavItem>
-                                <NavLink href="/portfolio">
-                                    Portfolio
-                                </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink onClick={this.handleLogout} href="/">
-                                    Logout
-                                </NavLink>
-                            </NavItem>                        
-                            <NavItem>
-                                <NavLink href="/login">
-                                    Login
-                                </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink href="/register">
-                                    Register
-                                </NavLink>
-                            </NavItem>
+                            {this.state.currentUser ? (
+                                <Row>
+                                    <Col span={12}>
+                                        <NavItem>
+                                            <NavLink href="/portfolio">
+                                                Portfolio
+                                            </NavLink>
+                                        </NavItem>
+                                    </Col>
+                                    <Col span={12}>
+                                        <NavItem>
+                                            <NavLink onClick={this.handleLogout} href="/">
+                                                Logout
+                                            </NavLink>
+                                        </NavItem>
+                                    </Col>
+                                </Row>
+                            ) : (
+                                <Row>
+                                    <Col span={12}>
+                                        <NavItem>
+                                            <NavLink href="/login">
+                                                Login
+                                            </NavLink>
+                                        </NavItem>
+                                    </Col>
+                                    <Col span={12}>
+                                        <NavItem>
+                                            <NavLink href="/register">
+                                                Register
+                                            </NavLink>
+                                        </NavItem>
+                                    </Col>
+                                </Row>
+                            )}
                         </Nav>
                     </Collapse>
                 </Container>
