@@ -40,7 +40,7 @@ class Register extends React.Component {
 	        this.setState({
 	        	successAlert: true
 	        });
-	        setTimeout(() => this.props.history.push('/portfolio'), 3000);
+	    	setTimeout(() => window.location.href = '/portfolio', 3000);
 	    }).catch(err => {
 	    	console.log(err);
 	    });

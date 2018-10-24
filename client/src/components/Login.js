@@ -35,7 +35,7 @@ class Login extends React.Component {
 	        	successAlert: true,
 	        	failedAlert: false
 	        });
-	    	setTimeout(() => this.props.history.push('/portfolio'), 3000);
+	    	setTimeout(() => window.location.href = '/portfolio', 3000);
 	    }).catch(err => {
 			this.setState({
 				successAlert: false,
