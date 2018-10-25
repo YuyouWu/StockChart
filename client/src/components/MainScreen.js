@@ -98,7 +98,7 @@ class TickerList extends Component{
 	render() { 
 		return(
 			<Layout>
-				<Sider width={200} style={{ background: '#fff' }}>
+				<Sider width={200} style={{ background: '#fff', overflow: 'auto', height: '100vh'}}>
 				<br />
 				<Button outline color="primary" onClick={this.showModal} style={{marginRight: 5+'px'}}>Add Ticker</Button>
 				{this.state.editMode ? (
@@ -168,7 +168,7 @@ class TickerList extends Component{
 					</SubMenu>
 				</Menu>
 			    </Sider>
-        		<Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
+        		<Content style={{ background: '#fff', padding: 24, margin: 0, minWidth: 600, minHeight: 280 }}>
 		            <div>
 						<ContentView ticker = {this.state.currentTicker} tickerId = {this.state.currentTickerId}/>
 			        </div>

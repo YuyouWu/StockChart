@@ -80,7 +80,7 @@ class Summary extends React.Component {
 								<p>High {this.state.priceData.high}</p>
 								<p>Low {this.state.priceData.low}</p>
 								<p>Market Cap {this.state.priceData.marketCap.toLocaleString(undefined)}</p>
-								<p>PE Ratio {this.state.priceData.peRatio.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+								<p>PE Ratio {this.state.priceData.peRatio}</p>
 							</Col>
 							<Col span={8}>
 								<p>52 wk High {this.state.priceData.week52High}</p>
