@@ -40,7 +40,9 @@ class Summary extends React.Component {
 		    	});	
 	    	}
 		}).catch(error => {
-	    	console.log(error);
+	    	this.setState({
+				priceData: null
+	    	});
 	   	});
 
 	   	//Get company stat 
@@ -49,7 +51,9 @@ class Summary extends React.Component {
 				statData: res.payload
 	    	});
 		}).catch(error => {
-	    	console.log(error);
+	    	this.setState({
+				statData: null
+	    	});
 	   	});
 	}
 
