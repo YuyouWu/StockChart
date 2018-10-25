@@ -27,7 +27,8 @@ class Summary extends React.Component {
 		//Get current price for ticker 
 		this.props.getCurrentPrice(ticker).then((res) => {
 			this.setState({
-				priceData: res.payload
+				priceData: res.payload,
+				changePercent: res.payload.changePercent * 100
 	    	});	
 	    	if (this.state.priceData.change > 0){
 		    	this.setState({
@@ -67,10 +68,10 @@ class Summary extends React.Component {
 								<h4 style={{color:this.state.textColor}}>${this.state.priceData.delayedPrice}</h4>
 							</Col>
 							<Col span={3}>
-								<p style={{fontSize:20+'px', color:this.state.textColor}}>{this.state.priceData.change}</p>
+								<p style={{fontSize:20+'px', color:this.state.textColor}}>{this.state.priceData.change.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
 							</Col>
 							<Col span={3}>
-								<p style={{fontSize:20+'px', color:this.state.textColor}}>{this.state.priceData.changePercent * 100}%</p>
+								<p style={{fontSize:20+'px', color:this.state.textColor}}>{this.state.changePercent.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
 							</Col>
 						</Row>
 						<Row>
@@ -78,15 +79,15 @@ class Summary extends React.Component {
 								<p>Open {this.state.priceData.open}</p>
 								<p>High {this.state.priceData.high}</p>
 								<p>Low {this.state.priceData.low}</p>
-								<p>Market Cap {this.state.priceData.marketCap}</p>
-								<p>PE Ratio {this.state.priceData.peRatio}</p>
+								<p>Market Cap {this.state.priceData.marketCap.toLocaleString(undefined)}</p>
+								<p>PE Ratio {this.state.priceData.peRatio.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
 							</Col>
 							<Col span={8}>
 								<p>52 wk High {this.state.priceData.week52High}</p>
 								<p>52 wk Low {this.state.priceData.week52Low}</p>
-								<p>EPS {this.state.statData.ttmEPS}</p>
-								<p>Dividend Rate {this.state.statData.dividendRate}</p>
-								<p>Dividend Yield {this.state.statData.dividendYield}</p>
+								<p>EPS {this.state.statData.ttmEPS.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+								<p>Dividend Rate {this.state.statData.dividendRate.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+								<p>Dividend Yield {this.state.statData.dividendYield.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
 							</Col>
 						</Row>
 					</div>
