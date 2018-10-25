@@ -58,8 +58,9 @@ class TickerList extends Component{
 			"quantity": quantity
 		}
 
-		this.props.addTicker(tickerObj);
-		this.getTickersList();
+		this.props.addTicker(tickerObj).then((res) =>{
+			this.getTickersList();
+		});
 		this.handleOk();
 	}
 
