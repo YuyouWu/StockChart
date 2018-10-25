@@ -45,7 +45,7 @@ class TickerList extends Component{
 
 	handleAddTicker = (e) => {
 		e.preventDefault();
-		var ticker =  e.target.elements.ticker.value.trim();
+		var ticker =  e.target.elements.ticker.value.trim().toUpperCase();
 		var quantity = 0;
 
 	    //Set default quantity to 0
