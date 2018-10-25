@@ -27,12 +27,21 @@ class Financial extends Component{
 
 	getFinancial(ticker) {
 		this.props.getCompanyFinancial(ticker).then((res) =>{
-			this.setState({
-	    		mostRecentQuarter: res.payload.financials[0],
-	    		mostRecentQuarter2: res.payload.financials[1],
-	    		mostRecentQuarter3: res.payload.financials[2],
-	    		mostRecentQuarter4: res.payload.financials[3],
-	    	});
+			if (res.payload.financials){
+				this.setState({
+		    		mostRecentQuarter: res.payload.financials[0],
+		    		mostRecentQuarter2: res.payload.financials[1],
+		    		mostRecentQuarter3: res.payload.financials[2],
+		    		mostRecentQuarter4: res.payload.financials[3],
+		    	});
+			} else {
+				this.setState({
+		    		mostRecentQuarter: '',
+		    		mostRecentQuarter2: '',
+		    		mostRecentQuarter3: '',
+		    		mostRecentQuarter4: ''
+		    	});
+			}
 		}).catch(error => {
 	    	console.log(error);
 	   	});
