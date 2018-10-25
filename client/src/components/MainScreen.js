@@ -154,6 +154,7 @@ class TickerList extends Component{
 								if (tickers.quantity === 0){
 									return(
 										<Menu.Item key={index} name={tickers.ticker}> 
+											<DeleteTickerButton updateTickersList = {this.getTickersList} hidden = {!this.state.editMode} tickerId = {tickers._id} />
 											{tickers.ticker}
 										</Menu.Item>
 									)
