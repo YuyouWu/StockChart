@@ -64,7 +64,7 @@ class Summary extends React.Component {
 						</Row>
 						<Row>
 							<Col span={4}>
-								<h4 style={{color:this.state.textColor}}>{this.state.priceData.delayedPrice}</h4>
+								<h4 style={{color:this.state.textColor}}>${this.state.priceData.delayedPrice}</h4>
 							</Col>
 							<Col span={3}>
 								<p style={{fontSize:20+'px', color:this.state.textColor}}>{this.state.priceData.change}</p>
