@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_TICKERS, ADD_TICKER,  GET_ERRORS, GET_CURRENT_PRICE, GET_COMPANY_STAT, GET_COMPANY_FINANCIAL, GET_COMPANY_NEWS } from './types';
+import { GET_TICKERS, ADD_TICKER, DELETE_TICKER, GET_ERRORS, GET_CURRENT_PRICE, GET_COMPANY_STAT, GET_COMPANY_FINANCIAL, GET_COMPANY_NEWS } from './types';
 
 var headers = {
   'xauth': localStorage.getItem('jwtToken')
@@ -26,6 +26,17 @@ export const addTicker = ticker => dispatch => {
     axios.post('/api/portfolio/add', ticker, {headers: headers}).then(res =>
       dispatch({
         type: ADD_TICKER,
+        payload: res.data
+      })
+    )
+  )
+};
+
+export const deleteTicker = tickerId => dispatch => {
+  return(
+    axios.delete('/api/portfolio/' + tickerId, {headers: headers}).then(res =>
+      dispatch({
+        type: DELETE_TICKER,
         payload: res.data
       })
     )
