@@ -9,7 +9,8 @@ class Summary extends React.Component {
 	    super(props);
 	    this.state = {
 	    	priceData: '',
-	    	statData: ''
+	    	statData: '',
+	    	textColor: 'green'
 	    }
 	    this.loadData = this.loadData.bind(this);
 	}
@@ -28,6 +29,15 @@ class Summary extends React.Component {
 			this.setState({
 				priceData: res.payload
 	    	});	
+	    	if (this.state.priceData.change > 0){
+		    	this.setState({
+					textColor: 'green'
+		    	});	
+	    	} else {
+	    		this.setState({
+					textColor: 'red'
+		    	});	
+	    	}
 		}).catch(error => {
 	    	console.log(error);
 	   	});
@@ -54,13 +64,13 @@ class Summary extends React.Component {
 						</Row>
 						<Row>
 							<Col span={4}>
-								<h4>{this.state.priceData.delayedPrice}</h4>
+								<h4 style={{color:this.state.textColor}}>{this.state.priceData.delayedPrice}</h4>
 							</Col>
 							<Col span={3}>
-								<p style={{fontSize:20+'px'}}>{this.state.priceData.change}</p>
+								<p style={{fontSize:20+'px', color:this.state.textColor}}>{this.state.priceData.change}</p>
 							</Col>
 							<Col span={3}>
-								<p style={{fontSize:20+'px'}}>{this.state.priceData.changePercent * 100}%</p>
+								<p style={{fontSize:20+'px', color:this.state.textColor}}>{this.state.priceData.changePercent * 100}%</p>
 							</Col>
 						</Row>
 						<Row>
