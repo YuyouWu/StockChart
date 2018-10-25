@@ -44,6 +44,7 @@ class TickerList extends Component{
 	}
 
 	handleAddTicker = (e) => {
+		e.preventDefault();
 		var ticker =  e.target.elements.ticker.value.trim();
 		var quantity = 0;
 
@@ -58,6 +59,7 @@ class TickerList extends Component{
 		}
 
 		this.props.addTicker(tickerObj);
+		this.getTickersList();
 		this.handleOk();
 	}
 
