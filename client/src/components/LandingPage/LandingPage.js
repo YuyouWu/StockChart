@@ -7,9 +7,9 @@ class LandingPage extends React.Component {
     return (
     	<div>
 		    <Jumbotron style={{marginTop: 25+'px'}}>
-		        <h1 className="display-4">Welcome to Provest</h1>
+		        <h1 className="display-4">Welcome to Prophest</h1>
 		        <p className="lead">
-		        	Provest is your one stop shop for dank memes and stock market information. 
+		        	Prophest is your one stop shop for dank memes and stock market information. 
 		        </p>
 		        <p className="lead">
 		        	Register now to find out more.
