@@ -128,7 +128,7 @@ class TickerList extends Component{
 				<Menu 
 					defaultSelectedKeys={['Overview']} 
 					mode="inline" 
-					defaultOpenKeys={['holding']}
+					defaultOpenKeys={['holding', 'watchlist']}
 					onClick={this.setCurrentTicker}
 				>
 					<Menu.Item key='Overview' name='Overview'>  

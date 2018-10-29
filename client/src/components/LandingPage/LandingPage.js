@@ -9,13 +9,10 @@ class LandingPage extends React.Component {
 		    <Jumbotron style={{marginTop: 25+'px'}}>
 		        <h1 className="display-4">Welcome to Prophest</h1>
 		        <p className="lead">
-		        	Prophest is your one stop shop for dank memes and stock market information. 
+		        	Prophest is an online stock portfolio that provides easy access to market information, portfolio optimization, and techical analysis. 
 		        </p>
 		        <p className="lead">
 		        	Register now to find out more.
-		        </p>
-		        <p className="lead">
-		        	- CSO (Chief Salty Officer): Phuc Nguyen
 		        </p>
 		    </Jumbotron>
 		    <Row>
