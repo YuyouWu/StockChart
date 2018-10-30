@@ -5,6 +5,7 @@ import { setCurrentUser } from '../actions/authActions';
 import Summary from './Summary';
 import Financial from './Financial';
 import NewsList from './NewsList';
+import Overview from './Overview';
 
 const TabPane = Tabs.TabPane;
 
@@ -12,7 +13,7 @@ class ContentView extends Component{
 	render() {
 		return(
 			<div>
-				{this.props.ticker !== 'Overview' &&
+				{this.props.ticker !== 'Overview' ? (
 					<Tabs defaultActiveKey="1">
 						<TabPane tab={this.props.ticker} key="1">
 							<Summary ticker = {this.props.ticker}/>
@@ -24,6 +25,9 @@ class ContentView extends Component{
 							<Financial ticker = {this.props.ticker}/>
 						</TabPane>
 					</Tabs>
+					) : (
+						<Overview />
+					)
 				}
 			</div>
 		);
