@@ -63,6 +63,7 @@ class Overview extends React.Component {
  	render() {
 	    return (
 	    	<Card
+	    		hoverable
 			    title="Daily Return"
 			    style={{ width: 200 }}
 			>
