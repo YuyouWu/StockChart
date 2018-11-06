@@ -20,14 +20,14 @@ class TickerList extends Component{
 	    	visible: false,
 	    	currentUser: '',
 	    	selectedOption: null,
-	    	editMode: false,
+	    	editMode: false
 	    };
     	this.handleAddTicker = this.handleAddTicker.bind(this);
     	this.setCurrentTicker = this.setCurrentTicker.bind(this);
 	}
 
 	componentDidMount(){
-		this.getTickersList()
+		this.getTickersList();
 	}
 
 	getTickersList = () => {
@@ -99,9 +99,12 @@ class TickerList extends Component{
 	render() { 
 		return(
 			<Layout>
-				<Sider width={200} style={{ background: '#fff', overflow: 'auto', height: '92vh'}}>
+				<Sider  
+					width={300} style={{ background: '#fff', overflow: 'auto', height: '92vh'}}>
 				<br />
-				<Button outline color="primary" onClick={this.showModal} style={{marginRight: 5+'px'}}>Add Ticker</Button>
+				<Button outline color="primary" onClick={this.showModal} style={{marginRight:5+'px', marginLeft:20+'px'}}>
+					Add Ticker
+				</Button>
 				{this.state.editMode ? (
 					<Button outline color="primary" onClick={this.enterEdit}>Done</Button>
 				):(

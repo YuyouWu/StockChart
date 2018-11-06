@@ -20,7 +20,7 @@ class App extends Component {
       <Provider store={store}>
         <div className="App">
           <AppNavbar />
-          <div className="container">
+          <div>
             <Router>
               <div>
                 <Route exact path="/" component={LandingPage} />

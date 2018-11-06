@@ -5,7 +5,7 @@ import { Jumbotron, Card, CardTitle, CardText, Row, Col } from 'reactstrap';
 class LandingPage extends React.Component {
   render() {
     return (
-    	<div>
+    	<div className="container">
 		    <Jumbotron style={{marginTop: 25+'px'}}>
 		        <h1 className="display-4">Welcome to Prophest</h1>
 		        <p className="lead">
