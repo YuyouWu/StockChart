@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ContentView from './ContentView';
 import DeleteTickerButton from './DeleteTickerButton';
-import { getTickers, addTicker, deleteTicker } from '../actions/portfolioActions';
+import { getTickers, getCurrentPrice, addTicker, deleteTicker } from '../actions/portfolioActions';
 import { setCurrentUser } from '../actions/authActions';
 import { Form, Input, Button, InputGroup } from 'reactstrap';
 import { Layout, Menu, Modal, Icon } from 'antd';
@@ -20,7 +20,8 @@ class TickerList extends Component{
 	    	visible: false,
 	    	currentUser: '',
 	    	selectedOption: null,
-	    	editMode: false
+	    	editMode: false,
+	    	forceUpdate: ''
 	    };
     	this.handleAddTicker = this.handleAddTicker.bind(this);
     	this.setCurrentTicker = this.setCurrentTicker.bind(this);
@@ -34,10 +35,20 @@ class TickerList extends Component{
 		//API to get the list of tickers
 		this.props.getTickers().then((res) => {
 			if(res.payload) {
+				res.payload.forEach((obj) => {
+					this.props.getCurrentPrice(obj.ticker).then((res) =>{
+						obj.price = res.payload.delayedPrice;
+						obj.change = (res.payload.changePercent * 100).toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2}); 
+						this.setState({
+							forceUpdate: ''
+						});
+					});
+				});
 		    	this.setState({
 		    		tickers: res.payload
 		    	});
 	    	}
+	    	console.log(this.state.tickers);
 		}).catch(function(err){
 			console.log(err);
 		});
@@ -71,6 +82,13 @@ class TickerList extends Component{
 		});
 	}
 
+	getPrice = (ticker) => {
+		this.props.getCurrentPrice(ticker).then((res)=>{
+			return res.payload.delayedPrice;
+		});
+	}
+	
+ 
 	//Handle Modal Logic
 	showModal = () => {
     	this.setState({
@@ -96,11 +114,11 @@ class TickerList extends Component{
 		}));
 	}
 
-	render() { 
+	render() {
 		return(
 			<Layout>
 				<Sider  
-					width={300} style={{ background: '#fff', overflow: 'auto', height: '92vh'}}>
+					width={260} style={{ background: '#fff', overflow: 'auto', height: '92vh'}}>
 				<br />
 				<Button outline color="primary" onClick={this.showModal} style={{marginRight:5+'px', marginLeft:20+'px'}}>
 					Add Ticker
@@ -145,7 +163,7 @@ class TickerList extends Component{
 									return(
 										<Menu.Item key={index} name={tickers.ticker} id={tickers.ticker}> 
 											<DeleteTickerButton updateTickersList = {this.getTickersList} hidden = {!this.state.editMode} tickerId = {tickers._id} />
-											{tickers.ticker} - {tickers.quantity} shares
+												{tickers.ticker} {tickers.change}% ${tickers.price}
 										</Menu.Item>
 									)
 								} else {
@@ -161,7 +179,7 @@ class TickerList extends Component{
 									return(
 										<Menu.Item key={index} name={tickers.ticker}> 
 											<DeleteTickerButton updateTickersList = {this.getTickersList} hidden = {!this.state.editMode} tickerId = {tickers._id} />
-											{tickers.ticker}
+											{tickers.ticker} - ${tickers.price} {tickers.change}%
 										</Menu.Item>
 									)
 								} else {
@@ -185,4 +203,4 @@ class TickerList extends Component{
 const mapStateToProps = state => ({
   tickers: state.tickers
 });
-export default connect(mapStateToProps,{getTickers, addTicker, deleteTicker, setCurrentUser})(TickerList);
+export default connect(mapStateToProps,{getTickers, getCurrentPrice, addTicker, deleteTicker, setCurrentUser})(TickerList);
