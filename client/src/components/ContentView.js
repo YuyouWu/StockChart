@@ -16,7 +16,7 @@ class ContentView extends Component{
 				{this.props.ticker !== 'Overview' ? (
 					<Tabs defaultActiveKey="1">
 						<TabPane tab={this.props.ticker} key="1">
-							<Summary ticker = {this.props.ticker}/>
+							<Summary ticker = {this.props.ticker} quantity={this.props.quantity}/>
 						</TabPane>
 						<TabPane tab='News' key="2">
 							<NewsList ticker = {this.props.ticker}/> 

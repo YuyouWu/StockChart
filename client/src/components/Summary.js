@@ -77,6 +77,9 @@ class Summary extends React.Component {
 							<Col span={3}>
 								<p style={{fontSize:20+'px', color:this.state.textColor}}>{this.state.changePercent.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
 							</Col>
+							<Col span={3}>
+								<p style={{fontSize:20+'px'}}>{this.props.quantity} shares</p>
+							</Col>
 						</Row>
 						<Row>
 							<Col span={8}>

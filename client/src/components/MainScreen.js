@@ -48,7 +48,6 @@ class TickerList extends Component{
 		    		tickers: res.payload
 		    	});
 	    	}
-	    	console.log(this.state.tickers);
 		}).catch(function(err){
 			console.log(err);
 		});
@@ -78,7 +77,8 @@ class TickerList extends Component{
 	setCurrentTicker = (e) => {
 		this.setState({
 			currentTicker: e.item.props.name,
-			currentTickerId: e.item.props.id
+			currentTickerId: e.item.props.id,
+			currentQuantity: e.item.props.quantity
 		});
 	}
 
@@ -161,7 +161,7 @@ class TickerList extends Component{
 							this.state.tickers.map((tickers, index) => {
 								if (tickers.quantity > 0){
 									return(
-										<Menu.Item key={index} name={tickers.ticker} id={tickers.ticker}> 
+										<Menu.Item key={index} name={tickers.ticker} id={tickers.ticker} quantity={tickers.quantity}> 
 											<DeleteTickerButton updateTickersList = {this.getTickersList} hidden = {!this.state.editMode} tickerId = {tickers._id} />
 												{tickers.ticker} {tickers.change}% ${tickers.price}
 										</Menu.Item>
@@ -177,9 +177,9 @@ class TickerList extends Component{
 							this.state.tickers.map((tickers, index) => {
 								if (tickers.quantity === 0){
 									return(
-										<Menu.Item key={index} name={tickers.ticker}> 
+										<Menu.Item key={index} name={tickers.ticker} quantity={tickers.quantity}> 
 											<DeleteTickerButton updateTickersList = {this.getTickersList} hidden = {!this.state.editMode} tickerId = {tickers._id} />
-											{tickers.ticker} - ${tickers.price} {tickers.change}%
+											{tickers.ticker} {tickers.change}% ${tickers.price}
 										</Menu.Item>
 									)
 								} else {
@@ -192,7 +192,7 @@ class TickerList extends Component{
 			    </Sider>
         		<Content style={{ background: '#fff', padding: 24, margin: 0, minWidth: 600, minHeight: 280 }}>
 		            <div>
-						<ContentView ticker = {this.state.currentTicker} tickerId = {this.state.currentTickerId}/>
+						<ContentView ticker = {this.state.currentTicker} tickerId = {this.state.currentTickerId} quantity={this.state.currentQuantity}/>
 			        </div>
 			    </Content>
 			</Layout>
