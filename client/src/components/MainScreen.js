@@ -151,12 +151,12 @@ class TickerList extends Component{
 		return(
 			<Layout>
 				<Sider
-					width={250} style={{ background: '#fff', overflow: 'auto', height: '92vh'}}>
+					width={250} style={{ background: '#fff', overflow: 'auto', height: '92vh', overflowX: "hidden", overflowY: "scroll"}}>
 					<br />
-					<Button outline color="primary" onClick={this.showModal} style={{marginBottom:10+'px', marginLeft:10+'px', width:220+'px'}}>
+					<Button outline color="primary" onClick={this.showModal} style={{marginBottom:10+'px', marginLeft:8+'px', width:220+'px'}}>
 						Add Ticker
 					</Button>
-					<Button outline color="primary" onClick={this.toOverview} style={{marginLeft:10+'px', width:220+'px'}}>
+					<Button outline color="primary" onClick={this.toOverview} style={{marginLeft:8+'px', width:220+'px'}}>
 						<Icon type="pie-chart" /> Overview
 					</Button>
 					<br />
@@ -183,7 +183,6 @@ class TickerList extends Component{
 						columns={this.state.columns} 
 						dataSource={this.state.tickers} 
 						pagination={false}
-						style={{overflowX: "hidden"}}
 						onRow={(record) => {
 						    return {
 						      	onClick: () => {
