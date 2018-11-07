@@ -1,11 +1,10 @@
 
 import React from "react";
 import PropTypes from "prop-types";
+import { format } from "d3-format";
 
 import { ChartCanvas, Chart } from "react-stockcharts";
-import {
-	CandlestickSeries,
-} from "react-stockcharts/lib/series";
+import { BarSeries, CandlestickSeries } from "react-stockcharts/lib/series";
 import { XAxis, YAxis } from "react-stockcharts/lib/axes";
 
 import { discontinuousTimeScaleProvider } from "react-stockcharts/lib/scale";
@@ -53,7 +52,7 @@ class CandleStickStockScaleChart extends React.Component {
 			<ChartCanvas height={500}
 				ratio={ratio}
 				width={width}
-				margin={{ left: 50, right: 50, top: 10, bottom: 30 }}
+				margin={{ left: 50, right: 55, top: 10, bottom: 30 }}
 				type={type}
 				seriesName="MSFT"
 				data={data}
@@ -65,9 +64,25 @@ class CandleStickStockScaleChart extends React.Component {
 
 				<Chart id={1} yExtents={d => [d.high, d.low]}>
 					<XAxis axisAt="bottom" orient="bottom" ticks={6} {...xGrid}/>
-					<YAxis axisAt="right" orient="right" ticks={5} {...yGrid}/>
-					<YAxis axisAt="left" orient="left" ticks={5} {...yGrid}/>
+					<YAxis axisAt="right" orient="right" ticks={10} {...yGrid}/>
 					<CandlestickSeries />
+				</Chart>
+				<Chart
+					id={2}
+					height={150}
+					yExtents={d => d.volume}
+					origin={(w, h) => [0, h - 150]}
+				>
+					<YAxis
+						axisAt="left"
+						orient="left"
+						ticks={5}
+						tickFormat={format(".2s")}
+					/>
+					<BarSeries
+						yAccessor={d => d.volume}
+						fill={d => (d.close > d.open ? "#6BA583" : "#FF0000")}
+					/>
 				</Chart>
 			</ChartCanvas>
 		);
