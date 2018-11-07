@@ -88,21 +88,21 @@ class Summary extends React.Component {
 		    		<div>
 			    		<Row>
 							<Col>
-								<h4>{this.props.ticker} - {this.state.statData.companyName}</h4>
+								<h6>{this.props.ticker} - {this.state.statData.companyName}</h6>
 							</Col>
 						</Row>
 						<Row>
-							<Col span={4}>
-								<h4 style={{color:this.state.textColor}}>${this.state.priceData.delayedPrice}</h4>
+							<Col span={3}>
+								<h6 style={{color:this.state.textColor}}>${this.state.priceData.delayedPrice}</h6>
 							</Col>
 							<Col span={3}>
-								<p style={{fontSize:20+'px', color:this.state.textColor}}>{this.state.priceData.change.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+								<p style={{fontSize:12+'px', color:this.state.textColor}}>{this.state.priceData.change.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
 							</Col>
 							<Col span={3}>
-								<p style={{fontSize:20+'px', color:this.state.textColor}}>{this.state.changePercent.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
+								<p style={{fontSize:12+'px', color:this.state.textColor}}>{this.state.changePercent.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
 							</Col>
 							<Col span={3}>
-								<p style={{fontSize:20+'px'}}>{this.props.quantity} shares</p>
+								<p style={{fontSize:12+'px'}}>{this.props.quantity} shares</p>
 							</Col>
 						</Row>
 						<Row>

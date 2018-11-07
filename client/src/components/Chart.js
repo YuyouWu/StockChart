@@ -57,7 +57,7 @@ class CandleStickStockScaleChart extends React.Component {
 		} : {};
 
 		return (
-			<ChartCanvas height={500}
+			<ChartCanvas height={520}
 				ratio={ratio}
 				width={width}
 				margin={{ left: 50, right: 55, top: 10, bottom: 30 }}
