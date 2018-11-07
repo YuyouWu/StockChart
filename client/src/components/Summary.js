@@ -42,7 +42,7 @@ class Summary extends React.Component {
 	componentWillReceiveProps(newProps){
 		this.loadData(newProps.ticker);	  	
 		//get chart data
-		axios.get('https://api.iextrading.com/1.0/stock/'+newProps.ticker+'/chart/1y').then((res) => {
+		axios.get('https://api.iextrading.com/1.0/stock/'+newProps.ticker+'/chart/5y').then((res) => {
 			res.data.forEach((obj) => {
 				obj.date = new Date(obj.date);
 			});
