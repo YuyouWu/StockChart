@@ -83,9 +83,9 @@ class CandleStickStockScaleChart extends React.Component {
 				</Chart>
 				<Chart
 					id={2}
-					height={150}
+					height={100}
 					yExtents={d => d.volume}
-					origin={(w, h) => [0, h - 150]}
+					origin={(w, h) => [0, h - 100]}
 				>
 					<YAxis
 						axisAt="left"
