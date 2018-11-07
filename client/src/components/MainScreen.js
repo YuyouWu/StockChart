@@ -4,7 +4,7 @@ import DeleteTickerButton from './DeleteTickerButton';
 import { getTickers, getCurrentPrice, addTicker, deleteTicker } from '../actions/portfolioActions';
 import { setCurrentUser } from '../actions/authActions';
 import { Form, Input, Button, InputGroup } from 'reactstrap';
-import { Layout Modal, Icon, Table } from 'antd';
+import { Layout, Modal, Icon, Table } from 'antd';
 import { connect } from 'react-redux';
 const { Content, Sider } = Layout;
 
