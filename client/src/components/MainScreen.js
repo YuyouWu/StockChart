@@ -32,7 +32,13 @@ class TickerList extends Component{
 				  dataIndex: 'change',
 				  key: 'change',
 				  width: '10%',
-				  render: text => <p>{text}%</p>
+				  render: (text,record) => <div>
+				  	{record.change < 0 ? (
+				  		<p style={{color:'red'}}>{text}%</p>
+				  	) : (
+				  		<p style={{color:'green'}}>{text}%</p>
+				  	)}
+				  </div>
 				},
 				{
 				  title: 'Price',
