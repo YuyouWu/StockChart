@@ -16,9 +16,9 @@ class DeleteTickerButton extends React.Component {
 			<Button 
 				onClick = {this.deleteTicker} 
 				hidden = {this.props.hidden}
-				outline size="sm" 
+				outline 
 				color="danger" 
-				style={{marginRight: 5+'px'}}>
+				size="sm">
 				X
 			</Button>
     	);

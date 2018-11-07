@@ -4,27 +4,59 @@ import DeleteTickerButton from './DeleteTickerButton';
 import { getTickers, getCurrentPrice, addTicker, deleteTicker } from '../actions/portfolioActions';
 import { setCurrentUser } from '../actions/authActions';
 import { Form, Input, Button, InputGroup } from 'reactstrap';
-import { Layout, Menu, Modal, Icon } from 'antd';
+import { Layout Modal, Icon, Table } from 'antd';
 import { connect } from 'react-redux';
 const { Content, Sider } = Layout;
-const SubMenu = Menu.SubMenu;
 
 //Class for rendering list of tickers
 class TickerList extends Component{
-	constructor() {
-	    super();
+	constructor(props) {
+	    super(props);
 	    this.state = {
-	    	tickers: ['Loading'],
+	    	tickers: [{
+				key:'0',
+				ticker: 'Loading',
+				change: '0',
+				price: '0'
+			}],
+			columns: [
+				{
+					title: 'Delete',
+					dataIndex: 'delete',
+					key: 'delete',
+					width: '10%',
+					render: (text, record) => <DeleteTickerButton updateTickersList = {this.getTickersList} hidden = {!record.edit} tickerId = {this.state.currentTickerId} />
+				},
+				{
+				  title: 'Ticker',
+				  dataIndex: 'ticker',
+				  key: 'ticker',
+				  width: '10%',
+				  render: text => <p>{text}</p>
+				},
+				{
+				  title: 'Change',
+				  dataIndex: 'change',
+				  key: 'change',
+				  width: '10%',
+				  render: text => <p>{text}%</p>
+				},
+				{
+				  title: 'Price',
+				  dataIndex: 'price',
+				  key: 'price',
+				  width: '10%',
+				  render: text => <p>${text}</p>
+				}
+			],
 	    	currentTicker: 'Overview',
 	    	currentTickerId: 0,
 	    	visible: false,
 	    	currentUser: '',
 	    	selectedOption: null,
-	    	editMode: false,
 	    	forceUpdate: ''
 	    };
     	this.handleAddTicker = this.handleAddTicker.bind(this);
-    	this.setCurrentTicker = this.setCurrentTicker.bind(this);
 	}
 
 	componentDidMount(){
@@ -35,7 +67,11 @@ class TickerList extends Component{
 		//API to get the list of tickers
 		this.props.getTickers().then((res) => {
 			if(res.payload) {
+				var i = 0;
 				res.payload.forEach((obj) => {
+					obj.key = i;
+					obj.edit = false;
+					i++;
 					this.props.getCurrentPrice(obj.ticker).then((res) =>{
 						obj.price = res.payload.delayedPrice;
 						obj.change = (res.payload.changePercent * 100).toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2}); 
@@ -74,20 +110,11 @@ class TickerList extends Component{
 		this.handleOk();
 	}
 
-	setCurrentTicker = (e) => {
+	toOverview = () => {
 		this.setState({
-			currentTicker: e.item.props.name,
-			currentTickerId: e.item.props.id,
-			currentQuantity: e.item.props.quantity
+			currentTicker: 'Overview',
 		});
-	}
-
-	getPrice = (ticker) => {
-		this.props.getCurrentPrice(ticker).then((res)=>{
-			return res.payload.delayedPrice;
-		});
-	}
-	
+	}	
  
 	//Handle Modal Logic
 	showModal = () => {
@@ -117,78 +144,64 @@ class TickerList extends Component{
 	render() {
 		return(
 			<Layout>
-				<Sider  
-					width={260} style={{ background: '#fff', overflow: 'auto', height: '92vh'}}>
-				<br />
-				<Button outline color="primary" onClick={this.showModal} style={{marginRight:5+'px', marginLeft:20+'px'}}>
-					Add Ticker
-				</Button>
-				{this.state.editMode ? (
-					<Button outline color="primary" onClick={this.enterEdit}>Done</Button>
-				):(
-					<Button outline color="primary" onClick={this.enterEdit}>Edit</Button>				
-				)}
-				<br />
-				<Modal
-		          title="Add New Ticker"
-		          visible={this.state.visible}
-		          onOk={this.handleOk}
-		          onCancel={this.handleCancel}
-		          footer={null}
-				>	
-		          	<Form onSubmit={this.handleAddTicker}>
-		          		<InputGroup>
-		          			<Input placeholder="Ticker" type="string" name="ticker"/>
-		          			<Input placeholder="Quantity - default 0" type="number" name="quantity"/>
-		          		</InputGroup>
-			          	<br/>
-		          		<Button outline color="primary">Add Ticker</Button>
-			    	</Form>
-		        </Modal>
-				<br />
-				<Menu 
-					defaultSelectedKeys={['Overview']} 
-					mode="inline" 
-					defaultOpenKeys={['holding', 'watchlist']}
-					onClick={this.setCurrentTicker}
-				>
-					<Menu.Item key='Overview' name='Overview'>  
-						<Icon type="pie-chart" />
-						<span>Overview</span>
-					</Menu.Item>
-					<SubMenu key="holding" title={<span><Icon type="line-chart"/><span>Holding</span></span>}>
-						{
-							this.state.tickers.map((tickers, index) => {
-								if (tickers.quantity > 0){
-									return(
-										<Menu.Item key={index} name={tickers.ticker} id={tickers.ticker} quantity={tickers.quantity}> 
-											<DeleteTickerButton updateTickersList = {this.getTickersList} hidden = {!this.state.editMode} tickerId = {tickers._id} />
-												{tickers.ticker} {tickers.change}% ${tickers.price}
-										</Menu.Item>
-									)
-								} else {
-									return(null)
+				<Sider
+					width={250} style={{ background: '#fff', overflow: 'auto', height: '92vh'}}>
+					<br />
+					<Button outline color="primary" onClick={this.showModal} style={{marginBottom:10+'px', marginLeft:10+'px', width:220+'px'}}>
+						Add Ticker
+					</Button>
+					<Button outline color="primary" onClick={this.toOverview} style={{marginLeft:10+'px', width:220+'px'}}>
+						<Icon type="pie-chart" /> Overview
+					</Button>
+					<br />
+					<Modal
+			          title="Add New Ticker"
+			          visible={this.state.visible}
+			          onOk={this.handleOk}
+			          onCancel={this.handleCancel}
+			          footer={null}
+					>	
+			          	<Form onSubmit={this.handleAddTicker}>
+			          		<InputGroup>
+			          			<Input placeholder="Ticker" type="string" name="ticker"/>
+			          			<Input placeholder="Quantity - default 0" type="number" name="quantity"/>
+			          		</InputGroup>
+				          	<br/>
+			          		<Button outline color="primary">Add Ticker</Button>
+				    	</Form>
+			        </Modal>
+					<br />
+					<Table 
+						size="small"
+						showHeader={false}
+						columns={this.state.columns} 
+						dataSource={this.state.tickers} 
+						pagination={false}
+						onRow={(record) => {
+						    return {
+						      	onClick: () => {
+							      	this.setState({
+										currentTicker: record.ticker,
+										currentTickerId: record._id,
+										currentQuantity: record.quantity
+									});
+									console.log(record);
+						      	},
+						      	onMouseEnter: () => {
+									this.setState({
+										currentTickerId: record._id
+									});
+									record.edit = true
+								},
+						      	onMouseLeave: () => {
+						      		this.setState({
+										currentTickerId: record._id
+									});
+									record.edit = false
 								}
-							})
-						}
-					</SubMenu>
-					<SubMenu key="watchlist" title={<span><Icon type="bars"/><span>Watch List</span></span>}>
-						{
-							this.state.tickers.map((tickers, index) => {
-								if (tickers.quantity === 0){
-									return(
-										<Menu.Item key={index} name={tickers.ticker} quantity={tickers.quantity}> 
-											<DeleteTickerButton updateTickersList = {this.getTickersList} hidden = {!this.state.editMode} tickerId = {tickers._id} />
-											{tickers.ticker} {tickers.change}% ${tickers.price}
-										</Menu.Item>
-									)
-								} else {
-									return(null)
-								}
-							})
-						}
-					</SubMenu>
-				</Menu>
+						    };
+						}}
+					/>
 			    </Sider>
         		<Content style={{ background: '#fff', padding: 24, margin: 0, minWidth: 600, minHeight: 280 }}>
 		            <div>
