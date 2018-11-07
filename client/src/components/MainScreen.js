@@ -191,7 +191,6 @@ class TickerList extends Component{
 										currentTickerId: record._id,
 										currentQuantity: record.quantity
 									});
-									console.log(record);
 						      	},
 						      	onMouseEnter: () => {
 									this.setState({

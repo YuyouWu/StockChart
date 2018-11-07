@@ -2,6 +2,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getCurrentPrice, getCompanyStat } from '../actions/portfolioActions';
 import { Row, Col } from 'antd';
+import axios from 'axios';
+import Chart from './Chart';
+import { getData } from "./utils"
+
+import { TypeChooser } from "react-stockcharts/lib/helper";
 
 //Class for rendering each individual tickers on portfolio
 class Summary extends React.Component {
@@ -17,10 +22,36 @@ class Summary extends React.Component {
 
 	componentDidMount(){
 		this.loadData(this.props.ticker);
+		getData().then(data => {
+			this.setState({ data });
+			console.log(data);
+		})
+
+		//get chart data
+		axios.get('https://api.iextrading.com/1.0/stock/'+this.props.ticker+'/chart/1y').then((res) => {
+			res.data.forEach((obj) => {
+				obj.date = new Date(obj.date);
+			});
+			this.setState({
+				chartData: res.data
+			});
+			console.log(res.data);
+		});
 	}
 
 	componentWillReceiveProps(newProps){
 		this.loadData(newProps.ticker);	  	
+		//get chart data
+		axios.get('https://api.iextrading.com/1.0/stock/'+newProps.ticker+'/chart/1y').then((res) => {
+			res.data.forEach((obj) => {
+				obj.date = new Date(obj.date);
+			});
+			this.setState({
+				chartData: res.data
+			});
+			console.log(res.data);
+		});
+
 	}
 
 	loadData(ticker){
@@ -60,11 +91,15 @@ class Summary extends React.Component {
   	render() {
     	return (
 	    	<div>
-		    	{this.state.priceData && this.state.statData ? ( 
+		    	{this.state.priceData && this.state.chartData && this.state.statData ? ( 
 		    		<div>
+		    		<TypeChooser>
+						{type => <Chart type={type} data={this.state.chartData} />}
+					</TypeChooser>
+					<br />
 			    		<Row>
 							<Col>
-								<h4>{this.state.statData.companyName}</h4>
+								<h4>{this.props.ticker} - {this.state.statData.companyName}</h4>
 							</Col>
 						</Row>
 						<Row>

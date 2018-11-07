@@ -13,11 +13,6 @@ import { fitWidth } from "react-stockcharts/lib/helper";
 import { last } from "react-stockcharts/lib/utils";
 
 class CandleStickStockScaleChart extends React.Component {
-
-	componentDidMount() {
-		console.log("Chart Here");
-	}
-
 	render() {
 		const { type, data: initialData, width, ratio } = this.props;
 
@@ -35,8 +30,6 @@ class CandleStickStockScaleChart extends React.Component {
 		];
 
 		return (
-			<div>
-			<p> Chart </p>
 			<ChartCanvas height={400}
 				ratio={ratio}
 				width={width}
@@ -56,7 +49,6 @@ class CandleStickStockScaleChart extends React.Component {
 					<CandlestickSeries />
 				</Chart>
 			</ChartCanvas>
-			</div>
 		);
 	}
 }
