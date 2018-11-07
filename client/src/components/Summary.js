@@ -4,9 +4,6 @@ import { getCurrentPrice, getCompanyStat } from '../actions/portfolioActions';
 import { Row, Col } from 'antd';
 import axios from 'axios';
 import Chart from './Chart';
-import { getData } from "./utils"
-
-import { TypeChooser } from "react-stockcharts/lib/helper";
 
 //Class for rendering each individual tickers on portfolio
 class Summary extends React.Component {
@@ -22,10 +19,6 @@ class Summary extends React.Component {
 
 	componentDidMount(){
 		this.loadData(this.props.ticker);
-		getData().then(data => {
-			this.setState({ data });
-			console.log(data);
-		})
 
 		//get chart data
 		axios.get('https://api.iextrading.com/1.0/stock/'+this.props.ticker+'/chart/1y').then((res) => {
@@ -93,10 +86,6 @@ class Summary extends React.Component {
 	    	<div>
 		    	{this.state.priceData && this.state.chartData && this.state.statData ? ( 
 		    		<div>
-		    		<TypeChooser>
-						{type => <Chart type={type} data={this.state.chartData} />}
-					</TypeChooser>
-					<br />
 			    		<Row>
 							<Col>
 								<h4>{this.props.ticker} - {this.state.statData.companyName}</h4>
@@ -115,6 +104,9 @@ class Summary extends React.Component {
 							<Col span={3}>
 								<p style={{fontSize:20+'px'}}>{this.props.quantity} shares</p>
 							</Col>
+						</Row>
+						<Row>
+							<Chart type="hybrid" data={this.state.chartData} />
 						</Row>
 						<Row>
 							<Col span={8}>
