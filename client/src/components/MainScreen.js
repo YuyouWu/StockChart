@@ -4,7 +4,7 @@ import DeleteTickerButton from './DeleteTickerButton';
 import { getTickers, getCurrentPrice, addTicker, deleteTicker } from '../actions/portfolioActions';
 import { setCurrentUser } from '../actions/authActions';
 import { Form, Input, Button, InputGroup } from 'reactstrap';
-import { Layout, Modal, Icon, Table } from 'antd';
+import { Layout, Modal, Icon, Table, Row, Col } from 'antd';
 import { connect } from 'react-redux';
 const { Content, Sider } = Layout;
 
@@ -20,13 +20,6 @@ class TickerList extends Component{
 				price: '0'
 			}],
 			columns: [
-				{
-					title: 'Delete',
-					dataIndex: 'delete',
-					key: 'delete',
-					width: '10%',
-					render: (text, record) => <DeleteTickerButton updateTickersList = {this.getTickersList} hidden = {!record.edit} tickerId = {this.state.currentTickerId} />
-				},
 				{
 				  title: 'Ticker',
 				  dataIndex: 'ticker',
@@ -46,7 +39,14 @@ class TickerList extends Component{
 				  dataIndex: 'price',
 				  key: 'price',
 				  width: '10%',
-				  render: text => <p>${text}</p>
+				  render: (text,record) => <Row>
+				  	<Col span={16}>
+				  		<p>${text}</p>
+				  	</Col>
+				  	<Col span={1}>
+				  		<DeleteTickerButton updateTickersList = {this.getTickersList} hidden = {!record.edit} tickerId = {this.state.currentTickerId} /> 
+				  	</Col>
+				  	</Row>
 				}
 			],
 	    	currentTicker: 'Overview',
@@ -171,12 +171,13 @@ class TickerList extends Component{
 				    	</Form>
 			        </Modal>
 					<br />
-					<Table 
+					<Table
 						size="small"
 						showHeader={false}
 						columns={this.state.columns} 
 						dataSource={this.state.tickers} 
 						pagination={false}
+						style={{overflowX: "hidden"}}
 						onRow={(record) => {
 						    return {
 						      	onClick: () => {
