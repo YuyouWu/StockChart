@@ -27,7 +27,8 @@ class TickerList extends Component{
 	    	visible: false,
 	    	currentUser: '',
 	    	selectedOption: null,
-	    	forceUpdate: ''
+	    	forceUpdate: '',
+	    	editMode: 'false'
 	    };
     	this.handleAddTicker = this.handleAddTicker.bind(this);
 	}
@@ -124,6 +125,17 @@ class TickerList extends Component{
 	render() {
 		const SortableItem = SortableElement(({ticker, change, price, id, quantity}) =>
 			<Table.Row>
+				<Table.Cell hidden={this.state.editMode}>
+			  		<Button size="sm" outline color="danger" id={id} ticker = {ticker}
+			  			onClick={(event) =>{
+			  				this.props.deleteTicker(id).then((res) => {
+								this.getTickersList();
+							});
+				  		}  				
+			 		}>
+			  			X
+			  		</Button>
+			  	</Table.Cell>
 			  	<Table.Cell>
 			  		<Button color="link" size="sm" id={id} ticker={ticker}
 			  			onClick={(event) =>{
@@ -140,17 +152,6 @@ class TickerList extends Component{
 			  	<Table.Cell>{change}%</Table.Cell>
 			  	<Table.Cell>
 			  		{price}
-			  	</Table.Cell>
-			  	<Table.Cell>
-			  		<Button size="sm" outline color="danger" id={id} ticker = {ticker}
-			  			onClick={(event) =>{
-			  				this.props.deleteTicker(id).then((res) => {
-								this.getTickersList();
-							});
-				  			}  				
-			 		}>
-			  			X
-			  		</Button>
 			  	</Table.Cell>
 			</Table.Row>
 		);
@@ -172,13 +173,25 @@ class TickerList extends Component{
 				<Sider
 					width={250} style={{ background: '#fff', overflow: 'auto', height: '92vh', overflowX: "hidden", overflowY: "scroll"}}>
 					<br />
-					<Button outline color="primary" onClick={this.showModal} style={{marginBottom:10+'px', marginLeft:8+'px', width:220+'px'}}>
-						Add Ticker
-					</Button>
-					<Button outline color="primary" onClick={this.toOverview} style={{marginLeft:8+'px', width:220+'px'}}>
+					<Button outline color="primary" onClick={this.toOverview} style={{marginBottom:10+'px', marginLeft:8+'px', width:220+'px'}}>
 						<Icon type="pie-chart" /> Overview
 					</Button>
-					<br />
+					<Row gutter={10}>
+						<Col span={12}>
+							<Button outline color="primary" onClick={this.showModal} style={{marginBottom:10+'px', marginLeft:8+'px', width:105+'px'}}>
+								Add Ticker
+							</Button>
+						</Col>
+						<Col span={12}>
+							<Button outline color="primary" onClick={this.enterEdit} style={{marginBottom:10+'px', width:105+'px'}}>
+								{this.state.editMode? (
+									<p>Edit</p>
+									):(
+									<p>Done</p>
+								)}
+							</Button>
+						</Col>
+					</Row>
 					<Modal
 			          title="Add New Ticker"
 			          visible={this.state.visible}
