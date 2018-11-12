@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getCurrentPrice, getCompanyStat } from '../actions/portfolioActions';
 import { Row, Col } from 'antd';
-import { Table } from 'reactstrap';
 import axios from 'axios';
 import Chart from './Chart';
 
@@ -85,33 +84,25 @@ class Summary extends React.Component {
 	    	<div>
 		    	{this.state.priceData && this.state.chartData && this.state.statData ? ( 
 		    		<div>
-		    			<Table borderless>
-		    				<thead>
-		    					<tr>
-		    						<th style={{width: 30 +'%'}}>{this.props.ticker} - {this.state.statData.companyName}</th>
-		    					</tr>
-		    				</thead>
-		    				<tbody>
-		    					<tr>
-		    						<td>
-			    						<Row>
-				    						<Col span={2}>
-					    						<p style={{color:this.state.textColor}}>${this.state.priceData.delayedPrice}</p>
-					    					</Col>
-				    						<Col span={2}>
-				    							<p style={{fontSize:12+'px', color:this.state.textColor}}>{this.state.priceData.change.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-					    					</Col>
-				    						<Col span={2}>
-				    							<p style={{fontSize:12+'px', color:this.state.textColor}}>{this.state.changePercent.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
-					    					</Col>
-				    						<Col span={2}>
-				    							<p style={{fontSize:12+'px'}}>{this.props.quantity} shares</p>
-				    						</Col>
-			    						</Row>
-		    						</td>
-		    					</tr>
-		    				</tbody>
-		    			</Table>
+		    			<Row>
+		    				<Col>
+		    					<h4>{this.props.ticker} - {this.state.statData.companyName}</h4>
+		    				</Col>
+		    			</Row>
+			    		<Row>
+				    		<Col span={2}>
+					    		<p style={{color:this.state.textColor}}>${this.state.priceData.delayedPrice}</p>
+					  		</Col>
+				  			<Col span={2}>
+				 					<p style={{fontSize:12+'px', color:this.state.textColor}}>{this.state.priceData.change.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+			    			</Col>
+				    		<Col span={2}>
+				    			<p style={{fontSize:12+'px', color:this.state.textColor}}>{this.state.changePercent.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
+					    	</Col>
+				    		<Col span={2}>
+				    			<p style={{fontSize:12+'px'}}>{this.props.quantity} shares</p>
+				    		</Col>
+			    		</Row>
 						<Chart type="hybrid" data={this.state.chartData} />
 					</div>
 					) : ( 
