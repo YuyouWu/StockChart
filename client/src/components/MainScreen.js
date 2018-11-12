@@ -28,7 +28,7 @@ class TickerList extends Component{
 	    	currentUser: '',
 	    	selectedOption: null,
 	    	forceUpdate: '',
-	    	editMode: 'false'
+	    	editMode: false
 	    };
     	this.handleAddTicker = this.handleAddTicker.bind(this);
 	}
@@ -125,7 +125,7 @@ class TickerList extends Component{
 	render() {
 		const SortableItem = SortableElement(({ticker, change, price, id, quantity}) =>
 			<Table.Row>
-				<Table.Cell hidden={this.state.editMode}>
+				<Table.Cell hidden={!this.state.editMode}>
 			  		<Button size="sm" outline color="danger" id={id} ticker = {ticker}
 			  			onClick={(event) =>{
 			  				this.props.deleteTicker(id).then((res) => {
@@ -171,7 +171,7 @@ class TickerList extends Component{
 		return(
 			<Layout>
 				<Sider
-					width={250} style={{ background: '#fff', overflow: 'auto', height: '92vh', overflowX: "hidden", overflowY: "scroll"}}>
+					width={250} style={{ background: '#fff', overflow: 'auto', height: '93vh', overflowX: "hidden", overflowY: "scroll"}}>
 					<br />
 					<Button outline color="primary" onClick={this.toOverview} style={{marginBottom:10+'px', marginLeft:8+'px', width:220+'px'}}>
 						<Icon type="pie-chart" /> Overview
@@ -184,7 +184,7 @@ class TickerList extends Component{
 						</Col>
 						<Col span={12}>
 							<Button outline color="primary" onClick={this.enterEdit} style={{marginBottom:10+'px', width:105+'px'}}>
-								{this.state.editMode? (
+								{!this.state.editMode? (
 									<p>Edit</p>
 									):(
 									<p>Done</p>

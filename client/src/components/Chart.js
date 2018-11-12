@@ -36,7 +36,7 @@ class CandleStickStockScaleChart extends React.Component {
 			xAccessor(data[data.length - 100])
 		];
 
-		const gheight = 500;
+		const gheight = 700;
 
 		var margin = {left: 70, right: 70, top:20, bottom: 30};
 		var gridHeight = gheight - margin.top - margin.bottom;
@@ -57,7 +57,7 @@ class CandleStickStockScaleChart extends React.Component {
 		} : {};
 
 		return (
-			<ChartCanvas height={520}
+			<ChartCanvas height={650}
 				ratio={ratio}
 				width={width}
 				margin={{ left: 50, right: 55, top: 10, bottom: 30 }}

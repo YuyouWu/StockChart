@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getCurrentPrice, getCompanyStat } from '../actions/portfolioActions';
 import { Row, Col } from 'antd';
+import { Table } from 'reactstrap';
 import axios from 'axios';
 import Chart from './Chart';
 
@@ -84,44 +85,34 @@ class Summary extends React.Component {
 	    	<div>
 		    	{this.state.priceData && this.state.chartData && this.state.statData ? ( 
 		    		<div>
-			    		<Row>
-							<Col>
-								<h6>{this.props.ticker} - {this.state.statData.companyName}</h6>
-							</Col>
-						</Row>
-						<Row>
-							<Col span={3}>
-								<h6 style={{color:this.state.textColor}}>${this.state.priceData.delayedPrice}</h6>
-							</Col>
-							<Col span={3}>
-								<p style={{fontSize:12+'px', color:this.state.textColor}}>{this.state.priceData.change.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-							</Col>
-							<Col span={3}>
-								<p style={{fontSize:12+'px', color:this.state.textColor}}>{this.state.changePercent.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
-							</Col>
-							<Col span={3}>
-								<p style={{fontSize:12+'px'}}>{this.props.quantity} shares</p>
-							</Col>
-						</Row>
-						<Row>
-							<Chart type="hybrid" data={this.state.chartData} />
-						</Row>
-						<Row>
-							<Col span={8}>
-								<p>Open {this.state.priceData.open}</p>
-								<p>High {this.state.priceData.high}</p>
-								<p>Low {this.state.priceData.low}</p>
-								<p>Market Cap {this.state.priceData.marketCap.toLocaleString(undefined)}</p>
-								<p>PE Ratio {this.state.priceData.peRatio}</p>
-							</Col>
-							<Col span={8}>
-								<p>52 wk High {this.state.priceData.week52High}</p>
-								<p>52 wk Low {this.state.priceData.week52Low}</p>
-								<p>EPS {this.state.statData.ttmEPS.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-								<p>Dividend Rate {this.state.statData.dividendRate.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-								<p>Dividend Yield {this.state.statData.dividendYield.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-							</Col>
-						</Row>
+		    			<Table borderless>
+		    				<thead>
+		    					<tr>
+		    						<th style={{width: 30 +'%'}}>{this.props.ticker} - {this.state.statData.companyName}</th>
+		    					</tr>
+		    				</thead>
+		    				<tbody>
+		    					<tr>
+		    						<td>
+			    						<Row>
+				    						<Col span={2}>
+					    						<p style={{color:this.state.textColor}}>${this.state.priceData.delayedPrice}</p>
+					    					</Col>
+				    						<Col span={2}>
+				    							<p style={{fontSize:12+'px', color:this.state.textColor}}>{this.state.priceData.change.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+					    					</Col>
+				    						<Col span={2}>
+				    							<p style={{fontSize:12+'px', color:this.state.textColor}}>{this.state.changePercent.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
+					    					</Col>
+				    						<Col span={2}>
+				    							<p style={{fontSize:12+'px'}}>{this.props.quantity} shares</p>
+				    						</Col>
+			    						</Row>
+		    						</td>
+		    					</tr>
+		    				</tbody>
+		    			</Table>
+						<Chart type="hybrid" data={this.state.chartData} />
 					</div>
 					) : ( 
 					<div>
