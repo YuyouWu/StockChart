@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import ContentView from './ContentView';
-import DeleteTickerButton from './DeleteTickerButton';
 import { getTickers, getCurrentPrice, addTicker, deleteTicker } from '../actions/portfolioActions';
 import { setCurrentUser } from '../actions/authActions';
 import { Form, Input, Button, InputGroup } from 'reactstrap';
-import { Layout, Modal, Icon, Table, Row, Col } from 'antd';
+import { Layout, Modal, Icon, Row, Col } from 'antd';
+import { Table } from 'semantic-ui-react'
+
 import { connect } from 'react-redux';
+import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc';
+
 const { Content, Sider } = Layout;
 
 //Class for rendering list of tickers
@@ -19,42 +22,6 @@ class TickerList extends Component{
 				change: '0',
 				price: '0'
 			}],
-			columns: [
-				{
-				  title: 'Ticker',
-				  dataIndex: 'ticker',
-				  key: 'ticker',
-				  width: '10%',
-				  render: text => <p>{text}</p>
-				},
-				{
-				  title: 'Change',
-				  dataIndex: 'change',
-				  key: 'change',
-				  width: '10%',
-				  render: (text,record) => <div>
-				  	{record.change < 0 ? (
-				  		<p style={{color:'red'}}>{text}%</p>
-				  	) : (
-				  		<p style={{color:'green'}}>{text}%</p>
-				  	)}
-				  </div>
-				},
-				{
-				  title: 'Price',
-				  dataIndex: 'price',
-				  key: 'price',
-				  width: '10%',
-				  render: (text,record) => <Row>
-				  	<Col span={16}>
-				  		<p>${text}</p>
-				  	</Col>
-				  	<Col span={1}>
-				  		<DeleteTickerButton updateTickersList = {this.getTickersList} hidden = {!record.edit} tickerId = {this.state.currentTickerId} /> 
-				  	</Col>
-				  	</Row>
-				}
-			],
 	    	currentTicker: 'Overview',
 	    	currentTickerId: 0,
 	    	visible: false,
@@ -147,7 +114,59 @@ class TickerList extends Component{
 		}));
 	}
 
+	//Updating index after drag and drop 
+	onSortEnd = ({oldIndex, newIndex}) => {
+	    this.setState({
+	    	tickers: arrayMove(this.state.tickers, oldIndex, newIndex),
+	    });
+	};
+
 	render() {
+		const SortableItem = SortableElement(({ticker, change, price, id, quantity}) =>
+			<Table.Row>
+			  	<Table.Cell>
+			  		<Button color="link" size="sm" id={id} ticker={ticker}
+			  			onClick={(event) =>{
+							this.setState({
+								currentTicker: ticker,
+								currentTickerId: id,
+								currentQuantity: quantity
+							})			  				
+			  			}  				
+			  		}>
+			  			{ticker}
+			  		</Button>
+			  	</Table.Cell>
+			  	<Table.Cell>{change}%</Table.Cell>
+			  	<Table.Cell>
+			  		{price}
+			  	</Table.Cell>
+			  	<Table.Cell>
+			  		<Button size="sm" outline color="danger" id={id} ticker = {ticker}
+			  			onClick={(event) =>{
+			  				this.props.deleteTicker(id).then((res) => {
+								this.getTickersList();
+							});
+				  			}  				
+			 		}>
+			  			X
+			  		</Button>
+			  	</Table.Cell>
+			</Table.Row>
+		);
+
+		const SortableList = SortableContainer(({items}) => {
+		  	return (
+			    <Table selectable size='small'>
+			    	<Table.Body className = "noselect">
+				      {items.map(({ticker, change, price, _id, quantity}, index) => (
+				        <SortableItem key={`item-${index}`} index={index} ticker={ticker} change={change} price={price} quantity={quantity} id={_id}/>
+				      ))}
+				    </Table.Body>
+			    </Table>
+		  	);
+		});
+
 		return(
 			<Layout>
 				<Sider
@@ -176,37 +195,7 @@ class TickerList extends Component{
 			          		<Button outline color="primary">Add Ticker</Button>
 				    	</Form>
 			        </Modal>
-					<br />
-					<Table
-						size="small"
-						showHeader={false}
-						columns={this.state.columns} 
-						dataSource={this.state.tickers} 
-						pagination={false}
-						onRow={(record) => {
-						    return {
-						      	onClick: () => {
-							      	this.setState({
-										currentTicker: record.ticker,
-										currentTickerId: record._id,
-										currentQuantity: record.quantity
-									});
-						      	},
-						      	onMouseEnter: () => {
-									this.setState({
-										currentTickerId: record._id
-									});
-									record.edit = true
-								},
-						      	onMouseLeave: () => {
-						      		this.setState({
-										currentTickerId: record._id
-									});
-									record.edit = false
-								}
-						    };
-						}}
-					/>
+					<SortableList lockAxis="y" items={this.state.tickers} onSortEnd={this.onSortEnd} />
 			    </Sider>
         		<Content style={{ background: '#fff', padding: 24, margin: 0, minWidth: 600, minHeight: 280 }}>
 		            <div>

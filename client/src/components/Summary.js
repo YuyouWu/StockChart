@@ -28,7 +28,6 @@ class Summary extends React.Component {
 			this.setState({
 				chartData: res.data
 			});
-			console.log(res.data);
 		});
 	}
 
@@ -42,7 +41,6 @@ class Summary extends React.Component {
 			this.setState({
 				chartData: res.data
 			});
-			console.log(res.data);
 		});
 
 	}

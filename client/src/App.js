@@ -13,6 +13,7 @@ import LandingPage from './components/LandingPage/LandingPage';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css';
 import 'antd/dist/antd.css';
+import 'semantic-ui-css/semantic.min.css';
 
 class App extends Component {
   render() {
