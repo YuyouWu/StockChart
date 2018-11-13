@@ -8,8 +8,6 @@ const TabPane = Tabs.TabPane;
 
 //Class for rendering each individual tickers on portfolio
 class Overview extends React.Component {
-
-
  	render() {
 	    return (
 	    	<div>

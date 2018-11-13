@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_TICKERS, ADD_TICKER, DELETE_TICKER, GET_ERRORS, GET_CURRENT_PRICE, GET_COMPANY_STAT, GET_COMPANY_FINANCIAL, GET_COMPANY_NEWS } from './types';
+import { GET_TICKERS, ADD_TICKER, DELETE_TICKER, GET_ERRORS, GET_CURRENT_PRICE, GET_COMPANY_STAT, GET_COMPANY_FINANCIAL, GET_COMPANY_FINANCIAL_ANNUAL, GET_COMPANY_NEWS } from './types';
 
 var headers = {
   'xauth': localStorage.getItem('jwtToken')
@@ -75,6 +75,18 @@ export const getCompanyFinancial = ticker => dispatch => {
     )
   )
 };
+
+export const getCompanyFinancialAnnual = ticker => dispatch => {
+  return (
+    axios.get('https://api.iextrading.com/1.0/stock/' + ticker +'/financials?period=annual').then(res =>
+      dispatch({
+        type: GET_COMPANY_FINANCIAL_ANNUAL,
+        payload: res.data
+      })
+    )
+  )
+};
+
 
 export const getCompanyNews = ticker => dispatch => {
   return (
