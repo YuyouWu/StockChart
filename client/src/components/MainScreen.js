@@ -125,7 +125,7 @@ class TickerList extends Component{
 	render() {
 		const SortableItem = SortableElement(({ticker, change, price, id, quantity}) =>
 			<Table.Row>
-				<Table.Cell hidden={!this.state.editMode}>
+				<Table.Cell hidden={!this.state.editMode} collapsing>
 			  		<Button size="sm" outline color="danger" id={id} ticker = {ticker}
 			  			onClick={(event) =>{
 			  				this.props.deleteTicker(id).then((res) => {
@@ -136,7 +136,7 @@ class TickerList extends Component{
 			  			X
 			  		</Button>
 			  	</Table.Cell>
-			  	<Table.Cell>
+			  	<Table.Cell collapsing>
 			  		<Button color="link" size="sm" id={id} ticker={ticker}
 			  			onClick={(event) =>{
 							this.setState({

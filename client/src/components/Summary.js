@@ -18,6 +18,9 @@ class Summary extends React.Component {
 	}
 
 	componentDidMount(){
+		this.setState({
+				chartData: null
+		});
 		this.loadData(this.props.ticker);
 
 		//get chart data
@@ -32,6 +35,9 @@ class Summary extends React.Component {
 	}
 
 	componentWillReceiveProps(newProps){
+		this.setState({
+				chartData: null
+		});
 		this.loadData(newProps.ticker);	  	
 		//get chart data
 		axios.get('https://api.iextrading.com/1.0/stock/'+newProps.ticker+'/chart/5y').then((res) => {

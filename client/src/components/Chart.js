@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { format } from "d3-format";
 import { timeFormat } from "d3-time-format";
 
-import { ChartCanvas, Chart } from "react-stockcharts";
+import { ChartCanvas, Chart, ZoomButtons } from "react-stockcharts";
 import { BarSeries, CandlestickSeries } from "react-stockcharts/lib/series";
 import { XAxis, YAxis } from "react-stockcharts/lib/axes";
 import {
@@ -20,6 +20,31 @@ import { fitWidth } from "react-stockcharts/lib/helper";
 import { last } from "react-stockcharts/lib/utils";
 
 class CandleStickStockScaleChart extends React.Component {
+	constructor(props){
+		super(props);
+		this.saveNode = this.saveNode.bind(this);
+		this.resetYDomain = this.resetYDomain.bind(this);
+		this.handleReset = this.handleReset.bind(this);
+	}
+
+	componentWillMount() {
+		this.setState({
+			suffix: 1
+		});
+	}
+
+	saveNode(node) {
+		this.node = node;
+	}
+	resetYDomain() {
+		this.node.resetYDomain();
+	}
+	handleReset() {
+		this.setState({
+			suffix: this.state.suffix + 1
+		});
+	}
+
 	render() {
 		const { type, data: initialData, width, ratio } = this.props;
 
@@ -57,12 +82,12 @@ class CandleStickStockScaleChart extends React.Component {
 		} : {};
 
 		return (
-			<ChartCanvas height={700}
+			<ChartCanvas ref={this.saveNode} height={700}
 				ratio={ratio}
 				width={width}
 				margin={{ left: 50, right: 50, top: 10, bottom: 30 }}
 				type={type}
-				seriesName="MSFT"
+				seriesName={`TICKER_${this.state.suffix}`}
 				data={data}
 				xScale={xScale}
 				xAccessor={xAccessor}
@@ -80,6 +105,9 @@ class CandleStickStockScaleChart extends React.Component {
 					/>
 					<CandlestickSeries />
 					<OHLCTooltip forChart={1} origin={[0, 0]} />
+					<ZoomButtons
+						onReset={this.handleReset}
+					/>
 				</Chart>
 				<Chart
 					id={2}
