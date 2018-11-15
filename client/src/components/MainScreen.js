@@ -8,7 +8,6 @@ import { Table } from 'semantic-ui-react'
 
 import { connect } from 'react-redux';
 import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc';
-import axios from 'axios';
 
 const { Content, Sider } = Layout;
 
@@ -158,7 +157,14 @@ class TickerList extends Component{
 			  			{ticker}
 			  		</Button>
 			  	</Table.Cell>
-			  	<Table.Cell>{change}%</Table.Cell>
+			  	<Table.Cell>
+			  		{change < 0 ? (
+			  			<p style={{color:'red'}}>{change}%</p>
+				  		) : (
+				  		<p style={{color:'green'}}>{change}%</p>
+				  		)
+			  		}
+			  	</Table.Cell>
 			  	<Table.Cell>
 			  		{price}
 			  	</Table.Cell>
