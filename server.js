@@ -52,17 +52,26 @@ app.get('/api/portfolio/:id', (req, res) => {
 
 //Add ticker to portfolio
 app.post('/api/portfolio/add', authenticate, (req, res) => {
-	var ticker = new Ticker({
-    ticker: req.body.ticker,
-    quantity: req.body.quantity,
+  //set new index based on how many tickers a user have
+  Ticker.find({
     _creator: req.user._id
-  });
+  }).then((tickers) =>{
 
-	ticker.save().then((doc) => {
-		res.send(doc);
-	}, (e) => {
-		res.status(400).send(e);
-	});
+    //create new ticker obj with new index
+    var ticker = new Ticker({
+      ticker: req.body.ticker,
+      quantity: req.body.quantity,
+      _creator: req.user._id,
+      index: tickers.length
+    });
+    ticker.save().then((doc) => {
+      res.send(doc);
+    }, (e) => {
+      res.status(400).send(e);
+    });
+  }, (e) => {
+    res.status(400).send(e);
+  });
 });
 
 //Delete ticker inside portfolio
@@ -87,6 +96,23 @@ app.delete('/api/portfolio/:id', authenticate, (req, res) => {
   });
 });
 
+//Update index of one tickers from a user
+app.patch('/api/portfolio/index', authenticate, (req, res) =>{
+  var body = _.pick(req.body, ['_id', 'index']);
+  var id = body._id;
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send();
+  }
+
+  Ticker.findOneAndUpdate({_id: id, _creator: req.user._id}, {$set: body}, {new: true}).then((ticker) => {
+    if (!ticker) {
+      return res.status(404).send();
+    }
+    res.send({ticker});
+  }).catch((e) => {
+    res.status(400).send();
+  })
+});
 
 ///////////////////
 //USER MANAGEMENT//
@@ -96,7 +122,6 @@ app.delete('/api/portfolio/:id', authenticate, (req, res) => {
 app.post('/api/users', (req, res) => {
   var body = _.pick(req.body, ['email', 'password']);
   var user = new User(body);
-
   user.save().then(() => {
     return user.generateAuthToken();
   }).then((token) => {

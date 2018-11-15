@@ -96,7 +96,7 @@ class CandleStickStockScaleChart extends React.Component {
 			>
 
 				<Chart id={1} yExtents={d => [d.high, d.low]}>
-					<XAxis axisAt="bottom" orient="bottom" ticks={6} {...xGrid}/>
+					<XAxis axisAt="bottom" orient="bottom" ticks={10} {...xGrid}/>
 					<YAxis axisAt="right" orient="right" ticks={10} {...yGrid}/>
 					<MouseCoordinateY
 						at="right"

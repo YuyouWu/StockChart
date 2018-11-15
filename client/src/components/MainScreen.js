@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ContentView from './ContentView';
-import { getTickers, getCurrentPrice, addTicker, deleteTicker } from '../actions/portfolioActions';
+import { getTickers, getCurrentPrice, addTicker, deleteTicker, updateIndex } from '../actions/portfolioActions';
 import { setCurrentUser } from '../actions/authActions';
 import { Form, Input, Button, InputGroup } from 'reactstrap';
 import { Layout, Modal, Icon, Row, Col } from 'antd';
@@ -8,6 +8,7 @@ import { Table } from 'semantic-ui-react'
 
 import { connect } from 'react-redux';
 import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc';
+import axios from 'axios';
 
 const { Content, Sider } = Layout;
 
@@ -54,6 +55,10 @@ class TickerList extends Component{
 						});
 					});
 				});
+				//sort tickers based on their index value 
+				res.payload.sort((a, b) => {
+		    		return a.index - b.index;
+		    	});
 		    	this.setState({
 		    		tickers: res.payload
 		    	});
@@ -119,6 +124,10 @@ class TickerList extends Component{
 	onSortEnd = ({oldIndex, newIndex}) => {
 	    this.setState({
 	    	tickers: arrayMove(this.state.tickers, oldIndex, newIndex),
+	    });
+	    this.state.tickers.forEach((ticker) => {
+	    	ticker.index = this.state.tickers.indexOf(ticker);
+			this.props.updateIndex(ticker);
 	    });
 	};
 
@@ -223,4 +232,4 @@ class TickerList extends Component{
 const mapStateToProps = state => ({
   tickers: state.tickers
 });
-export default connect(mapStateToProps,{getTickers, getCurrentPrice, addTicker, deleteTicker, setCurrentUser})(TickerList);
+export default connect(mapStateToProps,{getTickers, getCurrentPrice, addTicker, deleteTicker, updateIndex, setCurrentUser})(TickerList);
