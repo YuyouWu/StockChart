@@ -1,27 +1,39 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import ContentView from './ContentView';
 import { getTickers, getCurrentPrice, addTicker, deleteTicker, updateIndex } from '../actions/portfolioActions';
 import { setCurrentUser } from '../actions/authActions';
-import { Form, Input, Button, InputGroup } from 'reactstrap';
+import { Input, Button, InputGroup, Form} from 'reactstrap';
 import { Layout, Modal, Icon, Row, Col } from 'antd';
-import { Table } from 'semantic-ui-react'
-
+import { Table, Menu, Dropdown, Search, Label} from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc';
-
+import axios from 'axios';
+import _ from 'lodash';
 const { Content, Sider } = Layout;
+
+//For rendering ticker search result
+const resultRenderer = ({ symbol, name }) => <div>
+	<p> {symbol} - {name}</p>
+</div>
+resultRenderer.propTypes = {
+  symbol: PropTypes.string,
+  description: PropTypes.string,
+}
 
 //Class for rendering list of tickers
 class TickerList extends Component{
 	constructor(props) {
 	    super(props);
 	    this.state = {
+	    	activeItem: 'Overview',
 	    	tickers: [{
 				key:'0',
 				ticker: 'Loading',
 				change: '0',
 				price: '0'
 			}],
+			allTickers: [''],
 	    	currentTicker: 'Overview',
 	    	currentTickerId: 0,
 	    	visible: false,
@@ -35,7 +47,16 @@ class TickerList extends Component{
 
 	componentDidMount(){
 		this.getTickersList();
+		axios.get("https://api.iextrading.com/1.0/ref-data/symbols").then(res => {
+			this.setState({
+				allTickers: res.data
+			});
+		});
 	}
+
+	componentWillMount() {
+    	this.resetComponent();
+  	}
 
 	getTickersList = () => {
 		//API to get the list of tickers
@@ -130,34 +151,44 @@ class TickerList extends Component{
 	    });
 	};
 
+	//For searching Ticker
+	resetComponent = () => this.setState({ isLoading: false, results: [], value: '' });
+	handleResultSelect = (e, { result }) => this.setState({ value: result.symbol, currentTicker: result.symbol });
+	handleSearchChange = (e, { value }) => {
+	    this.setState({ isLoading: true, value })
+
+	    setTimeout(() => {
+	      	if (this.state.value.length < 1) return this.resetComponent();
+
+	      	const re = new RegExp(_.escapeRegExp(this.state.value), 'i');
+	      	const isMatch = result => re.test(result.symbol)||re.test(result.name);
+	      	this.setState({
+	        	isLoading: false,
+	        	results: _.filter(this.state.allTickers, isMatch)
+	      	});
+	    }, 300);
+  	}
+
+
 	render() {
+		const { isLoading, value, results } = this.state;
+
 		const SortableItem = SortableElement(({ticker, change, price, id, quantity}) =>
 			<Table.Row>
-				<Table.Cell hidden={!this.state.editMode} collapsing>
-			  		<Button size="sm" outline color="danger" id={id} ticker = {ticker}
-			  			onClick={(event) =>{
-			  				this.props.deleteTicker(id).then((res) => {
-								this.getTickersList();
-							});
-				  		}  				
-			 		}>
-			  			X
-			  		</Button>
-			  	</Table.Cell>
 			  	<Table.Cell collapsing>
-			  		<Button color="link" size="sm" id={id} ticker={ticker}
-			  			onClick={(event) =>{
+			  		<Button color="link" onClick={(event) =>{
+			  				console.log("clicked");
 							this.setState({
 								currentTicker: ticker,
 								currentTickerId: id,
 								currentQuantity: quantity
 							})			  				
-			  			}  				
-			  		}>
+			  			}}
+			  			style={{cursor: 'pointer'}}>
 			  			{ticker}
 			  		</Button>
 			  	</Table.Cell>
-			  	<Table.Cell>
+			  	<Table.Cell collapsing>
 			  		{change < 0 ? (
 			  			<p style={{color:'red'}}>{change}%</p>
 				  		) : (
@@ -165,64 +196,73 @@ class TickerList extends Component{
 				  		)
 			  		}
 			  	</Table.Cell>
-			  	<Table.Cell>
-			  		{price}
+			  	<Table.Cell collapsing>
+			  		{this.state.editMode ? (
+			  			<Button size="sm" outline color="danger" id={id} ticker = {ticker}
+				  			onClick={(event) =>{
+				  				this.props.deleteTicker(id).then((res) => {
+									this.getTickersList();
+								});
+					  		}
+			 			}>
+			  				X
+			  			</Button>
+			  		):(
+			  			<p>{price}</p>
+			  		)
+			  		}
 			  	</Table.Cell>
 			</Table.Row>
 		);
 
 		const SortableList = SortableContainer(({items}) => {
 		  	return (
-			    <Table selectable size='small'>
-			    	<Table.Body className = "noselect">
-				      {items.map(({ticker, change, price, _id, quantity}, index) => (
-				        <SortableItem key={`item-${index}`} index={index} ticker={ticker} change={change} price={price} quantity={quantity} id={_id}/>
-				      ))}
-				    </Table.Body>
-			    </Table>
+				<Table selectable size='small' style={{width:'225px', marginLeft: '5px'}}>
+				    <Table.Body className = "noselect">
+					  	{items.map(({ticker, change, price, _id, quantity}, index) => (
+					    	<SortableItem key={`item-${index}`} index={index} ticker={ticker} change={change} price={price} quantity={quantity} id={_id}/>
+					    ))}
+					</Table.Body>
+				</Table>
 		  	);
 		});
+
+		const options = [
+			  { key: 1, text: 'Holding', value: 1 },
+			  { key: 2, text: 'Watch List', value: 2 },
+			  { key: 3, text: 'Add New List', value: 3 },
+		]
 
 		return(
 			<Layout>
 				<Sider
-					width={250} style={{ background: '#fff', overflow: 'auto', height: '93vh', overflowX: "hidden", overflowY: "scroll"}}>
-					<br />
-					<Button outline color="primary" onClick={this.toOverview} style={{marginBottom:10+'px', marginLeft:8+'px', width:220+'px'}}>
-						<Icon type="pie-chart" /> Overview
-					</Button>
-					<Row gutter={10}>
-						<Col span={12}>
-							<Button outline color="primary" onClick={this.showModal} style={{marginBottom:10+'px', marginLeft:8+'px', width:105+'px'}}>
-								Add Ticker
-							</Button>
-						</Col>
-						<Col span={12}>
-							<Button outline color="primary" onClick={this.enterEdit} style={{marginBottom:10+'px', width:105+'px'}}>
-								{!this.state.editMode? (
-									<p>Edit</p>
-									):(
-									<p>Done</p>
-								)}
-							</Button>
-						</Col>
-					</Row>
-					<Modal
-			          title="Add New Ticker"
-			          visible={this.state.visible}
-			          onOk={this.handleOk}
-			          onCancel={this.handleCancel}
-			          footer={null}
-					>	
-			          	<Form onSubmit={this.handleAddTicker}>
-			          		<InputGroup>
-			          			<Input placeholder="Ticker" type="string" name="ticker"/>
-			          			<Input placeholder="Quantity - default 0" type="number" name="quantity"/>
-			          		</InputGroup>
-				          	<br/>
-			          		<Button outline color="primary">Add Ticker</Button>
-				    	</Form>
-			        </Modal>
+					width={250} style={{ background: '#fff', overflow: 'auto', height: '94vh', overflowX: "hidden"}}>
+					<Search input={{ fluid: true }} style={{ marginTop:'10px', marginLeft:'5px', marginRight:'5px'}}
+						placeholder="Look Up Ticker"
+						resultRenderer={resultRenderer}
+					    loading={isLoading}
+					    onResultSelect={this.handleResultSelect}
+					    onSearchChange={_.debounce(this.handleSearchChange, 500, { leading: true })}
+					    results={results}
+					    value={value}
+					    {...this.props}
+					/>
+					<Menu vertical style={{width:'225px', marginTop:'5px', marginLeft: '5px'}}>
+				        <Menu.Item name='Overview' onClick={this.toOverview}>
+				        	<Icon type="pie-chart" style={{marginRight: '5px'}}/> Overview
+				        </Menu.Item>
+				        <Menu.Item name='Add Ticker' onClick={this.showModal}>
+							<Icon type="file-add" style={{marginRight: '5px'}}/> Add Ticker
+				        </Menu.Item>
+				        <Menu.Item name='Edit' onClick={this.enterEdit}>
+							{!this.state.editMode? (
+								<p><Icon type="edit" style={{marginRight: '5px'}}/> Edit List</p>
+								):(
+								<p><Icon type="check" style={{marginRight: '5px'}}/> Done</p>
+							)}
+				        </Menu.Item>
+				    </Menu>
+				    <Dropdown style={{width:'225px', marginLeft: '5px'}} placeholder='Watch List' selection options={options} />
 					<SortableList lockAxis="y" items={this.state.tickers} onSortEnd={this.onSortEnd} />
 			    </Sider>
         		<Content style={{ background: '#fff', padding: 24, margin: 0, minWidth: 600, minHeight: 280 }}>

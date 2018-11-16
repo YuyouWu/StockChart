@@ -12,6 +12,8 @@ class Summary extends React.Component {
 	    this.state = {
 	    	priceData: '',
 	    	statData: '',
+	    	chartData: '',
+	    	notFound: false,
 	    	textColor: 'green'
 	    }
 	    this.loadData = this.loadData.bind(this);
@@ -19,24 +21,26 @@ class Summary extends React.Component {
 
 	componentDidMount(){
 		this.setState({
-				chartData: null
+			chartData: ''
 		});
 		this.loadData(this.props.ticker);
 
 		//get chart data
 		axios.get('https://api.iextrading.com/1.0/stock/'+this.props.ticker+'/chart/1y').then((res) => {
-			res.data.forEach((obj) => {
-				obj.date = new Date(obj.date);
-			});
-			this.setState({
-				chartData: res.data
-			});
+			if(res.data){
+				res.data.forEach((obj) => {
+					obj.date = new Date(obj.date);
+				});
+				this.setState({
+					chartData: res.data
+				});
+			}
 		});
 	}
 
 	componentWillReceiveProps(newProps){
 		this.setState({
-				chartData: null
+			chartData: ''
 		});
 		this.loadData(newProps.ticker);	  	
 		//get chart data
@@ -48,7 +52,6 @@ class Summary extends React.Component {
 				chartData: res.data
 			});
 		});
-
 	}
 
 	loadData(ticker){
@@ -69,7 +72,8 @@ class Summary extends React.Component {
 	    	}
 		}).catch(error => {
 	    	this.setState({
-				priceData: null
+				priceData: null,
+				notFound: true
 	    	});
 	   	});
 
@@ -80,7 +84,8 @@ class Summary extends React.Component {
 	    	});
 		}).catch(error => {
 	    	this.setState({
-				statData: null
+				statData: null,
+				notFound: true
 	    	});
 	   	});
 	}
@@ -113,7 +118,12 @@ class Summary extends React.Component {
 					</div>
 					) : ( 
 					<div>
-						<p>Loading</p>
+						{this.state.notFound ? (
+								<p>Ticker Symbol Not Found. Please make sure you have the correct ticker.</p>
+							):(
+								<p>Loading</p>
+							)
+						}
 					</div>
 					)	
 				}

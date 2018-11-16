@@ -40,7 +40,6 @@ class AppNavbar extends Component{
         return (
           <div>
             <Navbar color="dark" dark expand="md">
-                <Container>
                     <NavbarBrand href="/">Prophest</NavbarBrand>
                     <NavbarToggler onClick={this.toggle}/>
                     <Collapse isOpen={this.state.isOpen} navbar>
@@ -82,7 +81,6 @@ class AppNavbar extends Component{
                             )}
                         </Nav>
                     </Collapse>
-                </Container>
             </Navbar>
           </div>
         );
