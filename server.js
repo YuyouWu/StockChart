@@ -13,6 +13,8 @@ mongoose.set('useCreateIndex', true);
 
 var {Ticker} = require('./models/ticker');
 var {User} = require('./models/user');
+var {Portfolio} = require('./models/Portfolio');
+
 var {authenticate} = require('./middleware/authenticate');
 
 var app = express();
@@ -62,6 +64,7 @@ app.post('/api/portfolio/add', authenticate, (req, res) => {
       ticker: req.body.ticker,
       quantity: req.body.quantity,
       _creator: req.user._id,
+      portfolioName: req.body.portfolioName,
       index: tickers.length
     });
     ticker.save().then((doc) => {
@@ -109,6 +112,82 @@ app.patch('/api/portfolio/index', authenticate, (req, res) =>{
       return res.status(404).send();
     }
     res.send({ticker});
+  }).catch((e) => {
+    res.status(400).send();
+  })
+});
+
+////////////////////////
+//PORTFOLIO MANAGEMENT//
+////////////////////////
+
+//Get all portfolios from a user
+app.get('/api/allPortfolio/', authenticate, (req, res) => {
+	Portfolio.find({
+    _creator: req.user._id
+  }).then((portfolio) =>{
+		res.send({portfolio});
+	}, (e) => {
+		res.status(400).send(e);
+	});
+});
+
+//Create new Portfolio
+app.post('/api/newPortfolio/', authenticate, (req, res) => {
+    //create new ticker obj with new index
+    var portfolio = new Portfolio({
+      portfolioName: req.body.name,
+      _creator: req.user._id
+    });
+
+    portfolio.save().then((doc) => {
+      res.send(doc);
+    }, (e) => {
+      res.status(400).send(e);
+    });
+});
+
+//Delete Portfolio
+app.delete('/api/deletePortfolio/:id', authenticate, (req, res) => {
+  var id = req.params.id;
+
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send();
+  }
+
+  Portfolio.findOneAndRemove({
+    _id: id,
+    _creator: req.user._id
+  }).then((portfolio) => {
+    if (!portfolio) {
+      return res.status(404).send();
+    }
+
+    //TODO: Delete tickers inside this portfolio
+
+    res.send({portfolio});
+  }).catch((e) => {
+    res.status(400).send();
+  });
+});
+
+//Rename Portfolio
+app.patch('/api/renamePortfolio/', authenticate, (req, res) =>{
+  var body = _.pick(req.body, ['_id', 'portfolioName']);
+  var id = body._id;
+
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send();
+  }
+
+  Portfolio.findOneAndUpdate({_id: id, _creator: req.user._id}, {$set: body}, {new: true}).then((portfolio) => {
+    if (!portfolio) {
+      return res.status(404).send();
+    }
+
+    //TODO: update tickers' portfolio name 
+
+    res.send({portfolio});
   }).catch((e) => {
     res.status(400).send();
   })

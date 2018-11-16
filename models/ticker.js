@@ -18,7 +18,7 @@ var Ticker = mongoose.model('Ticker', {
   portfolioName:{
     type: String,
     required: true,
-    default: 'WatchList'
+    default: 'Watch List'
   },
   _creator: {
   	type: mongoose.Schema.Types.ObjectId,

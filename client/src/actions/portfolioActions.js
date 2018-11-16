@@ -1,5 +1,17 @@
 import axios from 'axios';
-import { GET_TICKERS, ADD_TICKER, DELETE_TICKER, UPDATE_INDEX, GET_ERRORS, GET_CURRENT_PRICE, GET_COMPANY_STAT, GET_COMPANY_FINANCIAL, GET_COMPANY_FINANCIAL_ANNUAL, GET_COMPANY_NEWS } from './types';
+import { 
+  GET_TICKERS, 
+  ADD_TICKER, 
+  DELETE_TICKER, 
+  UPDATE_INDEX, 
+  GET_ALL_PORTFOLIO,
+  CREATE_NEW_PORTFOLIO,
+  GET_ERRORS, 
+  GET_CURRENT_PRICE, 
+  GET_COMPANY_STAT, 
+  GET_COMPANY_FINANCIAL, 
+  GET_COMPANY_FINANCIAL_ANNUAL, 
+  GET_COMPANY_NEWS } from './types';
 
 var headers = {
   'xauth': localStorage.getItem('jwtToken')
@@ -48,6 +60,28 @@ export const updateIndex = (ticker) => dispatch => {
     axios.patch('/api/portfolio/index', ticker, {headers: headers}).then(res =>
       dispatch({
         type: UPDATE_INDEX,
+        payload: res.data
+      })
+    )
+  )
+};
+
+export const getAllPortfolio = () => dispatch => {
+  return (
+    axios.get('/api/allPortfolio', {headers: headers}).then(res =>
+      dispatch({
+        type: CREATE_NEW_PORTFOLIO,
+        payload: res.data
+      })
+    )
+  )
+};
+
+export const newPortfolio = portfolio => dispatch => {
+  return (
+    axios.get('/api/newPortfolio', portfolio, {headers: headers}).then(res =>
+      dispatch({
+        type: GET_ALL_PORTFOLIO,
         payload: res.data
       })
     )

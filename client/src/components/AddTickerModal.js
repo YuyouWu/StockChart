@@ -1,32 +1,59 @@
 import React from 'react';
-import { addTicker } from '../actions/portfolioActions';
-import { Form, InputGroup, Input, Button } from 'reactstrap';
+import { addTicker, getAllPortfolio } from '../actions/portfolioActions';
+import { Form, InputGroup, Input, Button, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { Modal } from 'antd';
 import { connect } from 'react-redux';
 
 //Class for rendering each individual tickers on portfolio
 class AddTickerModal extends React.Component {
+	constructor(props){
+		super(props);
+		this.state = {
+			portfolios: this.props.portfolios,
+			dropdownOpen: false,
+			currentPortfolio: this.props.currentPortfolio
+		}
+	}
+
+	componentWillReceiveProps(newProps){
+		this.setState({
+			portfolios: this.props.portfolios,
+			currentPortfolio: newProps.currentPortfolio
+		});
+	}
 
 	handleAddTicker = (e) => {
 		e.preventDefault();
 		var ticker =  e.target.elements.ticker.value.trim().toUpperCase();
-		var quantity = 0;
+		var quantity = 0; //Set default quantity to 0
+		var portfolioName = this.state.currentPortfolio; //Set default portfolio name to Watch List
 
-	    //Set default quantity to 0
-	    if(e.target.elements.quantity.value !== null){
+		if(e.target.elements.quantity.value !== null){
 	    	quantity = Number(e.target.elements.quantity.value.trim());
-	    }
-
+		}
+		
 		var tickerObj = {
 			"ticker": ticker,
 			"quantity": quantity,
-			"portfolioList": 'WatchList'
+			"portfolioName": portfolioName
 		}
 
 		this.props.addTicker(tickerObj).then((res) =>{
 			this.props.getTickersList();
 		});
 		this.props.hideModal();
+	}
+
+	setCurrentPortfolio = (e) =>{
+		this.setState({
+			currentPortfolio: e.target.name
+		});
+	}
+
+	toggle = () => {
+		this.setState(prevState => ({
+		  dropdownOpen: !prevState.dropdownOpen
+		}));
 	}
 
   	render() {
@@ -43,6 +70,19 @@ class AddTickerModal extends React.Component {
 						<Input placeholder="Ticker" type="string" name="ticker"/>
 						<Input placeholder="Quantity - default 0" type="number" name="quantity"/>
 			        </InputGroup>
+					<br/>
+					Add To Portfolio: 
+					<Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+						<DropdownToggle outline style={{width: '190px'}} caret>
+						{this.state.currentPortfolio}
+						</DropdownToggle>
+						<DropdownMenu>
+							<DropdownItem style={{width: '190px'}} onClick={this.setCurrentPortfolio} name='Watch List'>Watch List</DropdownItem>
+							{this.state.portfolios.map((portfolio) => 
+							<DropdownItem style={{width: '190px'}} onClick={this.setCurrentPortfolio} name={portfolio.portfolioName}>{portfolio.portfolioName}</DropdownItem>
+							)}
+						</DropdownMenu>
+					</Dropdown>
 				    <br/>
 			    <Button outline color="primary">Add Ticker</Button>
 				</Form>
@@ -52,5 +92,5 @@ class AddTickerModal extends React.Component {
 }
 
 const mapStateToProps = state => ({});
-export default connect(mapStateToProps,{addTicker})(AddTickerModal);
+export default connect(mapStateToProps,{addTicker, getAllPortfolio})(AddTickerModal);
   

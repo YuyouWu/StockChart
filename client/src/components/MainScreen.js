@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ContentView from './ContentView';
 import AddTickerModal from './AddTickerModal';
-import { getTickers, getCurrentPrice, addTicker, deleteTicker, updateIndex } from '../actions/portfolioActions';
+import { getTickers, getCurrentPrice, addTicker, deleteTicker, getAllPortfolio, newPortfolio, updateIndex } from '../actions/portfolioActions';
 import { setCurrentUser } from '../actions/authActions';
 import { Button, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, ButtonGroup, ButtonDropdown} from 'reactstrap';
 import { Layout, Icon, Row, Col } from 'antd';
@@ -35,6 +35,14 @@ class TickerList extends Component{
 				change: '0',
 				price: '0'
 			}],
+			filteredTickers: [{
+				key:'0',
+				ticker: 'Loading',
+				change: '0',
+				price: '0'
+			}],
+			portfolios: ['Loading'],
+			currentPortfolio: 'Watch List',
 			allTickers: [''],
 	    	currentTicker: 'Overview',
 	    	currentTickerId: 0,
@@ -44,11 +52,14 @@ class TickerList extends Component{
 			forceUpdate: '',
 			dropdownOpen: false,
 	    	editMode: false
-	    };
+		};		
 	}
 
 	componentDidMount(){
 		this.getTickersList();
+		this.getAllPortfolio();
+
+		//Get all symbols for tickers
 		axios.get("https://api.iextrading.com/1.0/ref-data/symbols").then(res => {
 			this.setState({
 				allTickers: res.data
@@ -82,12 +93,41 @@ class TickerList extends Component{
 		    		return a.index - b.index;
 		    	});
 		    	this.setState({
-		    		tickers: res.payload
-		    	});
-	    	}
+					tickers: res.payload,
+					filteredTickers: res.payload.filter(ticker => ticker.portfolioName === this.state.currentPortfolio)
+				});
+			}	
 		}).catch(function(err){
 			console.log(err);
 		});
+	}
+
+	getAllPortfolio = () => {
+		this.props.getAllPortfolio().then((res) => {
+			if(res.payload) {
+				this.setState({
+					portfolios: res.payload.portfolio
+				});
+			}
+		});
+	}
+
+	setCurrentPortfolio = (e) =>{
+		var portfolioName = e.target.name;
+		this.setState({
+			currentPortfolio: portfolioName,
+		});
+
+		if (portfolioName === 'Holding'){
+			this.setState({
+				filteredTickers: this.state.tickers.filter(ticker => ticker.quantity > 0)
+			});
+		} else {
+			this.setState({
+				filteredTickers: this.state.tickers.filter(ticker => ticker.portfolioName === portfolioName)
+			});
+		}
+
 	}
 
 	toOverview = () => {
@@ -129,10 +169,11 @@ class TickerList extends Component{
 	//Updating index after drag and drop 
 	onSortEnd = ({oldIndex, newIndex}) => {
 	    this.setState({
-	    	tickers: arrayMove(this.state.tickers, oldIndex, newIndex),
+	    	tickers: arrayMove(this.state.filteredTickers, oldIndex, newIndex),
+	    	filteredTickers: arrayMove(this.state.filteredTickers, oldIndex, newIndex),
 	    });
-	    this.state.tickers.forEach((ticker) => {
-	    	ticker.index = this.state.tickers.indexOf(ticker);
+	    this.state.filteredTickers.forEach((ticker) => {
+	    	ticker.index = this.state.filteredTickers.indexOf(ticker);
 			this.props.updateIndex(ticker);
 	    });
 	};
@@ -234,6 +275,8 @@ class TickerList extends Component{
 						handleCancel={this.handleCancel} 
 						visible={this.state.visible}
 						getTickersList={this.getTickersList}
+						portfolios={this.state.portfolios}
+						currentPortfolio={this.state.currentPortfolio}
 					/>
 
 					<Menu vertical style={{width:'225px', marginTop:'5px', marginBottom: '10px', marginLeft: '5px'}}>
@@ -253,16 +296,19 @@ class TickerList extends Component{
 						)}
 						<ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggleDropDown}>
 							<DropdownToggle style={{width: '190px'}} color="primary" outline caret>
-								Holding
+								{this.state.currentPortfolio}
 							</DropdownToggle>
 							<DropdownMenu>
-								<DropdownItem style={{width: '190px'}}>Holding</DropdownItem>
-								<DropdownItem style={{width: '190px'}}>Watch List</DropdownItem>
+								<DropdownItem onClick={this.setCurrentPortfolio} name='Watch List' style={{width: '190px'}}>Watch List</DropdownItem>
+								<DropdownItem onClick={this.setCurrentPortfolio} name='Holding' style={{width: '190px'}}>Holding</DropdownItem>
+								{this.state.portfolios.map((portfolio) => 
+									<DropdownItem onClick={this.setCurrentPortfolio} name={portfolio.portfolioName}>{portfolio.portfolioName}</DropdownItem>
+								)}
 								<DropdownItem style={{width: '190px'}}>Create New List</DropdownItem>
 							</DropdownMenu>	
 						</ButtonDropdown>
 					</ButtonGroup>
-					<SortableList lockAxis="y" items={this.state.tickers} onSortEnd={this.onSortEnd} />
+					<SortableList lockAxis="y" items={this.state.filteredTickers} onSortEnd={this.onSortEnd} />
 			    </Sider>
         		<Content style={{ background: '#fff', padding: 24, margin: 0, minWidth: 600, minHeight: 280 }}>
 		            <div>
@@ -277,4 +323,4 @@ class TickerList extends Component{
 const mapStateToProps = state => ({
   tickers: state.tickers
 });
-export default connect(mapStateToProps,{getTickers, getCurrentPrice, addTicker, deleteTicker, updateIndex, setCurrentUser})(TickerList);
+export default connect(mapStateToProps,{getTickers, getCurrentPrice, addTicker, deleteTicker, updateIndex, getAllPortfolio, newPortfolio, setCurrentUser})(TickerList);
