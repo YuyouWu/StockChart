@@ -94,8 +94,17 @@ class TickerList extends Component{
 		    	});
 		    	this.setState({
 					tickers: res.payload,
-					filteredTickers: res.payload.filter(ticker => ticker.portfolioName === this.state.currentPortfolio)
 				});
+
+				if (this.state.currentPortfolio === 'Holding'){
+					this.setState({
+						filteredTickers: res.payload.filter(ticker => ticker.quantity > 0)
+					});
+				} else {
+					this.setState({
+						filteredTickers: res.payload.filter(ticker => ticker.portfolioName === this.state.currentPortfolio)
+					});
+				}
 			}	
 		}).catch(function(err){
 			console.log(err);
@@ -114,6 +123,7 @@ class TickerList extends Component{
 
 	setCurrentPortfolio = (e) =>{
 		var portfolioName = e.target.name;
+		this.getTickersList();
 		this.setState({
 			currentPortfolio: portfolioName,
 		});
@@ -127,7 +137,6 @@ class TickerList extends Component{
 				filteredTickers: this.state.tickers.filter(ticker => ticker.portfolioName === portfolioName)
 			});
 		}
-
 	}
 
 	toOverview = () => {
@@ -169,13 +178,17 @@ class TickerList extends Component{
 	//Updating index after drag and drop 
 	onSortEnd = ({oldIndex, newIndex}) => {
 	    this.setState({
-	    	tickers: arrayMove(this.state.filteredTickers, oldIndex, newIndex),
+	    	tickers: arrayMove(this.state.tickers, oldIndex, newIndex),
 	    	filteredTickers: arrayMove(this.state.filteredTickers, oldIndex, newIndex),
 	    });
-	    this.state.filteredTickers.forEach((ticker) => {
+		this.state.tickers.forEach((ticker) => {
+	    	ticker.index = this.state.tickers.indexOf(ticker);
+			this.props.updateIndex(ticker);
+		});
+		this.state.filteredTickers.forEach((ticker) => {
 	    	ticker.index = this.state.filteredTickers.indexOf(ticker);
 			this.props.updateIndex(ticker);
-	    });
+		});
 	};
 
 	//For searching Ticker
