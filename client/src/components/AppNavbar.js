@@ -8,8 +8,7 @@ import {
     NavbarBrand,
     Nav,
     NavItem,
-    NavLink,
-    Container } from 'reactstrap';
+    NavLink } from 'reactstrap';
 import { Row, Col } from 'antd';
 
 class AppNavbar extends Component{

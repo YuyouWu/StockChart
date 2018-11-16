@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ContentView from './ContentView';
+import AddTickerModal from './AddTickerModal';
 import { getTickers, getCurrentPrice, addTicker, deleteTicker, updateIndex } from '../actions/portfolioActions';
 import { setCurrentUser } from '../actions/authActions';
-import { Input, Button, InputGroup, Form} from 'reactstrap';
-import { Layout, Modal, Icon, Row, Col } from 'antd';
-import { Table, Menu, Dropdown, Search, Label} from 'semantic-ui-react';
+import { Button } from 'reactstrap';
+import { Layout, Icon } from 'antd';
+import { Table, Menu, Dropdown, Search} from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc';
 import axios from 'axios';
@@ -42,7 +43,6 @@ class TickerList extends Component{
 	    	forceUpdate: '',
 	    	editMode: false
 	    };
-    	this.handleAddTicker = this.handleAddTicker.bind(this);
 	}
 
 	componentDidMount(){
@@ -88,27 +88,6 @@ class TickerList extends Component{
 		});
 	}
 
-	handleAddTicker = (e) => {
-		e.preventDefault();
-		var ticker =  e.target.elements.ticker.value.trim().toUpperCase();
-		var quantity = 0;
-
-	    //Set default quantity to 0
-	    if(e.target.elements.quantity.value !== null){
-	    	quantity = Number(e.target.elements.quantity.value.trim());
-	    }
-
-		var tickerObj = {
-			"ticker": ticker,
-			"quantity": quantity
-		}
-
-		this.props.addTicker(tickerObj).then((res) =>{
-			this.getTickersList();
-		});
-		this.handleOk();
-	}
-
 	toOverview = () => {
 		this.setState({
 			currentTicker: 'Overview',
@@ -121,19 +100,18 @@ class TickerList extends Component{
       		visible: true,
     	});
   	}
-
-  	handleOk = (e) => {
+  	hideModal = (e) => {
 	    this.setState({
 	      visible: false,
 	    });
 	}
-
   	handleCancel = (e) => {
 	    this.setState({
 	      visible: false,
 	    });
 	}
 
+	//Edit Portfolio Lists
 	enterEdit = () => {
 		this.setState(prevState => ({
 			editMode: !prevState.editMode
@@ -164,15 +142,15 @@ class TickerList extends Component{
 	      	const isMatch = result => re.test(result.symbol)||re.test(result.name);
 	      	this.setState({
 	        	isLoading: false,
-	        	results: _.filter(this.state.allTickers, isMatch)
+	        	results: _.filter(this.state.allTickers, isMatch).splice(0,10)
 	      	});
-	    }, 300);
+	    }, 1000);
   	}
 
 
 	render() {
 		const { isLoading, value, results } = this.state;
-
+		
 		const SortableItem = SortableElement(({ticker, change, price, id, quantity}) =>
 			<Table.Row>
 			  	<Table.Cell collapsing>
@@ -230,14 +208,14 @@ class TickerList extends Component{
 		const options = [
 			  { key: 1, text: 'Holding', value: 1 },
 			  { key: 2, text: 'Watch List', value: 2 },
-			  { key: 3, text: 'Add New List', value: 3 },
+			  { key: 3, text: 'Create New List', value: 3 },
 		]
 
 		return(
 			<Layout>
 				<Sider
 					width={250} style={{ background: '#fff', overflow: 'auto', height: '94vh', overflowX: "hidden"}}>
-					<Search input={{ fluid: true }} style={{ marginTop:'10px', marginLeft:'5px', marginRight:'5px'}}
+					<Search input={{ fluid: true }} style={{ marginTop:'10px', marginBottom:'10px', marginLeft:'5px', marginRight:'5px'}}
 						placeholder="Look Up Ticker"
 						resultRenderer={resultRenderer}
 					    loading={isLoading}
@@ -262,6 +240,13 @@ class TickerList extends Component{
 							)}
 				        </Menu.Item>
 				    </Menu>
+					<AddTickerModal 
+						hideModal={this.hideModal} 
+						showModal={this.showModal} 
+						handleCancel={this.handleCancel} 
+						visible={this.state.visible}
+						getTickersList={this.getTickersList}
+					/>
 				    <Dropdown style={{width:'225px', marginLeft: '5px'}} placeholder='Watch List' selection options={options} />
 					<SortableList lockAxis="y" items={this.state.tickers} onSortEnd={this.onSortEnd} />
 			    </Sider>
