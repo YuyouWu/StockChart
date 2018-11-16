@@ -4,13 +4,14 @@ import ContentView from './ContentView';
 import AddTickerModal from './AddTickerModal';
 import { getTickers, getCurrentPrice, addTicker, deleteTicker, updateIndex } from '../actions/portfolioActions';
 import { setCurrentUser } from '../actions/authActions';
-import { Button } from 'reactstrap';
-import { Layout, Icon } from 'antd';
-import { Table, Menu, Dropdown, Search} from 'semantic-ui-react';
-import { connect } from 'react-redux';
+import { Button, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, ButtonGroup, ButtonDropdown} from 'reactstrap';
+import { Layout, Icon, Row, Col } from 'antd';
+import { Table, Menu, Search} from 'semantic-ui-react';
 import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc';
+import { connect } from 'react-redux';
 import axios from 'axios';
 import _ from 'lodash';
+
 const { Content, Sider } = Layout;
 
 //For rendering ticker search result
@@ -40,7 +41,8 @@ class TickerList extends Component{
 	    	visible: false,
 	    	currentUser: '',
 	    	selectedOption: null,
-	    	forceUpdate: '',
+			forceUpdate: '',
+			dropdownOpen: false,
 	    	editMode: false
 	    };
 	}
@@ -109,6 +111,12 @@ class TickerList extends Component{
 	    this.setState({
 	      visible: false,
 	    });
+	}
+
+	toggleDropDown = () => {
+		this.setState(prevState => ({
+		  dropdownOpen: !prevState.dropdownOpen
+		}));
 	}
 
 	//Edit Portfolio Lists
@@ -205,12 +213,6 @@ class TickerList extends Component{
 		  	);
 		});
 
-		const options = [
-			  { key: 1, text: 'Holding', value: 1 },
-			  { key: 2, text: 'Watch List', value: 2 },
-			  { key: 3, text: 'Create New List', value: 3 },
-		]
-
 		return(
 			<Layout>
 				<Sider
@@ -225,21 +227,7 @@ class TickerList extends Component{
 					    value={value}
 					    {...this.props}
 					/>
-					<Menu vertical style={{width:'225px', marginTop:'5px', marginLeft: '5px'}}>
-				        <Menu.Item name='Overview' onClick={this.toOverview}>
-				        	<Icon type="pie-chart" style={{marginRight: '5px'}}/> Overview
-				        </Menu.Item>
-				        <Menu.Item name='Add Ticker' onClick={this.showModal}>
-							<Icon type="file-add" style={{marginRight: '5px'}}/> Add Ticker
-				        </Menu.Item>
-				        <Menu.Item name='Edit' onClick={this.enterEdit}>
-							{!this.state.editMode? (
-								<p><Icon type="edit" style={{marginRight: '5px'}}/> Edit List</p>
-								):(
-								<p><Icon type="check" style={{marginRight: '5px'}}/> Done</p>
-							)}
-				        </Menu.Item>
-				    </Menu>
+					
 					<AddTickerModal 
 						hideModal={this.hideModal} 
 						showModal={this.showModal} 
@@ -247,7 +235,33 @@ class TickerList extends Component{
 						visible={this.state.visible}
 						getTickersList={this.getTickersList}
 					/>
-				    <Dropdown style={{width:'225px', marginLeft: '5px'}} placeholder='Watch List' selection options={options} />
+
+					<Menu vertical style={{width:'225px', marginTop:'5px', marginBottom: '10px', marginLeft: '5px'}}>
+				        <Menu.Item name='Overview' outline onClick={this.toOverview}>
+				        	<Icon type="pie-chart" style={{marginRight: '5px'}}/> Overview
+				        </Menu.Item>
+				        <Menu.Item name='Add Ticker' outline onClick={this.showModal}>
+							<Icon type="file-add" style={{marginRight: '5px'}}/> Add Ticker
+				        </Menu.Item>
+				    </Menu>
+					
+					<ButtonGroup style={{marginLeft: '5px' }}>
+						{!this.state.editMode? (
+							<Button onClick={this.enterEdit} style={{width: '35px'}} color="primary" outline><Icon type="edit"/></Button>
+								):(
+							<Button onClick={this.enterEdit} style={{width: '35px'}} color="success" outline><Icon type="check"/></Button>
+						)}
+						<ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggleDropDown}>
+							<DropdownToggle style={{width: '190px'}} color="primary" outline caret>
+								Holding
+							</DropdownToggle>
+							<DropdownMenu>
+								<DropdownItem style={{width: '190px'}}>Holding</DropdownItem>
+								<DropdownItem style={{width: '190px'}}>Watch List</DropdownItem>
+								<DropdownItem style={{width: '190px'}}>Create New List</DropdownItem>
+							</DropdownMenu>	
+						</ButtonDropdown>
+					</ButtonGroup>
 					<SortableList lockAxis="y" items={this.state.tickers} onSortEnd={this.onSortEnd} />
 			    </Sider>
         		<Content style={{ background: '#fff', padding: 24, margin: 0, minWidth: 600, minHeight: 280 }}>
