@@ -21,7 +21,8 @@ class Summary extends React.Component {
 
 	componentDidMount(){
 		this.setState({
-			chartData: ''
+			chartData: '',
+			notFound: false
 		});
 		this.loadData(this.props.ticker);
 
@@ -40,7 +41,8 @@ class Summary extends React.Component {
 
 	componentWillReceiveProps(newProps){
 		this.setState({
-			chartData: ''
+			chartData: '',
+			notFound: false
 		});
 		this.loadData(newProps.ticker);	  	
 		//get chart data

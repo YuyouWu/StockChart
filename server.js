@@ -153,7 +153,7 @@ app.delete('/api/users/me/token', authenticate, (req, res) => {
   });
 });
 
-//Get a specific user
+//Get current user
 app.get('/api/users/me', authenticate, (req, res) => {
   res.send(req.user);
 });
