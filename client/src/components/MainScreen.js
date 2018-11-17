@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ContentView from './ContentView';
 import AddTickerModal from './AddTickerModal';
-import { getTickers, getCurrentPrice, addTicker, deleteTicker, getAllPortfolio, newPortfolio, updateIndex } from '../actions/portfolioActions';
+import NewPortfolioModal from './NewPortfolioModal';
+import { getTickers, getCurrentPrice, addTicker, deleteTicker, getAllPortfolio, updateIndex } from '../actions/portfolioActions';
 import { setCurrentUser } from '../actions/authActions';
 import { Button, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, ButtonGroup, ButtonDropdown} from 'reactstrap';
 import { Layout, Icon, Row, Col } from 'antd';
@@ -46,7 +47,8 @@ class TickerList extends Component{
 			allTickers: [''],
 	    	currentTicker: 'Overview',
 	    	currentTickerId: 0,
-	    	visible: false,
+			visible: false,
+			portfolioModalTogle: false,
 	    	currentUser: '',
 	    	selectedOption: null,
 			forceUpdate: '',
@@ -150,7 +152,8 @@ class TickerList extends Component{
     	this.setState({
       		visible: true,
     	});
-  	}
+	}
+	 
   	hideModal = (e) => {
 	    this.setState({
 	      visible: false,
@@ -159,6 +162,24 @@ class TickerList extends Component{
   	handleCancel = (e) => {
 	    this.setState({
 	      visible: false,
+	    });
+	}
+
+	showPortfolioModal = () => {
+    	this.setState({
+      		portfolioModalTogle: true,
+    	});
+  	}
+
+  	hidePortfolioModal = (e) => {
+	    this.setState({
+			portfolioModalTogle: false,
+	    });
+	}
+
+	handlePortfolioCancel = (e) => {
+	    this.setState({
+	      portfolioModalTogle: false,
 	    });
 	}
 
@@ -217,7 +238,6 @@ class TickerList extends Component{
 			<Table.Row>
 			  	<Table.Cell collapsing>
 			  		<Button color="link" onClick={(event) =>{
-			  				console.log("clicked");
 							this.setState({
 								currentTicker: ticker,
 								currentTickerId: id,
@@ -292,6 +312,14 @@ class TickerList extends Component{
 						currentPortfolio={this.state.currentPortfolio}
 					/>
 
+					<NewPortfolioModal 
+						hideModal={this.hidePortfolioModal} 
+						showModal={this.showPortfolioModal} 
+						handleCancel={this.handlePortfolioCancel} 
+						visible={this.state.portfolioModalTogle}
+						getAllPortfolio={this.getAllPortfolio}
+					/>
+
 					<Menu vertical style={{width:'225px', marginTop:'5px', marginBottom: '10px', marginLeft: '5px'}}>
 				        <Menu.Item name='Overview' outline onClick={this.toOverview}>
 				        	<Icon type="pie-chart" style={{marginRight: '5px'}}/> Overview
@@ -304,7 +332,7 @@ class TickerList extends Component{
 					<ButtonGroup style={{marginLeft: '5px' }}>
 						{!this.state.editMode? (
 							<Button onClick={this.enterEdit} style={{width: '35px'}} color="primary" outline><Icon type="edit"/></Button>
-								):(
+						):(
 							<Button onClick={this.enterEdit} style={{width: '35px'}} color="success" outline><Icon type="check"/></Button>
 						)}
 						<ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggleDropDown}>
@@ -312,12 +340,22 @@ class TickerList extends Component{
 								{this.state.currentPortfolio}
 							</DropdownToggle>
 							<DropdownMenu>
-								<DropdownItem onClick={this.setCurrentPortfolio} name='Watch List' style={{width: '190px'}}>Watch List</DropdownItem>
-								<DropdownItem onClick={this.setCurrentPortfolio} name='Holding' style={{width: '190px'}}>Holding</DropdownItem>
-								{this.state.portfolios.map((portfolio) => 
-									<DropdownItem onClick={this.setCurrentPortfolio} name={portfolio.portfolioName}>{portfolio.portfolioName}</DropdownItem>
+								<DropdownItem onClick={this.setCurrentPortfolio} name='Watch List' style={{width: '190px', height: '35px'}}>Watch List</DropdownItem>
+								<DropdownItem onClick={this.setCurrentPortfolio} name='Holding' style={{width: '190px', height: '35px'}}>Holding</DropdownItem>
+								{this.state.portfolios.map((portfolio) =>
+									<Row>
+										<Col span={19}>
+											<DropdownItem onClick={this.setCurrentPortfolio} name={portfolio.portfolioName} style={{height: '35px'}}>
+												{portfolio.portfolioName}
+											</DropdownItem>								
+										</Col>
+										<Col>
+											<Button hidden = {!this.state.editMode} onClick = {console.log('clicked')} color='danger' size='sm' outline>X</Button>									
+										</Col>
+									</Row>
 								)}
-								<DropdownItem style={{width: '190px'}}>Create New List</DropdownItem>
+								<DropdownItem divider />
+								<DropdownItem onClick={this.showPortfolioModal} style={{width: '190px', height: '35px'}}>Create New List</DropdownItem>
 							</DropdownMenu>	
 						</ButtonDropdown>
 					</ButtonGroup>
@@ -336,4 +374,4 @@ class TickerList extends Component{
 const mapStateToProps = state => ({
   tickers: state.tickers
 });
-export default connect(mapStateToProps,{getTickers, getCurrentPrice, addTicker, deleteTicker, updateIndex, getAllPortfolio, newPortfolio, setCurrentUser})(TickerList);
+export default connect(mapStateToProps,{getTickers, getCurrentPrice, addTicker, deleteTicker, updateIndex, getAllPortfolio, setCurrentUser})(TickerList);

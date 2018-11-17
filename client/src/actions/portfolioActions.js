@@ -70,18 +70,18 @@ export const getAllPortfolio = () => dispatch => {
   return (
     axios.get('/api/allPortfolio', {headers: headers}).then(res =>
       dispatch({
-        type: CREATE_NEW_PORTFOLIO,
+        type: GET_ALL_PORTFOLIO,
         payload: res.data
       })
     )
   )
 };
 
-export const newPortfolio = portfolio => dispatch => {
+export const newPortfolio = (portfolio) => dispatch => {
   return (
-    axios.get('/api/newPortfolio', portfolio, {headers: headers}).then(res =>
+    axios.post('/api/newPortfolio', portfolio, {headers: headers}).then(res =>
       dispatch({
-        type: GET_ALL_PORTFOLIO,
+        type: CREATE_NEW_PORTFOLIO,
         payload: res.data
       })
     )

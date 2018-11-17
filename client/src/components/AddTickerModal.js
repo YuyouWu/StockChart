@@ -11,23 +11,39 @@ class AddTickerModal extends React.Component {
 		this.state = {
 			portfolios: this.props.portfolios,
 			dropdownOpen: false,
-			currentPortfolio: this.props.currentPortfolio
+			currentPortfolio: ''
+		}
+		if(this.props.currentPortfolio === 'Holding') {
+			this.setState({
+				currentPortfolio: 'Watch List'
+			});
+		}else{
+			this.setState({
+				currentPortfolio: this.props.currentPortfolio
+			});
 		}
 	}
 
 	componentWillReceiveProps(newProps){
 		this.setState({
 			portfolios: this.props.portfolios,
-			currentPortfolio: newProps.currentPortfolio
 		});
+		if(newProps.currentPortfolio === 'Holding') {
+			this.setState({
+				currentPortfolio: 'Watch List'
+			});
+		}else{
+			this.setState({
+				currentPortfolio: newProps.currentPortfolio
+			});
+		}
 	}
 
 	handleAddTicker = (e) => {
 		e.preventDefault();
 		var ticker =  e.target.elements.ticker.value.trim().toUpperCase();
 		var quantity = 0; //Set default quantity to 0
-		var portfolioName = this.state.currentPortfolio; //Set default portfolio name to Watch List
-
+		var portfolioName = this.state.currentPortfolio; //Set default portfolio name to current portfolio
 		if(e.target.elements.quantity.value !== null){
 	    	quantity = Number(e.target.elements.quantity.value.trim());
 		}

@@ -134,9 +134,8 @@ app.get('/api/allPortfolio/', authenticate, (req, res) => {
 
 //Create new Portfolio
 app.post('/api/newPortfolio/', authenticate, (req, res) => {
-    //create new ticker obj with new index
     var portfolio = new Portfolio({
-      portfolioName: req.body.name,
+      portfolioName: req.body.portfolioName,
       _creator: req.user._id
     });
 
