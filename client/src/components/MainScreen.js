@@ -414,7 +414,5 @@ class TickerList extends Component{
 	}
 }
 
-const mapStateToProps = state => ({
-  tickers: state.tickers
-});
+const mapStateToProps = state => ({});
 export default connect(mapStateToProps,{getTickers, getCurrentPrice, addTicker, deleteTicker, updateIndex, getAllPortfolio, setCurrentUser})(TickerList);
