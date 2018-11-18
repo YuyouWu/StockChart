@@ -86,8 +86,7 @@ class AddTickerModal extends React.Component {
 						<Input placeholder="Ticker" type="string" name="ticker"/>
 						<Input placeholder="Quantity - default 0" type="number" name="quantity"/>
 			        </InputGroup>
-					<br/>
-					Add To Portfolio: 
+					<h4> Add To List: </h4>
 					<Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
 						<DropdownToggle outline style={{width: '190px'}} caret>
 						{this.state.currentPortfolio}

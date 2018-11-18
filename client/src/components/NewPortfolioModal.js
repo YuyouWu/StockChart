@@ -6,10 +6,6 @@ import { connect } from 'react-redux';
 
 //Class for rendering each individual tickers on portfolio
 class NewPortfolioModal extends React.Component {
-	constructor(props){
-		super(props);
-	}
-
 	handleNewPortfolio= (e) => {
 		e.preventDefault();
 		var portfolioName =  e.target.elements.portfolioName.value.trim();

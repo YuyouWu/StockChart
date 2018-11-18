@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import ContentView from './ContentView';
 import AddTickerModal from './AddTickerModal';
 import NewPortfolioModal from './NewPortfolioModal';
+import DeletePortfolioModal from './DeletePortfolioModal';
 import { getTickers, getCurrentPrice, addTicker, deleteTicker, getAllPortfolio, updateIndex } from '../actions/portfolioActions';
 import { setCurrentUser } from '../actions/authActions';
-import { Button, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, ButtonGroup, ButtonDropdown} from 'reactstrap';
+import { Button, DropdownToggle, DropdownMenu, DropdownItem, ButtonGroup, ButtonDropdown} from 'reactstrap';
 import { Layout, Icon, Row, Col } from 'antd';
 import { Table, Menu, Search} from 'semantic-ui-react';
 import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc';
@@ -49,10 +50,12 @@ class TickerList extends Component{
 	    	currentTickerId: 0,
 			visible: false,
 			portfolioModalTogle: false,
+			deletePortfolioModalTogle: false,
 	    	currentUser: '',
 	    	selectedOption: null,
 			forceUpdate: '',
 			dropdownOpen: false,
+			dropdownColWidth: 24,
 	    	editMode: false
 		};		
 	}
@@ -183,6 +186,26 @@ class TickerList extends Component{
 	    });
 	}
 
+	showDeletePortfolioModal = (e) => {
+    	this.setState({
+			deletePortfolioModalTogle: true,
+			currentPortfolioID: e.target.id,
+			deletePortfolioName: e.target.name
+    	});
+  	}
+
+  	hideDeletePortfolioModal = (e) => {
+	    this.setState({
+			deletePortfolioModalTogle: false,
+	    });
+	}
+
+	handleDeletePortfolioCancel = (e) => {
+	    this.setState({
+			deletePortfolioModalTogle: false,
+	    });
+	}
+
 	toggleDropDown = () => {
 		this.setState(prevState => ({
 		  dropdownOpen: !prevState.dropdownOpen
@@ -192,8 +215,18 @@ class TickerList extends Component{
 	//Edit Portfolio Lists
 	enterEdit = () => {
 		this.setState(prevState => ({
-			editMode: !prevState.editMode
+			editMode: !prevState.editMode,
 		}));
+
+		if(!this.state.editMode){
+			this.setState({
+				dropdownColWidth: 19
+			});
+		} else {
+			this.setState({
+				dropdownColWidth: 24
+			});
+		}
 	}
 
 	//Updating index after drag and drop 
@@ -320,6 +353,16 @@ class TickerList extends Component{
 						getAllPortfolio={this.getAllPortfolio}
 					/>
 
+					<DeletePortfolioModal 
+						hideModal={this.hideDeletePortfolioModal} 
+						showModal={this.showDeletePortfolioModal} 
+						handleCancel={this.handleDeletePortfolioCancel} 
+						visible={this.state.deletePortfolioModalTogle}
+						getAllPortfolio={this.getAllPortfolio}
+						portfolioID={this.state.currentPortfolioID}
+						portfolioName={this.state.deletePortfolioName}
+					/>
+
 					<Menu vertical style={{width:'225px', marginTop:'5px', marginBottom: '10px', marginLeft: '5px'}}>
 				        <Menu.Item name='Overview' outline onClick={this.toOverview}>
 				        	<Icon type="pie-chart" style={{marginRight: '5px'}}/> Overview
@@ -333,7 +376,7 @@ class TickerList extends Component{
 						{!this.state.editMode? (
 							<Button onClick={this.enterEdit} style={{width: '35px'}} color="primary" outline><Icon type="edit"/></Button>
 						):(
-							<Button onClick={this.enterEdit} style={{width: '35px'}} color="success" outline><Icon type="check"/></Button>
+							<Button onClick={this.enterEdit} style={{width: '35px'}} color="success"><Icon type="check"/></Button>
 						)}
 						<ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggleDropDown}>
 							<DropdownToggle style={{width: '190px'}} color="primary" outline caret>
@@ -344,13 +387,13 @@ class TickerList extends Component{
 								<DropdownItem onClick={this.setCurrentPortfolio} name='Holding' style={{width: '190px', height: '35px'}}>Holding</DropdownItem>
 								{this.state.portfolios.map((portfolio) =>
 									<Row>
-										<Col span={19}>
+										<Col span={this.state.dropdownColWidth}>
 											<DropdownItem onClick={this.setCurrentPortfolio} name={portfolio.portfolioName} style={{height: '35px'}}>
 												{portfolio.portfolioName}
 											</DropdownItem>								
 										</Col>
 										<Col>
-											<Button hidden = {!this.state.editMode} onClick = {console.log('clicked')} color='danger' size='sm' outline>X</Button>									
+											<Button hidden = {!this.state.editMode} onClick = {this.showDeletePortfolioModal} id={portfolio._id} name={portfolio.portfolioName} color='danger' size='sm' outline>X</Button>									
 										</Col>
 									</Row>
 								)}

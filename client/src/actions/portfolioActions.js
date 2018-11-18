@@ -6,6 +6,7 @@ import {
   UPDATE_INDEX, 
   GET_ALL_PORTFOLIO,
   CREATE_NEW_PORTFOLIO,
+  DELETE_PORTFOLIO,
   GET_ERRORS, 
   GET_CURRENT_PRICE, 
   GET_COMPANY_STAT, 
@@ -82,6 +83,17 @@ export const newPortfolio = (portfolio) => dispatch => {
     axios.post('/api/newPortfolio', portfolio, {headers: headers}).then(res =>
       dispatch({
         type: CREATE_NEW_PORTFOLIO,
+        payload: res.data
+      })
+    )
+  )
+};
+
+export const deletePortfolio = (portfolioID) => dispatch => {
+  return (
+    axios.delete('/api/deletePortfolio/' + portfolioID, {headers: headers}).then(res =>
+      dispatch({
+        type: DELETE_PORTFOLIO,
         payload: res.data
       })
     )
