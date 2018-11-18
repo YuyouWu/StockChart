@@ -13,7 +13,7 @@ mongoose.set('useCreateIndex', true);
 
 var {Ticker} = require('./models/ticker');
 var {User} = require('./models/user');
-var {Portfolio} = require('./models/Portfolio');
+var {Portfolio} = require('./models/portfolio');
 
 var {authenticate} = require('./middleware/authenticate');
 
