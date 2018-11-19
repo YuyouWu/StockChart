@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getCurrentPrice, getCompanyStat } from '../actions/portfolioActions';
 import { Row, Col } from 'antd';
+import { Divider } from '@blueprintjs/core';
 import axios from 'axios';
 import Chart from './Chart';
 
@@ -95,6 +96,7 @@ class Summary extends React.Component {
   	render() {
     	return (
 	    	<div>
+				<Divider style={{marginTop:'-21px'}}/>
 		    	{this.state.priceData && this.state.chartData && this.state.statData ? ( 
 		    		<div>
 		    			<Row>

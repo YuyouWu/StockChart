@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getCompanyNews } from '../actions/portfolioActions';
 import { ListGroup } from 'reactstrap';
+import { Divider } from '@blueprintjs/core';
 import NewsItem from './NewsItem';
 
 class NewsList extends React.Component {
@@ -34,6 +35,7 @@ class NewsList extends React.Component {
 	render() {
 		return (
 			<div>
+				<Divider style={{marginTop:'-21px'}}/>
 				<ListGroup flush>
 					{this.state.newsArray &&
 						this.state.newsArray.map((newsItem, index) => {

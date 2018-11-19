@@ -4,6 +4,7 @@ import FinancialField from './FinancialField';
 import { connect } from 'react-redux';
 import { Table } from 'reactstrap';
 import { Tab } from 'semantic-ui-react'
+import { Divider } from '@blueprintjs/core';
 import { Row, Col } from 'antd';
 
 class Financial extends Component{
@@ -246,6 +247,8 @@ class Financial extends Component{
 		return (
 			<div>
 			{this.state.priceData && this.state.statData ? (
+				<div>
+				<Divider style={{marginTop:'-21px'}}/>
 				<Row style={{marginLeft:10+'px'}}>
 					<Col span={7}>
 						<p>Open {this.state.priceData.open}</p>
@@ -262,6 +265,7 @@ class Financial extends Component{
 						<p>Dividend Yield {this.state.statData.dividendYield.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
 					</Col>
 				</Row>
+				</div>
 			) : (
 				<p> - </p>
 			)}

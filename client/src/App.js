@@ -10,10 +10,12 @@ import Register from './components/Register';
 import Login from './components/Login';
 import LandingPage from './components/LandingPage/LandingPage';
 
-import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css'
 import 'antd/dist/antd.css';
 import 'semantic-ui-css/semantic.min.css';
+import "@blueprintjs/core/lib/css/blueprint.css";
+import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 
 class App extends Component {
   render() {

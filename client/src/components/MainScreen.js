@@ -8,7 +8,9 @@ import { getTickers, getCurrentPrice, addTicker, deleteTicker, getAllPortfolio, 
 import { setCurrentUser } from '../actions/authActions';
 import { Button, DropdownToggle, DropdownMenu, DropdownItem, ButtonGroup, ButtonDropdown} from 'reactstrap';
 import { Layout, Icon, Row, Col } from 'antd';
-import { Table, Menu, Search} from 'semantic-ui-react';
+import { Table, Search} from 'semantic-ui-react';
+import { Classes, Menu, Popover, MenuDivider, MenuItem, Position, Intent, Divider} from "@blueprintjs/core";
+import { Button as BPButton, ButtonGroup as BPButtonGroup} from "@blueprintjs/core";
 import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc';
 import { connect } from 'react-redux';
 import axios from 'axios';
@@ -127,7 +129,8 @@ class TickerList extends Component{
 	}
 
 	setCurrentPortfolio = (e) =>{
-		var portfolioName = e.target.name;
+		//var portfolioName = e.target.name;
+		var portfolioName = e.target.textContent;
 		this.getTickersList();
 		this.setState({
 			currentPortfolio: portfolioName,
@@ -310,7 +313,7 @@ class TickerList extends Component{
 
 		const SortableList = SortableContainer(({items}) => {
 		  	return (
-				<Table selectable size='small' style={{width:'225px', marginLeft: '5px'}}>
+				<Table selectable size='small' style={{width:'225px', marginLeft: '5px', marginTop: '1px'}}>
 				    <Table.Body className = "noselect">
 					  	{items.map(({ticker, change, price, _id, quantity}, index) => (
 					    	<SortableItem key={`item-${index}`} index={index} ticker={ticker} change={change} price={price} quantity={quantity} id={_id}/>
@@ -319,6 +322,16 @@ class TickerList extends Component{
 				</Table>
 		  	);
 		});
+
+		const exampleMenu = (
+            <Menu>
+				<MenuItem onClick={this.setCurrentPortfolio} name='Watch List' text='Watch List'/>
+				<MenuItem onClick={this.setCurrentPortfolio} name='Holding' text='Holding'/>
+				{this.state.portfolios.map((portfolio) =>
+					<MenuItem onClick={this.setCurrentPortfolio} name={portfolio.portfolioName} text={portfolio.portfolioName}/>
+				)}
+            </Menu>
+        );
 
 		return(
 			<Layout>
@@ -363,23 +376,19 @@ class TickerList extends Component{
 						portfolioName={this.state.deletePortfolioName}
 					/>
 
-					<Menu vertical style={{width:'225px', marginTop:'5px', marginBottom: '10px', marginLeft: '5px'}}>
-				        <Menu.Item name='Overview' outline onClick={this.toOverview}>
-				        	<Icon type="pie-chart" style={{marginRight: '5px'}}/> Overview
-				        </Menu.Item>
-				        <Menu.Item name='Add Ticker' outline onClick={this.showModal}>
-							<Icon type="file-add" style={{marginRight: '5px'}}/> Add Ticker
-				        </Menu.Item>
-				    </Menu>
+					<Menu className={Classes.ELEVATION_1} style={{width:'224px', marginTop:'5px', marginBottom: '10px', marginLeft: '5px'}}>
+						<MenuItem text="Overview" onClick={this.toOverview}/>
+						<MenuItem text="Add Ticker" onClick={this.showModal}/>
+                	</Menu>
 					
-					<ButtonGroup style={{marginLeft: '5px' }}>
+					{/* <ButtonGroup style={{marginLeft: '5px' }}>
 						{!this.state.editMode? (
-							<Button onClick={this.enterEdit} style={{width: '35px'}} color="primary" outline><Icon type="edit"/></Button>
+							<Button onClick={this.enterEdit} style={{width: '35px'}}  outline><Icon type="edit"/></Button>
 						):(
 							<Button onClick={this.enterEdit} style={{width: '35px'}} color="success"><Icon type="check"/></Button>
 						)}
 						<ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggleDropDown}>
-							<DropdownToggle style={{width: '190px'}} color="primary" outline caret>
+							<DropdownToggle style={{width: '190px'}} outline caret>
 								{this.state.currentPortfolio}
 							</DropdownToggle>
 							<DropdownMenu>
@@ -401,7 +410,22 @@ class TickerList extends Component{
 								<DropdownItem onClick={this.showPortfolioModal} style={{width: '190px', height: '35px'}}>Create New List</DropdownItem>
 							</DropdownMenu>	
 						</ButtonDropdown>
-					</ButtonGroup>
+					</ButtonGroup> */}
+					<BPButtonGroup>
+							<BPButton
+							icon={this.state.editMode ? "small-tick" : "edit"}
+							style={{marginLeft: '5px', width:'35px'}}
+							onClick={this.enterEdit}
+							intent = {this.state.editMode ? Intent.SUCCESS : Intent.NONE}
+							/>
+							<Popover content={exampleMenu} position={Position.BOTTOM}>
+									<BPButton 
+									text={this.state.currentPortfolio}
+									rightIcon="caret-down"
+									style={{width:'191px'}}
+									/>
+							</Popover>
+					</BPButtonGroup>
 					<SortableList lockAxis="y" items={this.state.filteredTickers} onSortEnd={this.onSortEnd} />
 			    </Sider>
         		<Content style={{ background: '#fff', padding: 24, margin: 0, minWidth: 600, minHeight: 280 }}>
