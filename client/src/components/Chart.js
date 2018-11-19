@@ -19,6 +19,21 @@ import { OHLCTooltip } from "react-stockcharts/lib/tooltip";
 import { fitWidth } from "react-stockcharts/lib/helper";
 import { last } from "react-stockcharts/lib/utils";
 
+const candlesAppearance = {
+	wickStroke: function wick(d) {
+		return d.close > d.open ? "rgba(0,128,0, 0.8)" : "rgba(255,0,0, 0.8)";
+	},
+	fill: function fill(d) {
+	  return d.close > d.open ? "rgba(0,128,0, 0.8)" : "rgba(255,0,0, 0.8)";
+	},
+	stroke: function stoke(d) {
+		return d.close > d.open ? "rgba(0,128,0, 0.8)" : "rgba(255,0,0, 0.8)";
+	},
+	candleStrokeWidth: 1,
+	widthRatio: 0.8,
+	opacity: 1,
+}
+
 class CandleStickStockScaleChart extends React.Component {
 	constructor(props){
 		super(props);
@@ -65,7 +80,7 @@ class CandleStickStockScaleChart extends React.Component {
 
 		var margin = {left: 70, right: 70, top:20, bottom: 30};
 		var gridHeight = gheight - margin.top - margin.bottom;
-		var gridWidth = width - margin.left - margin.right;
+		var gridWidth = width - 30 - margin.right;
 
 		var showGrid = true;
 		var yGrid = showGrid ? { 
@@ -103,7 +118,7 @@ class CandleStickStockScaleChart extends React.Component {
 						orient="right"
 						displayFormat={format(".2f")}
 					/>
-					<CandlestickSeries />
+					<CandlestickSeries {...candlesAppearance}/>
 					<OHLCTooltip forChart={1} origin={[0, 0]} />
 					<ZoomButtons
 						onReset={this.handleReset}
