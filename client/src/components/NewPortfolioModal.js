@@ -14,7 +14,6 @@ class NewPortfolioModal extends React.Component {
 			"portfolioName": portfolioName
 		}
 
-        console.log(portfolioObj);
 		this.props.newPortfolio(portfolioObj).then(res => {
             this.props.getAllPortfolio();
         });

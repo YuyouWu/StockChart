@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Tab, Tabs, FocusStyleManager, Divider } from '@blueprintjs/core';
+import { Tab, Tabs, FocusStyleManager } from '@blueprintjs/core';
 import { connect } from 'react-redux';
 import { setCurrentUser } from '../actions/authActions';
 import Summary from './Summary';
