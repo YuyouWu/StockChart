@@ -275,9 +275,9 @@ class TickerList extends Component{
 			  	</Table.Cell>
 			  	<Table.Cell collapsing>
 			  		{change < 0 ? (
-			  			<p style={{color:'red'}}>{change}%</p>
+			  			<p style={{color:'red', marginTop:'5px'}}>{change}%</p>
 				  		) : (
-				  		<p style={{color:'green'}}>{change}%</p>
+				  		<p style={{color:'green', marginTop:'5px'}}>{change}%</p>
 				  		)
 			  		}
 			  	</Table.Cell>
@@ -293,7 +293,7 @@ class TickerList extends Component{
 			  				X
 			  			</Button>
 			  		):(
-			  			<p>{price}</p>
+			  			<p style={{marginTop:'5px'}}>{price}</p>
 			  		)
 			  		}
 			  	</Table.Cell>
@@ -312,7 +312,7 @@ class TickerList extends Component{
 		  	);
 		});
 
-		const exampleMenu = (
+		const listMenu = (
             <Menu>
 				<MenuItem onClick={this.setCurrentPortfolio} name='Watch List' text='Watch List'/>
 				<MenuItem onClick={this.setCurrentPortfolio} name='Holding' text='Holding'/>
@@ -397,7 +397,7 @@ class TickerList extends Component{
 							onClick={this.enterEdit}
 							intent = {this.state.editMode ? Intent.SUCCESS : Intent.NONE}
 						/>
-						<Popover content={exampleMenu} position={Position.BOTTOM}>
+						<Popover content={listMenu} position={Position.BOTTOM}>
 							<BPButton 
 								text={this.state.currentPortfolio}
 								rightIcon="caret-down"
