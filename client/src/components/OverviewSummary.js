@@ -1,6 +1,7 @@
 import React from 'react';
 import { getTickers, getCurrentPrice } from '../actions/portfolioActions';
 import { connect } from 'react-redux';
+import { Divider } from '@blueprintjs/core';
 import { Card } from 'antd';
 
 var tickerList = [];
@@ -64,6 +65,7 @@ class OverviewSummary extends React.Component {
   	render() {
     	return (
 			<div> 
+				<Divider style={{marginTop:'-21px'}}/>
 				<Card
 		    		hoverable
 				    title="Daily Return"

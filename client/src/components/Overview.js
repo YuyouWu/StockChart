@@ -1,7 +1,7 @@
 import React from 'react';
 import { getTickers, getCurrentPrice } from '../actions/portfolioActions';
 import { connect } from 'react-redux';
-import { Tabs } from 'antd';
+import { Tab, Tabs } from '@blueprintjs/core';
 import OverviewSummary from './OverviewSummary'
 
 const TabPane = Tabs.TabPane;
@@ -10,14 +10,11 @@ const TabPane = Tabs.TabPane;
 class Overview extends React.Component {
  	render() {
 	    return (
-	    	<div>
-				<Tabs defaultActiveKey="1">
-					<TabPane tab='Overview' key="1">
-						<OverviewSummary />
-					</TabPane>
-					<TabPane tab='Tools' key="2">
-					</TabPane>
-				</Tabs>
+			<div style={{marginTop:'-6px'}}>
+				<Tabs id="ContentView">
+					<Tab id="Overview" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>Overview</p>} panel={<OverviewSummary />} />
+					<Tab id="Tools" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>Tools</p>} panel={<div />} />
+				</Tabs>				
 			</div>
 	    );
   	}
