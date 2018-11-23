@@ -101,7 +101,7 @@ class OverviewSummary extends React.Component {
 							<Card
 								interactive = {true}
 								elevation = {Elevation.ONE}
-								style={{ width: 120, marginTop:'10px' }}
+								style={{ width: 140, marginTop:'10px' }}
 							>
 								<p>{ticker.symbol}</p>
 								<p>{(ticker.changePercent*100).toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
@@ -123,7 +123,7 @@ class OverviewSummary extends React.Component {
 							<Card
 								interactive = {true}
 								elevation = {Elevation.ONE}
-								style={{ width: 120, marginTop:'10px' }}
+								style={{ width: 140, marginTop:'10px' }}
 							>
 								<p>{ticker.symbol}</p>
 								<p>{(ticker.changePercent*100).toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
