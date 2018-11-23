@@ -21,8 +21,8 @@ class OverviewSummary extends React.Component {
 			topGainers: [''],
 			topLosers: ['']
  		}
- 	}
-
+	}
+	 
   	componentDidMount(){
  		tickerList = [];
 		totalQuantity = 0;
@@ -68,13 +68,11 @@ class OverviewSummary extends React.Component {
 			 this.setState({
 				 topGainers: res.data
 			 });
-			 console.log(res.data);
 		 });
 		 axios.get('https://api.iextrading.com/1.0/stock/market/list/losers').then(res => {
 			 this.setState({
 				 topLosers: res.data
 			 });
-			 console.log(res.data);
 		 });
  	}
 
@@ -84,7 +82,8 @@ class OverviewSummary extends React.Component {
 			<div> 
 				<Divider style={{marginTop:'-21px'}}/>
 				<Card
-		    		interactive = {true}
+					interactive = {true}
+					elevation = {Elevation.ONE}
 				    style={{ width: 250, marginTop:'10px' }}
 				>	
 					<h4>Daily Holdings Performance</h4>
@@ -92,48 +91,52 @@ class OverviewSummary extends React.Component {
 				    	{(this.state.avgPercChange*100).toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}%
 				    </p>
 				</Card>
-				<h3>Daily Top Gainers</h3>
-				<Row style={{marginBottom: '10px'}}>
-				{this.state.topGainers ? (
-					this.state.topGainers.map((ticker) => {
-						return(
-							<Col span={3}>
-							<Card
-								interactive = {true}
-								elevation = {Elevation.ONE}
-								style={{ width: 140, marginTop:'10px' }}
-							>
-								<p>{ticker.symbol}</p>
-								<p>{(ticker.changePercent*100).toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
-							</Card>
-							</Col>
-						)
-					})
-				):(
-					<div />
-				)}
+				<h3 style={{marginBottom: '20px'}}>Daily Top Gainers</h3>
+				<Row>
+					<div style={{width:'1000px'}}>
+						{this.state.topGainers ? (
+							this.state.topGainers.map((ticker) => {
+								return(
+									<Col span={4}>
+									<Card
+										interactive = {true}
+										elevation = {Elevation.ONE}
+										style={{ width: 140, marginTop:'10px' }}
+									>
+										<p>{ticker.symbol}</p>
+										<p style={{color:'green'}}>{(ticker.changePercent*100).toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
+									</Card>
+									</Col>
+								)
+							})
+						):(
+							<div />
+						)}
+					</div>
 				</Row>
-			
-				<Row style={{marginTop:'30px' }}>
-				<h3>Daily Top Losers</h3>
-				{this.state.topLosers ? (
-					this.state.topLosers.map((ticker) => {
-						return(
-							<Col span={3}>
-							<Card
-								interactive = {true}
-								elevation = {Elevation.ONE}
-								style={{ width: 140, marginTop:'10px' }}
-							>
-								<p>{ticker.symbol}</p>
-								<p>{(ticker.changePercent*100).toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
-							</Card>
-							</Col>
-						)
-					})
-				):(
-					<div />
-				)}
+				
+				<h3 style={{marginBottom: '20px'}}>Daily Top Losers</h3>
+				<Row>
+					<div style={{width:'1000px'}}>
+						{this.state.topLosers ? (
+							this.state.topLosers.map((ticker) => {
+								return(
+									<Col span={4}>
+									<Card
+										interactive = {true}
+										elevation = {Elevation.ONE}
+										style={{ width: 140, marginTop:'10px' }}
+									>
+										<p>{ticker.symbol}</p>
+										<p style={{color:'red'}}>{(ticker.changePercent*100).toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
+									</Card>
+									</Col>
+								)
+							})
+						):(
+							<div />
+						)}
+					</div>
 				</Row>
 			</div>
     	);

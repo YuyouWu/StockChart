@@ -262,7 +262,9 @@ class TickerList extends Component{
 		const SortableItem = SortableElement(({ticker, change, price, id, quantity}) =>
 			<tr>
 			  	<td>
-			  		<Button color="link" onClick={(event) =>{
+					<Button 
+					  	color="link" 
+					  	onClick={(event) =>{
 							this.setState({
 								currentTicker: ticker,
 								currentTickerId: id,
@@ -355,7 +357,7 @@ class TickerList extends Component{
 		return(
 			<Layout>
 				<Sider
-					width={250} style={{ background: '#fff', overflow: 'auto', height: '94vh', overflowX: "hidden"}}>
+					width={250} style={{ background: '#fff', overflow: 'auto', height: '95vh', overflowX: "hidden"}}>
 					<div style={{width:'235px'}}>
 					<Search input={{ fluid: true }} style={{ marginTop:'10px', marginBottom:'10px', marginLeft:'5px', marginRight:'5px'}}
 						placeholder="Look Up Ticker"
@@ -393,7 +395,7 @@ class TickerList extends Component{
 						<Popover content={addTickerMenu} position={Position.BOTTOM}>
 							<MenuItem 
 								text="Add Ticker"
-								style={{width:'215px'}}
+								style={{width:'214px'}}
 							/>
 						</Popover>
                 	</Menu>
@@ -415,7 +417,7 @@ class TickerList extends Component{
 					</BPButtonGroup>
 					<SortableList lockAxis="y" items={this.state.filteredTickers} onSortEnd={this.onSortEnd} />
 			    </Sider>
-        		<Content style={{ background: '#fff', padding: 24, margin: 0, minWidth: 600, minHeight: 280 }}>
+        		<Content style={{ background: '#fff', padding: 24, margin: 0, minWidth: 600, minHeight: 280, height: '95vh' }}>
 		            <div>
 						<ContentView ticker = {this.state.currentTicker} tickerId = {this.state.currentTickerId} quantity={this.state.currentQuantity}/>
 			        </div>

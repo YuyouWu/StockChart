@@ -275,7 +275,5 @@ class Financial extends Component{
 	}
 }
 
-const mapStateToProps = state => ({
-  tickers: state.tickers
-});
+const mapStateToProps = state => ({});
 export default connect(mapStateToProps,{getCompanyFinancial, getCompanyFinancialAnnual, getCurrentPrice, getCompanyStat})(Financial);
