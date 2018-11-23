@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ContentView from './ContentView';
-import AddTickerModal from './AddTickerModal';
+import AddTickerMenu from './AddTickerMenu';
 import NewPortfolioModal from './NewPortfolioModal';
 import DeletePortfolioModal from './DeletePortfolioModal';
 import { getTickers, getCurrentPrice, addTicker, deleteTicker, getAllPortfolio, updateIndex } from '../actions/portfolioActions';
@@ -9,7 +9,7 @@ import { setCurrentUser } from '../actions/authActions';
 import { Button } from 'reactstrap';
 import { Layout, Icon, Row, Col } from 'antd';
 import { Table, Search} from 'semantic-ui-react';
-import { Classes, Menu, Popover, MenuDivider, MenuItem, Position, Intent, Divider} from "@blueprintjs/core";
+import { Classes, Menu, Popover, MenuDivider, MenuItem, Position, Intent, Divider, HTMLTable} from "@blueprintjs/core";
 import { Button as BPButton, ButtonGroup as BPButtonGroup} from "@blueprintjs/core";
 import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc';
 import { connect } from 'react-redux';
@@ -340,7 +340,11 @@ class TickerList extends Component{
 				<Divider/>
 				<MenuItem onClick={this.showPortfolioModal} name='Create New List' text='Create New List'/>
             </Menu>
-        );
+		);
+		
+		const addTickerMenu = (
+			<AddTickerMenu currentPortfolio={this.state.currentPortfolio} getTickersList={this.getTickersList}/>
+		)
 
 		return(
 			<Layout>
@@ -357,16 +361,6 @@ class TickerList extends Component{
 					    {...this.props}
 					/>
 					
-					<AddTickerModal 
-						hideModal={this.hideModal} 
-						showModal={this.showModal} 
-						handleCancel={this.handleCancel} 
-						visible={this.state.visible}
-						getTickersList={this.getTickersList}
-						portfolios={this.state.portfolios}
-						currentPortfolio={this.state.currentPortfolio}
-					/>
-
 					<NewPortfolioModal 
 						hideModal={this.hidePortfolioModal} 
 						showModal={this.showPortfolioModal} 
@@ -387,7 +381,12 @@ class TickerList extends Component{
 
 					<Menu className={Classes.ELEVATION_1} style={{width:'224px', marginTop:'5px', marginBottom: '10px', marginLeft: '5px'}}>
 						<MenuItem text="Overview" onClick={this.toOverview}/>
-						<MenuItem text="Add Ticker" onClick={this.showModal}/>
+						<Popover content={addTickerMenu} position={Position.BOTTOM}>
+							<MenuItem 
+								text="Add Ticker"
+								style={{width:'215px'}}
+							/>
+						</Popover>
                 	</Menu>
 					
 					<BPButtonGroup>
