@@ -356,6 +356,7 @@ class TickerList extends Component{
 			<Layout>
 				<Sider
 					width={250} style={{ background: '#fff', overflow: 'auto', height: '94vh', overflowX: "hidden"}}>
+					<div style={{width:'235px'}}>
 					<Search input={{ fluid: true }} style={{ marginTop:'10px', marginBottom:'10px', marginLeft:'5px', marginRight:'5px'}}
 						placeholder="Look Up Ticker"
 						resultRenderer={resultRenderer}
@@ -366,6 +367,7 @@ class TickerList extends Component{
 					    value={value}
 					    {...this.props}
 					/>
+					</div>
 					
 					<NewPortfolioModal 
 						hideModal={this.hidePortfolioModal} 
