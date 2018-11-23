@@ -8,7 +8,7 @@ import { getTickers, getCurrentPrice, addTicker, deleteTicker, getAllPortfolio, 
 import { setCurrentUser } from '../actions/authActions';
 import { Button } from 'reactstrap';
 import { Layout, Icon, Row, Col } from 'antd';
-import { Table, Search} from 'semantic-ui-react';
+import { Search} from 'semantic-ui-react';
 import { Classes, Menu, Popover, MenuDivider, MenuItem, Position, Intent, Divider, HTMLTable} from "@blueprintjs/core";
 import { Button as BPButton, ButtonGroup as BPButtonGroup} from "@blueprintjs/core";
 import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc';
@@ -260,8 +260,8 @@ class TickerList extends Component{
 		const { isLoading, value, results } = this.state;
 		
 		const SortableItem = SortableElement(({ticker, change, price, id, quantity}) =>
-			<Table.Row>
-			  	<Table.Cell collapsing>
+			<tr>
+			  	<td>
 			  		<Button color="link" onClick={(event) =>{
 							this.setState({
 								currentTicker: ticker,
@@ -272,16 +272,16 @@ class TickerList extends Component{
 			  			style={{cursor: 'pointer'}}>
 			  			{ticker}
 			  		</Button>
-			  	</Table.Cell>
-			  	<Table.Cell collapsing>
+			  	</td>
+			  	<td>
 			  		{change < 0 ? (
 			  			<p style={{color:'red', marginTop:'5px'}}>{change}%</p>
 				  		) : (
 				  		<p style={{color:'green', marginTop:'5px'}}>{change}%</p>
 				  		)
 			  		}
-			  	</Table.Cell>
-			  	<Table.Cell collapsing>
+			  	</td>
+			  	<td>
 			  		{this.state.editMode ? (
 			  			<Button size="sm" outline color="danger" id={id} ticker = {ticker}
 				  			onClick={(event) =>{
@@ -296,19 +296,25 @@ class TickerList extends Component{
 			  			<p style={{marginTop:'5px'}}>{price}</p>
 			  		)
 			  		}
-			  	</Table.Cell>
-			</Table.Row>
+			  	</td>
+			</tr>
 		);
 
 		const SortableList = SortableContainer(({items}) => {
 		  	return (
-				<Table selectable size='small' style={{width:'225px', marginLeft: '5px', marginTop: '1px'}}>
-				    <Table.Body className = "noselect">
-					  	{items.map(({ticker, change, price, _id, quantity}, index) => (
+				<HTMLTable 
+					condensed = {true}
+					interactive = {true}
+					striped = {true}
+					className = 'noselect'
+					style={{width:'225px', marginLeft: '5px', marginTop: '1px'}}
+				>
+					<tbody>
+						{items.map(({ticker, change, price, _id, quantity}, index) => (
 					    	<SortableItem key={`item-${index}`} index={index} ticker={ticker} change={change} price={price} quantity={quantity} id={_id}/>
 					    ))}
-					</Table.Body>
-				</Table>
+					</tbody>
+				</HTMLTable>
 		  	);
 		});
 
