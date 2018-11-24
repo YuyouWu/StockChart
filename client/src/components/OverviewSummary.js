@@ -19,7 +19,8 @@ class OverviewSummary extends React.Component {
  			avgPercChange: 0,
 			textColor: 'green',
 			topGainers: [''],
-			topLosers: ['']
+			topLosers: [''],
+			sectorData: ['']
  		}
 	}
 	 
@@ -75,12 +76,11 @@ class OverviewSummary extends React.Component {
 			 });
 		 });
 
-		 //Get market wide news
-		 axios.get('https://api.iextrading.com/1.0/stock/market/news/').then(res => {
+		//Get market sector performance
+		axios.get('https://api.iextrading.com/1.0/stock/market/sector-performance').then(res =>{
 			this.setState({
-				news: res.data
+				sectorData: res.data
 			});
-			console.log(res.data);
 		});
  	}
 
@@ -89,12 +89,11 @@ class OverviewSummary extends React.Component {
     	return (
 			<div> 
 				<Divider style={{marginTop:'-21px'}}/>
+				<h3>Daily Holdings Performance</h3>
 				<Card
-					interactive = {true}
 					elevation = {Elevation.ONE}
-				    style={{ width: 250, marginTop:'10px' }}
+				    style={{ width: 130, marginTop:'10px' }}
 				>	
-					<h4>Daily Holdings Performance</h4>
 				    <p  style={{fontSize:20+'px', color:this.state.textColor}}>
 				    	{(this.state.avgPercChange*100).toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}%
 				    </p>
@@ -102,15 +101,15 @@ class OverviewSummary extends React.Component {
 
 				<h3 style={{marginTop: '20px'}}>Daily Top Gainers</h3>
 				<Row>
-					<div style={{width:'800px'}}>
+					<div style={{width:'850px'}}>
 						{this.state.topGainers ? (
-							this.state.topGainers.slice(0, 5).map((ticker) => {
+							this.state.topGainers.slice(0, 6).map((ticker) => {
 								return(
 									<Col span={4}>
 									<Card
 										interactive = {true}
 										elevation = {Elevation.ONE}
-										style={{ width: 120, marginTop:'10px' }}
+										style={{ width: 130, marginTop:'10px' }}
 										onClick = {() => {this.props.setCurrentTicker(ticker.symbol)}}
 									>
 										<p>{ticker.symbol}</p>
@@ -127,15 +126,15 @@ class OverviewSummary extends React.Component {
 				
 				<h3 style={{marginTop: '20px'}}>Daily Top Losers</h3>
 				<Row>
-					<div style={{width:'800px'}}>
+					<div style={{width:'850px'}}>
 						{this.state.topLosers ? (
-							this.state.topLosers.slice(0, 5).map((ticker) => {
+							this.state.topLosers.slice(0, 6).map((ticker) => {
 								return(
 									<Col span={4}>
 									<Card
 										interactive = {true}
 										elevation = {Elevation.ONE}
-										style={{ width: 120, marginTop:'10px' }}
+										style={{ width: 130, marginTop:'10px' }}
 										onClick = {() => {this.props.setCurrentTicker(ticker.symbol)}}
 									>
 										<p>{ticker.symbol}</p>
@@ -150,7 +149,34 @@ class OverviewSummary extends React.Component {
 					</div>
 				</Row>
 				
-				<h3 style={{marginTop: '50px'}}>Market Wide News</h3>	
+				<h3 style={{marginTop: '20px'}}>Daily Sector Performance</h3>
+				<Row>
+					<div style={{width:'850px'}}>
+						{ this.state.sectorData ? (
+							this.state.sectorData.map((sector) => {
+								return(
+									<Col span={4}>
+										<Card
+											elevation = {Elevation.ONE}
+											style={{ width: 130, height: 120,marginTop:'15px' }}
+										>
+											<p>{sector.name}</p>
+											{sector.performance < 0 ? (
+											<p style={{color:'red'}}>{(sector.performance*100).toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
+											): (
+											<p style={{color:'green'}}>{(sector.performance*100).toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
+											)}
+										</Card>
+									</Col>
+								)
+							})
+						):(
+							<p>Loading</p>
+						)}
+					</div>
+				</Row>
+
+				{/* <h3 style={{marginTop: '50px'}}>Market Wide News</h3>	
 				<List
 					itemLayout="vertical"
 					dataSource={this.state.news}
@@ -163,7 +189,7 @@ class OverviewSummary extends React.Component {
 						{item.summary}
 					</List.Item>
 					)}
-				/>
+				/> */}
 			</div>
     	);
   	}

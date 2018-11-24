@@ -10,20 +10,15 @@ class AddTickerMenu extends React.Component {
 		super(props);
 		this.state = {
 			currentPortfolio: this.props.currentPortfolio,
-			ticker: '',
+			ticker: this.props.ticker,
 			quantity: 0,
 		}
 	}
 
 	componentWillReceiveProps = (newProps) => {
 		this.setState({
+			ticker: newProps.ticker,
 			currentPortfolio: newProps.currentPortfolio
-		});
-	}
-
-	tickerOnChange = (e) =>{
-		this.setState({
-			ticker: e.target.value.toUpperCase()
 		});
 	}
 
@@ -54,11 +49,7 @@ class AddTickerMenu extends React.Component {
 			{this.state.currentPortfolio !== 'Holding' ? (
 					<Menu style={{marginLeft:"5px", marginRight:"5px"}}>
 						<FormGroup label="Ticker Symbol" labelFor="ticker" style={{marginTop:"5px"}}>
-							<InputGroup 
-								id="ticker" 
-								placeholder="Ticker Symbol" 
-								onChange={this.tickerOnChange}
-							/>
+							<p>{this.state.ticker}</p>
 						</FormGroup>
 						<FormGroup label="Quantity" labelFor="quantity" labelInfo="default 0">
 							<InputGroup 

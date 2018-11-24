@@ -145,13 +145,13 @@ class TickerList extends Component{
 			});
 		}
 	}
-
-	toOverview = () => {
+	
+	setCurrentTicker = (ticker) => {
 		this.setState({
-			currentTicker: 'Overview',
+			currentTicker: ticker
 		});
-	}	
- 
+	}
+
 	//Handle Modal Logic
 	showModal = () => {
     	this.setState({
@@ -309,7 +309,7 @@ class TickerList extends Component{
 					interactive = {true}
 					striped = {true}
 					className = 'noselect'
-					style={{width:'225px', marginLeft: '5px', marginTop: '1px'}}
+					style={{width:'225px', marginLeft: '5px', marginTop: '-1px', marginRight: '5px'}}
 				>
 					<tbody>
 						{items.map(({ticker, change, price, _id, quantity}, index) => (
@@ -328,7 +328,7 @@ class TickerList extends Component{
 					<div>
 					<Row>
 						<Col span={this.state.editMode ? 19 : 24}>
-							<MenuItem onClick={this.setCurrentPortfolio} name={portfolio.portfolioName} text={portfolio.portfolioName}/>
+							<MenuItem onClick={() => this.setCurrentPortfolio} name={portfolio.portfolioName} text={portfolio.portfolioName}/>
 						</Col>
 						<Col span={4}>
 							<BPButton 
@@ -337,7 +337,7 @@ class TickerList extends Component{
 								small 
 								intent={Intent.DANGER} 
 								style={{marginLeft:'5px'}}
-								onClick = {this.showDeletePortfolioModal}
+								onClick = {() => this.showDeletePortfolioModal}
 								id={portfolio._id} 
 								name={portfolio.portfolioName}
 							/>
@@ -413,13 +413,14 @@ class TickerList extends Component{
 							icon={this.state.editMode ? "small-tick" : "edit"}
 							style={{marginLeft: '5px', width:'35px'}}
 							onClick={this.enterEdit}
-							intent = {this.state.editMode ? Intent.SUCCESS : Intent.NONE}
+							intent = {this.state.editMode ? Intent.SUCCESS : Intent.PRIMARY}
 						/>
 						<Popover content={listMenu} position={Position.BOTTOM}>
 							<BPButton 
 								text={this.state.currentPortfolio}
 								rightIcon="caret-down"
 								style={{width:'191px'}}
+								intent = {Intent.PRIMARY}
 							/>
 						</Popover>
 					</BPButtonGroup>
@@ -427,7 +428,14 @@ class TickerList extends Component{
 			    </Sider>
         		<Content style={{ background: '#fff', padding: 24, margin: 0, minWidth: 600, minHeight: 280, height: '95vh' }}>
 		            <div>
-						<ContentView ticker = {this.state.currentTicker} tickerId = {this.state.currentTickerId} quantity={this.state.currentQuantity}/>
+						<ContentView 
+							ticker={this.state.currentTicker} 
+							tickerId={this.state.currentTickerId} 
+							quantity={this.state.currentQuantity}
+							portfolio={this.state.currentPortfolio}
+							setCurrentTicker={this.setCurrentTicker}
+							getTickersList={this.getTickersList}
+						/>
 			        </div>
 			    </Content>
 			</Layout>

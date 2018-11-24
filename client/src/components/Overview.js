@@ -1,9 +1,7 @@
 import React from 'react';
-import { getTickers, getCurrentPrice } from '../actions/portfolioActions';
-import { connect } from 'react-redux';
 import { Tab, Tabs } from '@blueprintjs/core';
 import OverviewSummary from './OverviewSummary'
-import MarketOverview from './MarketOverview'
+import MarketNews from './MarketNews'
 
 //Class for rendering each individual tickers on portfolio
 class Overview extends React.Component {
@@ -12,12 +10,11 @@ class Overview extends React.Component {
 			<div style={{marginTop:'-6px'}}>
 				<Tabs id="ContentView">
 					<Tab id="Overview" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>Overview</p>} panel={<OverviewSummary setCurrentTicker={this.props.setCurrentTicker}/>} />
-					<Tab id="Sectors" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>Sectors</p>} panel={<MarketOverview />} />
+					<Tab id="Market News" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>Market News</p>} panel={<MarketNews />} />
 				</Tabs>				
 			</div>
 	    );
   	}
 }
 
-const mapStateToProps = state => ({});
-export default connect(mapStateToProps,{getTickers, getCurrentPrice})(Overview);
+export default Overview;
