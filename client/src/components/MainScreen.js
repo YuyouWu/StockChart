@@ -328,7 +328,7 @@ class TickerList extends Component{
 					<div>
 					<Row>
 						<Col span={this.state.editMode ? 19 : 24}>
-							<MenuItem onClick={() => this.setCurrentPortfolio} name={portfolio.portfolioName} text={portfolio.portfolioName}/>
+							<MenuItem onClick={this.setCurrentPortfolio} name={portfolio.portfolioName} text={portfolio.portfolioName}/>
 						</Col>
 						<Col span={4}>
 							<BPButton 
@@ -337,7 +337,7 @@ class TickerList extends Component{
 								small 
 								intent={Intent.DANGER} 
 								style={{marginLeft:'5px'}}
-								onClick = {() => this.showDeletePortfolioModal}
+								onClick = {this.showDeletePortfolioModal}
 								id={portfolio._id} 
 								name={portfolio.portfolioName}
 							/>
