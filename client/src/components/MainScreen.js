@@ -390,7 +390,15 @@ class TickerList extends Component{
 					/>
 
 					<Menu className={Classes.ELEVATION_1} style={{width:'224px', marginTop:'5px', marginBottom: '10px', marginLeft: '5px'}}>
-						<MenuItem text="Overview" onClick={this.toOverview}/>
+						<MenuItem text="Overview" 
+							onClick={() => {
+								this.setState({
+									currentTicker: 'Overview',
+									currentTickerId: '',
+									currentQuantity: 0
+								});	
+			  				}}
+						/>
 						<MenuItem text="Screener"/>
 						<Popover content={addTickerMenu} position={Position.BOTTOM}>
 							<MenuItem 

@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { Tab, Tabs, FocusStyleManager } from '@blueprintjs/core';
-import { connect } from 'react-redux';
-import { setCurrentUser } from '../actions/authActions';
 import Summary from './Summary';
 import Financial from './Financial';
 import NewsList from './NewsList';
@@ -13,28 +11,41 @@ class ContentView extends Component{
 	constructor(props){
 		super(props);
 		FocusStyleManager.onlyShowFocusOnTabs();
+		this.state = {
+			currentTicker: this.props.ticker
+		}
+	}
+
+	setCurrentTicker = (ticker) => {
+		this.setState({
+			currentTicker: ticker
+		});
+	}
+
+	componentWillReceiveProps = (newProps) =>{
+		this.setState({
+			currentTicker: newProps.ticker
+		});
 	}
 	
 	render() {		  
 		return(
 			<div>
-				{this.props.ticker !== 'Overview' ? (
+				{this.state.currentTicker !== 'Overview' ? (
 					<div style={{marginTop:'-6px'}}>
 						<Tabs id="ContentView">
-							<Tab id="Summary" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>{this.props.ticker}</p>} panel={<Summary ticker = {this.props.ticker} quantity={this.props.quantity}/>} />
-							<Tab id="News" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>News</p>} panel={<NewsList ticker = {this.props.ticker}/>} />
-							<Tab id="Financial" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>Financial</p>} panel={<Financial ticker = {this.props.ticker}/>} />
+							<Tab id="Summary" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>{this.state.currentTicker}</p>} panel={<Summary ticker = {this.state.currentTicker} quantity={this.props.quantity}/>} />
+							<Tab id="News" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>News</p>} panel={<NewsList ticker = {this.state.currentTicker}/>} />
+							<Tab id="Financial" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>Financial</p>} panel={<Financial ticker = {this.state.currentTicker}/>} />
 						</Tabs>				
 					</div>
 				) : (
-					<Overview />
+					<Overview setCurrentTicker = {this.setCurrentTicker}/>
 				)}
 			</div>
 		);
 	}
 }
 
-const mapStateToProps = state => ({
-});
-export default connect(mapStateToProps,{setCurrentUser})(ContentView);
+export default ContentView;
 

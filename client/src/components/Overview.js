@@ -11,7 +11,7 @@ class Overview extends React.Component {
 	    return (
 			<div style={{marginTop:'-6px'}}>
 				<Tabs id="ContentView">
-					<Tab id="Overview" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>Overview</p>} panel={<OverviewSummary />} />
+					<Tab id="Overview" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>Overview</p>} panel={<OverviewSummary setCurrentTicker={this.props.setCurrentTicker}/>} />
 					<Tab id="Sectors" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>Sectors</p>} panel={<MarketOverview />} />
 				</Tabs>				
 			</div>

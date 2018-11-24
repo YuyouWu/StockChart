@@ -1,7 +1,7 @@
 import React from 'react';
 import { getTickers, getCurrentPrice } from '../actions/portfolioActions';
 import { connect } from 'react-redux';
-import { Row, Col } from 'antd';
+import { Row, Col, List } from 'antd';
 import { Card, Elevation, Divider } from "@blueprintjs/core";
 import axios from 'axios';
 
@@ -74,6 +74,14 @@ class OverviewSummary extends React.Component {
 				 topLosers: res.data
 			 });
 		 });
+
+		 //Get market wide news
+		 axios.get('https://api.iextrading.com/1.0/stock/market/news/').then(res => {
+			this.setState({
+				news: res.data
+			});
+			console.log(res.data);
+		});
  	}
 
 
@@ -91,17 +99,19 @@ class OverviewSummary extends React.Component {
 				    	{(this.state.avgPercChange*100).toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}%
 				    </p>
 				</Card>
-				<h3 style={{marginBottom: '20px'}}>Daily Top Gainers</h3>
+
+				<h3 style={{marginTop: '20px'}}>Daily Top Gainers</h3>
 				<Row>
-					<div style={{width:'1000px'}}>
+					<div style={{width:'800px'}}>
 						{this.state.topGainers ? (
-							this.state.topGainers.map((ticker) => {
+							this.state.topGainers.slice(0, 5).map((ticker) => {
 								return(
 									<Col span={4}>
 									<Card
 										interactive = {true}
 										elevation = {Elevation.ONE}
-										style={{ width: 140, marginTop:'10px' }}
+										style={{ width: 120, marginTop:'10px' }}
+										onClick = {() => {this.props.setCurrentTicker(ticker.symbol)}}
 									>
 										<p>{ticker.symbol}</p>
 										<p style={{color:'green'}}>{(ticker.changePercent*100).toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
@@ -115,17 +125,18 @@ class OverviewSummary extends React.Component {
 					</div>
 				</Row>
 				
-				<h3 style={{marginBottom: '20px'}}>Daily Top Losers</h3>
+				<h3 style={{marginTop: '20px'}}>Daily Top Losers</h3>
 				<Row>
-					<div style={{width:'1000px'}}>
+					<div style={{width:'800px'}}>
 						{this.state.topLosers ? (
-							this.state.topLosers.map((ticker) => {
+							this.state.topLosers.slice(0, 5).map((ticker) => {
 								return(
 									<Col span={4}>
 									<Card
 										interactive = {true}
 										elevation = {Elevation.ONE}
-										style={{ width: 140, marginTop:'10px' }}
+										style={{ width: 120, marginTop:'10px' }}
+										onClick = {() => {this.props.setCurrentTicker(ticker.symbol)}}
 									>
 										<p>{ticker.symbol}</p>
 										<p style={{color:'red'}}>{(ticker.changePercent*100).toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
@@ -138,6 +149,21 @@ class OverviewSummary extends React.Component {
 						)}
 					</div>
 				</Row>
+				
+				<h3 style={{marginTop: '50px'}}>Market Wide News</h3>	
+				<List
+					itemLayout="vertical"
+					dataSource={this.state.news}
+					renderItem={item => (
+					<List.Item>
+						<List.Item.Meta
+						title={<a href={item.url}>{item.headline}</a>}
+						description={item.source + " - " + item.datetime}
+						/>
+						{item.summary}
+					</List.Item>
+					)}
+				/>
 			</div>
     	);
   	}
