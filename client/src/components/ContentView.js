@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Tab, Tabs, FocusStyleManager } from '@blueprintjs/core';
+import { Tab, Tabs, FocusStyleManager, Button, Intent } from '@blueprintjs/core';
 import Summary from './Summary';
 import Financial from './Financial';
 import NewsList from './NewsList';
@@ -37,6 +37,7 @@ class ContentView extends Component{
 							<Tab id="Summary" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>{this.state.currentTicker}</p>} panel={<Summary ticker = {this.state.currentTicker} quantity={this.props.quantity}/>} />
 							<Tab id="News" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>News</p>} panel={<NewsList ticker = {this.state.currentTicker}/>} />
 							<Tab id="Financial" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>Financial</p>} panel={<Financial ticker = {this.state.currentTicker}/>} />
+							<Button intent = {Intent.PRIMARY} style={{marginBottom:'5px'}}>Add {this.state.currentTicker}</Button>
 						</Tabs>				
 					</div>
 				) : (
