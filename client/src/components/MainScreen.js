@@ -263,7 +263,7 @@ class TickerList extends Component{
 			<tr>
 			  	<td>
 					<Button 
-					  	color="link" 
+						color="link" 
 					  	onClick={(event) =>{
 							this.setState({
 								currentTicker: ticker,
@@ -271,15 +271,16 @@ class TickerList extends Component{
 								currentQuantity: quantity
 							})			  				
 			  			}}
-			  			style={{cursor: 'pointer'}}>
+			  			style={{cursor: 'pointer'}}
+					>
 			  			{ticker}
 			  		</Button>
 			  	</td>
 			  	<td>
 			  		{change < 0 ? (
-			  			<p style={{color:'red', marginTop:'5px'}}>{change}%</p>
+			  			<p style={{color:'red', marginTop:'5px', fontSize:'13px'}}>{change}%</p>
 				  		) : (
-				  		<p style={{color:'green', marginTop:'5px'}}>{change}%</p>
+				  		<p style={{color:'green', marginTop:'5px', fontSize:'13px'}}>{change}%</p>
 				  		)
 			  		}
 			  	</td>
@@ -295,7 +296,7 @@ class TickerList extends Component{
 			  				X
 			  			</Button>
 			  		):(
-			  			<p style={{marginTop:'5px'}}>{price}</p>
+			  			<p style={{marginTop:'5px', fontSize:'13px'}}>{price}</p>
 			  		)
 			  		}
 			  	</td>
