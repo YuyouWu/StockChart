@@ -17,7 +17,14 @@ import {
 import { discontinuousTimeScaleProvider } from "react-stockcharts/lib/scale";
 import { OHLCTooltip } from "react-stockcharts/lib/tooltip";
 import { fitWidth } from "react-stockcharts/lib/helper";
-import { last } from "react-stockcharts/lib/utils";
+import { last, toObject } from "react-stockcharts/lib/utils";
+
+//Interaction
+import { TrendLine, DrawingObjectSelector } from "react-stockcharts/lib/interactive";
+import {
+	saveInteractiveNodes,
+	getInteractiveNodes,
+} from "./interactiveutils";
 
 const candlesAppearance = {
 	wickStroke: function wick(d) {
@@ -40,24 +47,104 @@ class CandleStickStockScaleChart extends React.Component {
 		this.saveNode = this.saveNode.bind(this);
 		this.resetYDomain = this.resetYDomain.bind(this);
 		this.handleReset = this.handleReset.bind(this);
+
+		this.onKeyPress = this.onKeyPress.bind(this);
+		this.onDrawCompleteChart1 = this.onDrawCompleteChart1.bind(this);
+		this.handleSelection = this.handleSelection.bind(this);
+
+		this.saveInteractiveNodes = saveInteractiveNodes.bind(this);
+		this.getInteractiveNodes = getInteractiveNodes.bind(this);
+
+		this.saveCanvasNode = this.saveCanvasNode.bind(this);
+
+		this.state = {
+			enableTrendLine: false,
+			trends_1: [], //for storing drawn trend line
+		};
 	}
 
+	componentDidMount() {
+		document.addEventListener("keyup", this.onKeyPress);
+	}
+	
 	componentWillMount() {
 		this.setState({
 			suffix: 1
 		});
+		document.removeEventListener("keyup", this.onKeyPress);
 	}
 
 	saveNode(node) {
 		this.node = node;
 	}
+
+	saveCanvasNode(node) {
+		this.canvasNode = node;
+	}
+
 	resetYDomain() {
 		this.node.resetYDomain();
 	}
+
 	handleReset() {
 		this.setState({
 			suffix: this.state.suffix + 1
 		});
+	}
+
+	handleSelection(interactives) {
+		const state = toObject(interactives, each => {
+			return [
+				`trends_${each.chartId}`,
+				each.objects,
+			];
+		});
+		this.setState(state);
+	}
+
+	onDrawCompleteChart1(trends_1) {
+		// this gets called on
+		// 1. draw complete of trendline
+		// 2. drag complete of trendline
+		console.log(trends_1);
+		this.setState({
+			enableTrendLine: false,
+			trends_1
+		});
+	}
+
+	onKeyPress(e) {
+		const keyCode = e.which;
+		console.log(keyCode);
+		switch (keyCode) {
+		case 46: { // DEL
+
+			const trends_1 = this.state.trends_1
+				.filter(each => !each.selected);
+			if(this.canvasNode){
+				this.canvasNode.cancelDrag();
+			}		
+			this.setState({
+				trends_1
+			});
+			break;
+		}
+		case 27: { // ESC
+			//this.node_1.terminate();
+			this.canvasNode.cancelDrag();
+			this.setState({
+				enableTrendLine: false
+			});
+			break;
+		}
+		case 68:   // D - Draw trendline
+		case 69: { // E - Enable trendline
+			this.setState({
+				enableTrendLine: true
+			});
+			break;
+		}
+		}
 	}
 
 	render() {
@@ -97,7 +184,8 @@ class CandleStickStockScaleChart extends React.Component {
 		} : {};
 
 		return (
-			<ChartCanvas ref={this.saveNode} height={window.innerHeight-200}
+			<ChartCanvas ref={this.saveCanvasNode} 
+				height={window.innerHeight-200}
 				ratio={ratio}
 				width={width}
 				margin={{ left: 50, right: 50, top: 10, bottom: 30 }}
@@ -122,6 +210,16 @@ class CandleStickStockScaleChart extends React.Component {
 					<OHLCTooltip forChart={1} origin={[0, 0]} />
 					<ZoomButtons
 						onReset={this.handleReset}
+					/>
+					<TrendLine
+						ref={this.saveInteractiveNodes("Trendline", 1)}
+						enabled={this.state.enableTrendLine}
+						type="RAY"
+						snap={false}
+						snapTo={d => [d.high, d.low]}
+						onStart={() => console.log("START")}
+						onComplete={this.onDrawCompleteChart1}
+						trends={this.state.trends_1}
 					/>
 				</Chart>
 				<Chart
@@ -154,6 +252,14 @@ class CandleStickStockScaleChart extends React.Component {
 					/>
 				</Chart>
 				<CrossHairCursor />
+				<DrawingObjectSelector
+					enabled={!this.state.enableTrendLine}
+					getInteractiveNodes={this.getInteractiveNodes}
+					drawingObjectMap={{
+						Trendline: "trends"
+					}}
+					onSelect={this.handleSelection}
+				/>
 			</ChartCanvas>
 		);
 	}
