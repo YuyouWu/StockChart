@@ -20,7 +20,7 @@ import { fitWidth } from "react-stockcharts/lib/helper";
 import { last, toObject } from "react-stockcharts/lib/utils";
 
 //Interaction
-import { TrendLine, FibonacciRetracement, DrawingObjectSelector } from "react-stockcharts/lib/interactive";
+import { TrendLine, FibonacciRetracement, GannFan, DrawingObjectSelector } from "react-stockcharts/lib/interactive";
 import {
 	saveInteractiveNodes,
 	getInteractiveNodes,
@@ -51,9 +51,12 @@ class CandleStickStockScaleChart extends React.Component {
 		this.handleReset = this.handleReset.bind(this);
 
 		this.onKeyPress = this.onKeyPress.bind(this);
-		this.onDrawCompleteChart1 = this.onDrawCompleteChart1.bind(this);
+		this.onDrawComplete = this.onDrawComplete.bind(this);
+	    this.onFibComplete = this.onFibComplete.bind(this);
+	    this.onFanComplete = this.onFanComplete.bind(this);
+
 		this.handleSelection = this.handleSelection.bind(this);
-		this.onFibComplete1 = this.onFibComplete1.bin
+
 		this.saveInteractiveNodes = saveInteractiveNodes.bind(this);
 		this.getInteractiveNodes = getInteractiveNodes.bind(this);
 
@@ -61,9 +64,11 @@ class CandleStickStockScaleChart extends React.Component {
 
 		this.state = {
 			enableTrendLine: false,
+			trends_1: [],
 			enableFib: false,
-			trends_1: [], //for storing drawn trend line
-			retracements_1: [] //for storing retracement line
+			retracements_1: [],
+			enableFans: false,
+			fans: []
 		};
 
 		//Custom chart control
@@ -100,30 +105,44 @@ class CandleStickStockScaleChart extends React.Component {
 	}
 
 	handleSelection(interactives) {
-		const state = toObject(interactives, each => {
-			return [
-				`trends_${each.chartId}`,
-				each.objects,
-			];
-		});
-		this.setState(state);
+		if (interactives[0].type === "Trendline") {
+		  const state = toObject([interactives[0]], each => {
+			return [`trends_${each.chartId}`, each.objects];
+		  });
+		  this.setState(state);
+		}
+		if (interactives[1].type === "FibonacciRetracement") {
+		  const state = toObject([interactives[1]], each => {
+			return [`retracements_${each.chartId}`, each.objects];
+		  });
+		  this.setState(state);
+		}
+		if (interactives[2].type === "GannFan") {
+		  const state = toObject([interactives[2]], each => {
+			return ["fans", each.objects];
+		  });
+		  this.setState(state);
+		}
 	}
 
-	onDrawCompleteChart1(trends_1) {
-		// this gets called on
-		// 1. draw complete of trendline
-		// 2. drag complete of trendline
-		console.log(trends_1);
+	onDrawComplete(trends_1) {
 		this.setState({
-			enableTrendLine: false,
-			trends_1
+		  enableTrendLine: false,
+		  trends_1
 		});
 	}
-
-	onFibComplete1(retracements_1) {
+	
+	onFibComplete(retracements_1) {
 		this.setState({
-			retracements_1,
-			enableFib: false
+		  retracements_1,
+		  enableFib: false
+		});
+	}
+	
+	onFanComplete(fans) {
+		this.setState({
+		  enableFans: false,
+		  fans
 		});
 	}
 
@@ -133,25 +152,39 @@ class CandleStickStockScaleChart extends React.Component {
 		switch (keyCode) {
 			case 46: { // DEL
 
-				const trends_1 = this.state.trends_1
-					.filter(each => !each.selected);
+				const trends_1 = this.state.trends_1.filter(each => !each.selected);
+				const retracements_1 = this.state.retracements_1.filter(
+				  each => !each.selected
+				);
+				const fans = this.state.fans.filter(each => !each.selected);
 				if(this.canvasNode){
 					this.canvasNode.cancelDrag();
-				}		
+				}
 				this.setState({
-					trends_1
+				  trends_1,
+				  retracements_1,
+				  fans
 				});
 				break;
 			}
 			case 27: { // ESC
-				//this.node_1.terminate();
-				this.canvasNode.cancelDrag();
+				if(this.canvasNode){
+					this.canvasNode.cancelDrag();
+				}
 				this.setState({
-					enableTrendLine: false
+					enableTrendLine: false,
+					enableFib: false,
+					enableFans: false
 				});
 				break;
 			}
-			case 68:   // D - Draw Fib
+			case 68:  {
+				// D - Enable fan
+				this.setState({
+					enableFans: true
+				  });
+				  break;
+			} 
 			case 69: { // E - Enable Fib
 				this.setState({
 					enableFib: true
@@ -239,20 +272,46 @@ class CandleStickStockScaleChart extends React.Component {
 						<TrendLine
 							ref={this.saveInteractiveNodes("Trendline", 1)}
 							enabled={this.state.enableTrendLine}
-							type="RAY"
+							type="LINE"
 							snap={false}
 							snapTo={d => [d.high, d.low]}
-							onStart={() => console.log("START")}
-							onComplete={this.onDrawCompleteChart1}
+							onStart={() => {}}
 							trends={this.state.trends_1}
+							onComplete={this.onDrawComplete}
 						/>
-						{/* <FibonacciRetracement
+
+						<FibonacciRetracement
 							ref={this.saveInteractiveNodes("FibonacciRetracement", 1)}
 							enabled={this.state.enableFib}
 							retracements={this.state.retracements_1}
-							onComplete={this.onFibComplete1}
-						/> */}
+							onComplete={this.onFibComplete}
+						/>
+
+						<GannFan
+							ref={this.saveInteractiveNodes("GannFan", 1)}
+							enabled={this.state.enableFans}
+							onStart={() => console.log("START")}
+							onComplete={this.onFanComplete}
+							fans={this.state.fans}
+						/>
 					</Chart>
+					<DrawingObjectSelector
+						enabled={
+						!(
+							this.state.enableTrendLine &&
+							this.state.enableFib &&
+							this.state.enableFans
+						)
+						}
+						getInteractiveNodes={this.getInteractiveNodes}
+						drawingObjectMap={{
+						FibonacciRetracement: "retracements",
+						Trendline: "trends",
+						GannFan: "fans"
+						}}
+						onSelect={this.handleSelection}
+					/>
+
 					<Chart
 						id={2}
 						height={100}
@@ -283,14 +342,6 @@ class CandleStickStockScaleChart extends React.Component {
 						/>
 					</Chart>
 					<CrossHairCursor />
-					<DrawingObjectSelector
-						enabled={!this.state.enableTrendLine}
-						getInteractiveNodes={this.getInteractiveNodes}
-						drawingObjectMap={{
-							Trendline: "trends"
-						}}
-						onSelect={this.handleSelection}
-					/>
 				</ChartCanvas>
 			</div>
 		);
