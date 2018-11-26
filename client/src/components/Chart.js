@@ -20,7 +20,13 @@ import { fitWidth } from "react-stockcharts/lib/helper";
 import { last, toObject } from "react-stockcharts/lib/utils";
 
 //Interaction
-import { TrendLine, FibonacciRetracement, GannFan, DrawingObjectSelector } from "react-stockcharts/lib/interactive";
+import { 
+	TrendLine, 
+	EquidistantChannel,
+	FibonacciRetracement, 
+	StandardDeviationChannel,
+	GannFan, 
+	DrawingObjectSelector } from "react-stockcharts/lib/interactive";
 import {
 	saveInteractiveNodes,
 	getInteractiveNodes,
@@ -52,7 +58,9 @@ class CandleStickStockScaleChart extends React.Component {
 
 		this.onKeyPress = this.onKeyPress.bind(this);
 		this.onDrawComplete = this.onDrawComplete.bind(this);
-	    this.onFibComplete = this.onFibComplete.bind(this);
+		this.onEqChannelComplete = this.onEqChannelComplete.bind(this);
+		this.onStdChannelComplete = this.onStdChannelComplete.bind(this);
+		this.onFibComplete = this.onFibComplete.bind(this);
 	    this.onFanComplete = this.onFanComplete.bind(this);
 
 		this.handleSelection = this.handleSelection.bind(this);
@@ -68,11 +76,20 @@ class CandleStickStockScaleChart extends React.Component {
 			enableFib: false,
 			retracements_1: [],
 			enableFans: false,
-			fans: []
+			fans: [],
+			enableEqChannel: false,
+			channels_1: [],
+			enableStdChannel: false,
+			stdchannels: []
 		};
 
 		//Custom chart control
 		this.handleTrendLine = this.handleTrendLine.bind(this);
+		this.handleFib = this.handleFib.bind(this);
+		this.handleFan = this.handleFan.bind(this);
+		this.handleEqChannel = this.handleEqChannel.bind(this);
+		this.handleStdChannel = this.handleStdChannel.bind(this);
+		this.handleClearDrawings = this.handleClearDrawings.bind(this);
 	}
 
 	componentDidMount() {
@@ -94,6 +111,10 @@ class CandleStickStockScaleChart extends React.Component {
 		this.canvasNode = node;
 	}
 
+	saveInteractiveNode(node) {
+		this.node = node;
+	}
+	
 	resetYDomain() {
 		this.node.resetYDomain();
 	}
@@ -105,20 +126,33 @@ class CandleStickStockScaleChart extends React.Component {
 	}
 
 	handleSelection(interactives) {
+		//console.log(interactives)
 		if (interactives[0].type === "Trendline") {
 		  const state = toObject([interactives[0]], each => {
 			return [`trends_${each.chartId}`, each.objects];
 		  });
 		  this.setState(state);
 		}
-		if (interactives[1].type === "FibonacciRetracement") {
-		  const state = toObject([interactives[1]], each => {
+		if (interactives[1].type === "EquidistantChannel") {
+			const state = toObject([interactives[1]], each => {
+			  return [`channels_${each.chartId}`, each.objects];
+			});
+			this.setState(state);
+		}
+		if (interactives[2].type === "StandardDeviationChannel") {
+			const state = toObject([interactives[2]], each => {
+			  return ["stdchannels", each.objects];
+			});
+			this.setState(state);
+		}
+		if (interactives[3].type === "FibonacciRetracement") {
+		  const state = toObject([interactives[3]], each => {
 			return [`retracements_${each.chartId}`, each.objects];
 		  });
 		  this.setState(state);
 		}
-		if (interactives[2].type === "GannFan") {
-		  const state = toObject([interactives[2]], each => {
+		if (interactives[4].type === "GannFan") {
+		  const state = toObject([interactives[4]], each => {
 			return ["fans", each.objects];
 		  });
 		  this.setState(state);
@@ -131,7 +165,18 @@ class CandleStickStockScaleChart extends React.Component {
 		  trends_1
 		});
 	}
-	
+	onEqChannelComplete(channels_1) {
+		this.setState({
+			enableEqChannel: false,
+			channels_1
+		});
+	}
+	onStdChannelComplete(stdchannels) {
+		this.setState({
+			enableStdChannel: false,
+			stdchannels
+		});
+	}
 	onFibComplete(retracements_1) {
 		this.setState({
 		  retracements_1,
@@ -156,12 +201,20 @@ class CandleStickStockScaleChart extends React.Component {
 				const retracements_1 = this.state.retracements_1.filter(
 				  each => !each.selected
 				);
+				const channels_1 = this.state.channels_1.filter(
+					each => !each.selected
+				);
+				const stdchannels = this.state.stdchannels.filter(
+					each => !each.selected
+				);
 				const fans = this.state.fans.filter(each => !each.selected);
 				if(this.canvasNode){
 					this.canvasNode.cancelDrag();
 				}
 				this.setState({
 				  trends_1,
+				  channels_1,
+				  stdchannels,
 				  retracements_1,
 				  fans
 				});
@@ -173,23 +226,22 @@ class CandleStickStockScaleChart extends React.Component {
 				}
 				this.setState({
 					enableTrendLine: false,
+					enableEqChannel: false,
+					enableStdChannel: false,
 					enableFib: false,
 					enableFans: false
 				});
 				break;
 			}
-			case 68:  {
-				// D - Enable fan
+
+			default: {
 				this.setState({
-					enableFans: true
-				  });
-				  break;
-			} 
-			case 69: { // E - Enable Fib
-				this.setState({
-					enableFib: true
+					enableTrendLine: false,
+					enableEqChannel: false,
+					enableStdChannel: false,
+					enableFib: false,
+					enableFans: false
 				});
-				break;
 			}
 		}
 	}
@@ -198,6 +250,40 @@ class CandleStickStockScaleChart extends React.Component {
 	handleTrendLine() {
 		this.setState({
 			enableTrendLine: true
+		});
+	}
+	handleEqChannel() {
+		this.setState({
+			enableEqChannel: true
+		});
+	}
+	handleStdChannel() {
+		this.setState({
+			enableStdChannel: true
+		});
+	}
+	handleFib(){
+		this.setState({
+			enableFib: true
+		});
+	}
+	handleFan(){
+		this.setState({
+			enableFans: true
+		});
+	}
+	handleClearDrawings(){
+		this.setState({
+			enableTrendLine: false,
+			trends_1: [],
+			enableFib: false,
+			retracements_1: [],
+			enableFans: false,
+			fans: [],
+			enableEqChannel: false,
+			channels_1: [],
+			enableStdChannel: false,
+			stdchannels: []
 		});
 	}
 
@@ -241,6 +327,11 @@ class CandleStickStockScaleChart extends React.Component {
 			<div>
 				<ButtonGroup>
 					<Button icon="minus" onClick={this.handleTrendLine}></Button>
+					<Button icon="vertical-distribution" onClick={this.handleEqChannel}></Button>
+					<Button icon="menu" onClick={this.handleStdChannel}></Button>
+					<Button icon="align-justify" onClick={this.handleFib}></Button>
+					<Button icon="curved-range-chart" onClick={this.handleFan}></Button>
+					<Button icon="cross" onClick={this.handleClearDrawings}></Button>
 				</ButtonGroup>
 				<ChartCanvas ref={this.saveCanvasNode} 
 					height={window.innerHeight-200}
@@ -275,11 +366,21 @@ class CandleStickStockScaleChart extends React.Component {
 							type="LINE"
 							snap={false}
 							snapTo={d => [d.high, d.low]}
-							onStart={() => {}}
 							trends={this.state.trends_1}
 							onComplete={this.onDrawComplete}
 						/>
-
+						<EquidistantChannel
+							ref={this.saveInteractiveNodes("EquidistantChannel", 1)}
+							enabled={this.state.enableEqChannel}
+							onComplete={this.onEqChannelComplete}
+							channels={this.state.channels_1}
+						/>
+						<StandardDeviationChannel
+							ref={this.saveInteractiveNodes("StandardDeviationChannel", 1)}
+							enabled={this.state.enableStdChannel}
+							onComplete={this.onStdChannelComplete}
+							channels={this.state.stdchannels}
+						/>
 						<FibonacciRetracement
 							ref={this.saveInteractiveNodes("FibonacciRetracement", 1)}
 							enabled={this.state.enableFib}
@@ -299,6 +400,8 @@ class CandleStickStockScaleChart extends React.Component {
 						enabled={
 						!(
 							this.state.enableTrendLine &&
+							this.state.enableEqChannel &&
+							this.state.enableStdChannel &&
 							this.state.enableFib &&
 							this.state.enableFans
 						)
@@ -306,6 +409,8 @@ class CandleStickStockScaleChart extends React.Component {
 						getInteractiveNodes={this.getInteractiveNodes}
 						drawingObjectMap={{
 						FibonacciRetracement: "retracements",
+						EquidistantChannel: "channels",
+						StandardDeviationChannel: "channels",
 						Trendline: "trends",
 						GannFan: "fans"
 						}}
@@ -356,7 +461,7 @@ CandleStickStockScaleChart.propTypes = {
 };
 
 CandleStickStockScaleChart.defaultProps = {
-	type: "svg",
+	type: "hybrid",
 };
 CandleStickStockScaleChart = fitWidth(CandleStickStockScaleChart);
 

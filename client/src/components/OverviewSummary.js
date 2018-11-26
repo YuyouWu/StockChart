@@ -1,7 +1,7 @@
 import React from 'react';
 import { getTickers, getCurrentPrice } from '../actions/portfolioActions';
 import { connect } from 'react-redux';
-import { Row, Col, List } from 'antd';
+import { Row, Col } from 'antd';
 import { Card, Elevation, Divider } from "@blueprintjs/core";
 import axios from 'axios';
 
