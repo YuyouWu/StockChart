@@ -6,18 +6,22 @@ import { format } from "d3-format";
 import { timeFormat } from "d3-time-format";
 
 import { ChartCanvas, Chart, ZoomButtons } from "react-stockcharts";
-import { BarSeries, CandlestickSeries } from "react-stockcharts/lib/series";
+import { BarSeries, CandlestickSeries, LineSeries } from "react-stockcharts/lib/series";
 import { XAxis, YAxis } from "react-stockcharts/lib/axes";
 import {
 	CrossHairCursor,
+	CurrentCoordinate,
 	MouseCoordinateX,
 	MouseCoordinateY
 } from "react-stockcharts/lib/coordinates";
 
 import { discontinuousTimeScaleProvider } from "react-stockcharts/lib/scale";
-import { OHLCTooltip } from "react-stockcharts/lib/tooltip";
+import { OHLCTooltip, MovingAverageTooltip } from "react-stockcharts/lib/tooltip";
 import { fitWidth } from "react-stockcharts/lib/helper";
 import { last, toObject } from "react-stockcharts/lib/utils";
+
+//Indicator
+import { ema, wma, sma, tma } from "react-stockcharts/lib/indicator";
 
 //Interaction
 import { 
@@ -33,6 +37,8 @@ import {
 } from "./interactiveutils";
 
 import { Button, ButtonGroup } from "@blueprintjs/core";
+import { Layout } from 'antd';
+const { Sider, Content } = Layout;
 
 const candlesAppearance = {
 	wickStroke: function wick(d) {
@@ -290,6 +296,19 @@ class CandleStickStockScaleChart extends React.Component {
 	render() {
 		const { type, data: initialData, width, ratio } = this.props;
 
+		//Indicator
+		const ema20 = ema()
+			.options({
+				windowSize: 20, // optional will default to 10
+				sourcePath: "close", // optional will default to close as the source
+			})
+			.skipUndefined(true) // defaults to true
+			.merge((d, c) => {d.ema20 = c;}) // Required, if not provided, log a error
+			.accessor(d => d.ema20) // Required, if not provided, log an error during calculation
+			.stroke("blue"); // Optional
+		
+		const calculatedData = ema20(initialData);
+
 		const xScaleProvider = discontinuousTimeScaleProvider
 			.inputDateAccessor(d => d.date);
 		const {
@@ -297,7 +316,8 @@ class CandleStickStockScaleChart extends React.Component {
 			xScale,
 			xAccessor,
 			displayXAccessor,
-		} = xScaleProvider(initialData);
+		} = xScaleProvider(calculatedData);
+		
 		const xExtents = [
 			xAccessor(last(data)),
 			xAccessor(data[data.length - 100])
@@ -307,7 +327,7 @@ class CandleStickStockScaleChart extends React.Component {
 
 		var margin = {left: 70, right: 70, top:20, bottom: 30};
 		var gridHeight = gheight - margin.top - margin.bottom;
-		var gridWidth = width - 30 - margin.right;
+		var gridWidth = width - 80 - margin.right;
 
 		var showGrid = true;
 		var yGrid = showGrid ? { 
@@ -325,129 +345,154 @@ class CandleStickStockScaleChart extends React.Component {
 
 		return (
 			<div>
-				<ButtonGroup>
-					<Button icon="minus" onClick={this.handleTrendLine}></Button>
-					<Button icon="vertical-distribution" onClick={this.handleEqChannel}></Button>
-					<Button icon="menu" onClick={this.handleStdChannel}></Button>
-					<Button icon="align-justify" onClick={this.handleFib}></Button>
-					<Button icon="curved-range-chart" onClick={this.handleFan}></Button>
-					<Button icon="cross" onClick={this.handleClearDrawings}></Button>
-				</ButtonGroup>
-				<ChartCanvas ref={this.saveCanvasNode} 
-					height={window.innerHeight-200}
-					ratio={ratio}
-					width={width}
-					margin={{ left: 50, right: 50, top: 10, bottom: 30 }}
-					type={type}
-					seriesName={`TICKER_${this.state.suffix}`}
-					data={data}
-					xScale={xScale}
-					xAccessor={xAccessor}
-					displayXAccessor={displayXAccessor}
-					xExtents={xExtents}
-				>
+				<Layout>
+					<Sider width={30} style={{ background: '#fff' }}>
+					<ButtonGroup vertical style={{marginTop:'0px'}}>
+						<Button icon="minus" onClick={this.handleTrendLine}></Button>
+						<Button icon="vertical-distribution" onClick={this.handleEqChannel}></Button>
+						<Button icon="menu" onClick={this.handleStdChannel}></Button>
+						<Button icon="align-justify" onClick={this.handleFib}></Button>
+						<Button icon="curved-range-chart" onClick={this.handleFan}></Button>
+						<Button icon="cross" onClick={this.handleClearDrawings}></Button>
+					</ButtonGroup>
+					</Sider>
+					<Layout>
+						<Content style={{ background: '#fff', borderStyle: "solid", borderWidth: '1px', borderRadius:'5px', borderColor:'#DADADA' }} >
+							<ChartCanvas ref={this.saveCanvasNode} 
+								height={window.innerHeight-200}
+								ratio={ratio}
+								width={width - 50}
+								margin={{ left: 50, right: 50, top: 10, bottom: 30 }}
+								type={type}
+								seriesName={`TICKER_${this.state.suffix}`}
+								data={data}
+								xScale={xScale}
+								xAccessor={xAccessor}
+								displayXAccessor={displayXAccessor}
+								xExtents={xExtents}
+							>
 
-					<Chart id={1} yExtents={d => [d.high, d.low]}>
-						<XAxis axisAt="bottom" orient="bottom" ticks={10} {...xGrid}/>
-						<YAxis axisAt="right" orient="right" ticks={10} {...yGrid}/>
-						<MouseCoordinateY
-							at="right"
-							orient="right"
-							displayFormat={format(".2f")}
-						/>
-						<CandlestickSeries {...candlesAppearance}/>
-						<OHLCTooltip forChart={1} origin={[0, 0]} />
-						<ZoomButtons
-							onReset={this.handleReset}
-						/>
-						<TrendLine
-							ref={this.saveInteractiveNodes("Trendline", 1)}
-							enabled={this.state.enableTrendLine}
-							type="LINE"
-							snap={false}
-							snapTo={d => [d.high, d.low]}
-							trends={this.state.trends_1}
-							onComplete={this.onDrawComplete}
-						/>
-						<EquidistantChannel
-							ref={this.saveInteractiveNodes("EquidistantChannel", 1)}
-							enabled={this.state.enableEqChannel}
-							onComplete={this.onEqChannelComplete}
-							channels={this.state.channels_1}
-						/>
-						<StandardDeviationChannel
-							ref={this.saveInteractiveNodes("StandardDeviationChannel", 1)}
-							enabled={this.state.enableStdChannel}
-							onComplete={this.onStdChannelComplete}
-							channels={this.state.stdchannels}
-						/>
-						<FibonacciRetracement
-							ref={this.saveInteractiveNodes("FibonacciRetracement", 1)}
-							enabled={this.state.enableFib}
-							retracements={this.state.retracements_1}
-							onComplete={this.onFibComplete}
-						/>
+								<Chart id={1} yExtents={[d => [d.high, d.low], ema20.accessor()]}>
+									<XAxis axisAt="bottom" orient="bottom" ticks={10} {...xGrid}/>
+									<YAxis axisAt="right" orient="right" ticks={10} {...yGrid}/>
+									<MouseCoordinateY
+										at="right"
+										orient="right"
+										displayFormat={format(".2f")}
+									/>
+									<CandlestickSeries {...candlesAppearance}/>
 
-						<GannFan
-							ref={this.saveInteractiveNodes("GannFan", 1)}
-							enabled={this.state.enableFans}
-							onStart={() => console.log("START")}
-							onComplete={this.onFanComplete}
-							fans={this.state.fans}
-						/>
-					</Chart>
-					<DrawingObjectSelector
-						enabled={
-						!(
-							this.state.enableTrendLine &&
-							this.state.enableEqChannel &&
-							this.state.enableStdChannel &&
-							this.state.enableFib &&
-							this.state.enableFans
-						)
-						}
-						getInteractiveNodes={this.getInteractiveNodes}
-						drawingObjectMap={{
-						FibonacciRetracement: "retracements",
-						EquidistantChannel: "channels",
-						StandardDeviationChannel: "channels",
-						Trendline: "trends",
-						GannFan: "fans"
-						}}
-						onSelect={this.handleSelection}
-					/>
+									<LineSeries yAccessor={ema20.accessor()} stroke={ema20.stroke()}/>
+									<CurrentCoordinate yAccessor={ema20.accessor()} fill={ema20.stroke()} />
 
-					<Chart
-						id={2}
-						height={100}
-						yExtents={d => d.volume}
-						origin={(w, h) => [0, h - 100]}
-					>
-						<YAxis
-							axisAt="left"
-							orient="left"
-							ticks={5}
-							tickFormat={format(".2s")}
-						/>
+									<OHLCTooltip forChart={1} origin={[-38, 0]} />
+									<ZoomButtons
+										onReset={this.handleReset}
+									/>
+									<MovingAverageTooltip
+										onClick={e => console.log(e)}
+										origin={[-38, 15]}
+										options={[
+											{
+												yAccessor: ema20.accessor(),
+												type: "EMA",
+												stroke: ema20.stroke(),
+												windowSize: ema20.options().windowSize,
+												echo: "some echo here",
+											}
+										]}
+									/>
+									<TrendLine
+										ref={this.saveInteractiveNodes("Trendline", 1)}
+										enabled={this.state.enableTrendLine}
+										type="LINE"
+										snap={false}
+										snapTo={d => [d.high, d.low]}
+										trends={this.state.trends_1}
+										onComplete={this.onDrawComplete}
+									/>
+									<EquidistantChannel
+										ref={this.saveInteractiveNodes("EquidistantChannel", 1)}
+										enabled={this.state.enableEqChannel}
+										onComplete={this.onEqChannelComplete}
+										channels={this.state.channels_1}
+									/>
+									<StandardDeviationChannel
+										ref={this.saveInteractiveNodes("StandardDeviationChannel", 1)}
+										enabled={this.state.enableStdChannel}
+										onComplete={this.onStdChannelComplete}
+										channels={this.state.stdchannels}
+									/>
+									<FibonacciRetracement
+										ref={this.saveInteractiveNodes("FibonacciRetracement", 1)}
+										enabled={this.state.enableFib}
+										retracements={this.state.retracements_1}
+										onComplete={this.onFibComplete}
+									/>
 
-						<MouseCoordinateX
-							at="bottom"
-							orient="bottom"
-							displayFormat={timeFormat("%Y-%m-%d")}
-						/>
-						<MouseCoordinateY
-							at="left"
-							orient="left"
-							displayFormat={format(".4s")}
-						/>
+									<GannFan
+										ref={this.saveInteractiveNodes("GannFan", 1)}
+										enabled={this.state.enableFans}
+										onStart={() => console.log("START")}
+										onComplete={this.onFanComplete}
+										fans={this.state.fans}
+									/>
+								</Chart>
+								<DrawingObjectSelector
+									enabled={
+									!(
+										this.state.enableTrendLine &&
+										this.state.enableEqChannel &&
+										this.state.enableStdChannel &&
+										this.state.enableFib &&
+										this.state.enableFans
+									)
+									}
+									getInteractiveNodes={this.getInteractiveNodes}
+									drawingObjectMap={{
+									FibonacciRetracement: "retracements",
+									EquidistantChannel: "channels",
+									StandardDeviationChannel: "channels",
+									Trendline: "trends",
+									GannFan: "fans"
+									}}
+									onSelect={this.handleSelection}
+								/>
 
-						<BarSeries
-							yAccessor={d => d.volume}
-							fill={d => (d.close > d.open ? "#6BA583" : "#FF0000")}
-						/>
-					</Chart>
-					<CrossHairCursor />
-				</ChartCanvas>
+								<Chart
+									id={2}
+									height={100}
+									yExtents={d => d.volume}
+									origin={(w, h) => [0, h - 100]}
+								>
+									<YAxis
+										axisAt="left"
+										orient="left"
+										ticks={5}
+										tickFormat={format(".2s")}
+									/>
+
+									<MouseCoordinateX
+										at="bottom"
+										orient="bottom"
+										displayFormat={timeFormat("%Y-%m-%d")}
+									/>
+									<MouseCoordinateY
+										at="left"
+										orient="left"
+										displayFormat={format(".4s")}
+									/>
+
+									<BarSeries
+										yAccessor={d => d.volume}
+										fill={d => (d.close > d.open ? "#6BA583" : "#FF0000")}
+									/>
+								</Chart>
+								<CrossHairCursor />
+							</ChartCanvas>
+						</Content>
+					</Layout>
+				</Layout>
 			</div>
 		);
 	}
