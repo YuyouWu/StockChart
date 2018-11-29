@@ -262,19 +262,21 @@ class TickerList extends Component{
 		const SortableItem = SortableElement(({ticker, change, price, id, quantity}) =>
 			<tr>
 			  	<td>
-					<Button 
-						color="link" 
-					  	onClick={(event) =>{
-							this.setState({
-								currentTicker: ticker,
-								currentTickerId: id,
-								currentQuantity: quantity
-							})			  				
-			  			}}
-			  			style={{cursor: 'pointer'}}
-					>
-			  			{ticker}
-			  		</Button>
+					<div style={{width:'50px'}}>
+						<Button 
+							color="link" 
+							onClick={(event) =>{
+								this.setState({
+									currentTicker: ticker,
+									currentTickerId: id,
+									currentQuantity: quantity
+								})			  				
+							}}
+							style={{cursor: 'pointer'}}
+						>
+							{ticker}
+						</Button>
+					</div>
 			  	</td>
 			  	<td>
 			  		{change < 0 ? (
