@@ -4,6 +4,7 @@ import Summary from './Summary';
 import Financial from './Financial';
 import NewsList from './NewsList';
 import Overview from './Overview';
+import Screener from './Screener';
 import AddTickerSubMenu from './AddTickerSubMenu';
 
 // const TabPane = Tabs.TabPane;
@@ -32,25 +33,29 @@ class ContentView extends Component{
 
 		return(
 			<div>
-				{this.state.currentTicker !== 'Overview' ? (
-					<div style={{marginTop:'-6px'}}>
-						<Tabs id="ContentView">
-							<Tab id="Summary" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>{this.state.currentTicker}</p>} panel={<Summary ticker = {this.state.currentTicker} quantity={this.props.quantity}/>} />
-							<Tab id="Financial" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>Financial</p>} panel={<Financial ticker = {this.state.currentTicker}/>} />
-							<Tab id="News" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>News</p>} panel={<NewsList ticker = {this.state.currentTicker}/>} />
-							<Popover content={addTickerMenu} position={Position.BOTTOM}>
-								<Button 
-									intent = {Intent.PRIMARY} 
-									style={{marginBottom:'5px'}}
-									disabled={this.state.currentPortfolio === 'Holding' ? true : false}
-								>
-									Add {this.state.currentTicker}
-								</Button>
-							</Popover>
-						</Tabs>				
-					</div>
-				) : (
+				{this.state.currentTicker === 'Overview' ? (
 					<Overview setCurrentTicker = {this.props.setCurrentTicker}/>
+				):(
+					this.state.currentTicker === 'Screener' ? (
+						<Screener/>
+					):(
+						<div style={{marginTop:'-6px'}}>
+							<Tabs id="ContentView">
+								<Tab id="Summary" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>{this.state.currentTicker}</p>} panel={<Summary ticker = {this.state.currentTicker} quantity={this.props.quantity}/>} />
+								<Tab id="Financial" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>Financial</p>} panel={<Financial ticker = {this.state.currentTicker}/>} />
+								<Tab id="News" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>News</p>} panel={<NewsList ticker = {this.state.currentTicker}/>} />
+								<Popover content={addTickerMenu} position={Position.BOTTOM}>
+									<Button 
+										intent = {Intent.PRIMARY} 
+										style={{marginBottom:'5px'}}
+										disabled={this.state.currentPortfolio === 'Holding' ? true : false}
+									>
+										Add {this.state.currentTicker}
+									</Button>
+								</Popover>
+							</Tabs>				
+						</div>
+					)
 				)}
 			</div>
 		);

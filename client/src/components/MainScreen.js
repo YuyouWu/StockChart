@@ -402,7 +402,15 @@ class TickerList extends Component{
 								});	
 			  				}}
 						/>
-						<MenuItem text="Screener"/>
+						<MenuItem text="Screener"
+							onClick={() => {
+								this.setState({
+									currentTicker: 'Screener',
+									currentTickerId: '',
+									currentQuantity: 0
+								});	
+			  				}}
+						/>
 						<Popover content={addTickerMenu} position={Position.BOTTOM}>
 							<MenuItem 
 								text="Add Ticker"
