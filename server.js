@@ -14,6 +14,7 @@ mongoose.set('useCreateIndex', true);
 var {Ticker} = require('./models/ticker');
 var {User} = require('./models/user');
 var {Portfolio} = require('./models/portfolio');
+var {Screener} = require('./models/screener');
 
 var {authenticate} = require('./middleware/authenticate');
 
@@ -191,6 +192,26 @@ app.patch('/api/renamePortfolio/', authenticate, (req, res) =>{
     res.status(400).send();
   })
 });
+
+//Add all tickers to screener model
+app.post('/api/screener/', (req, res) =>{
+  try{
+    axios.get('https://api.iextrading.com/1.0/ref-data/symbols').then(result =>{
+      var screenerDataArr = result.data;
+        screenerDataArr.forEach(screenerData => {
+          var symbol = new Screener(screenerData);
+          symbol.save().catch((e) => {
+            console.log(e);
+          });
+        });
+    });
+    res.status(200).send();  
+  } catch (e) {
+    res.status(400).send();
+  }
+});
+
+// Update tickers in screener model
 
 ///////////////////
 //USER MANAGEMENT//
