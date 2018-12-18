@@ -26,6 +26,7 @@
     "concurrently": "^4.0.1",
     "express": "^4.16.3",
     "heroku": "^7.16.0",
+    "https": "^1.0.0",
     "jsonwebtoken": "^8.3.0",
     "lodash": "^4.17.10",
     "mongodb": "^3.1.4",

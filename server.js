@@ -1,7 +1,7 @@
 const express = require('express');
 const _ = require('lodash');
 const path = require("path");
-
+const https = require('https');
 const bodyParser = require('body-parser');
 const request = require('request');
 const axios = require('axios');
@@ -193,19 +193,50 @@ app.patch('/api/renamePortfolio/', authenticate, (req, res) =>{
   })
 });
 
+////////////
+//Screener//
+////////////
+
 //Add all tickers to screener model
 app.post('/api/screener/', (req, res) =>{
+  var symbolArr = [];
+  var symbolChunk = '';
   try{
-    axios.get('https://api.iextrading.com/1.0/ref-data/symbols').then(result =>{
+    axios.get('https://api.iextrading.com/1.0/ref-data/symbols').then(result => {
       var screenerDataArr = result.data;
-        screenerDataArr.forEach(screenerData => {
-          var symbol = new Screener(screenerData);
-          symbol.save().catch((e) => {
-            console.log(e);
-          });
+      var chunk = 100;
+      var j = 0
+      for (var i = 0; i < screenerDataArr.length; i=i+chunk) {
+        symbolArr[j] = screenerDataArr.slice(i, i+chunk); //Slice into chunks of 100 
+        j++;
+      }
+      console.log(screenerDataArr.length);
+      return symbolArr;
+    }).then(arr => {
+      for (var i = 0; i < arr.length; i++){
+        symbolChunk = '';
+        arr[i].forEach(element => {
+          symbolChunk = symbolChunk + element.symbol + ','
         });
+        axios.get('https://api.iextrading.com/1.0/stock/market/batch?symbols='+symbolChunk+'&types=stats').then(stat => {
+          for (key in stat.data) {
+            if(stat.data.hasOwnProperty(key)) {
+              var statData = new Screener (stat.data[key].stats);
+              statData.save().then(()=> {
+              }).catch(e => {
+                console.log(e);
+              });
+            }
+          }
+        }).catch(e => {
+          //console.log(e);
+        });
+      };
+      console.log('Screener Data Saved');
+      res.status(200).send();
+    }).catch(e => {
+      //console.log(e);
     });
-    res.status(200).send();  
   } catch (e) {
     res.status(400).send();
   }
