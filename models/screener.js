@@ -10,49 +10,41 @@ var Screener = mongoose.model('Screener', {
         type: String
     },
     marketcap: {
-        type: String,
+        type: Number,
         required: false
     },
     beta: {
-        type: String,
+        type: Number,
         required: false
     },
     week52high: {
-        type: String,
+        type: Number,
         required: false
     },
     week52low: {
-        type: String,
+        type: Number,
         required: false
     },
     week52change: {
-        type: String,
+        type: Number,
         required: false
     },
     dividendRate: {
-        type: String,
+        type: Number,
         required: false
     },
     dividendYield: {
-        type: String,
-        required: false
-    },
-    exDividendDate: {
-        type: String,
-        required: false
-    },
-    returnOnEquity: {
-        type: String,
+        type: Number,
         required: false
     },
     consensusEPS: {
-        type: String,
+        type: Number,
         required: false
     },
-    EPSSurpriseDollar: {
-        type: String,
-        required: false
-    },
+    // EPSSurpriseDollar: {
+    //     type: String,
+    //     required: false
+    // },
     EPSSurprisePercent: {
         type: String,
         required: false
@@ -77,100 +69,100 @@ var Screener = mongoose.model('Screener', {
         type: String,
         required: false
     },
-    revenuePerShare: {
-        type: String,
-        required: false
-    },
-    revenuePerEmployee: {
-        type: String,
-        required: false
-    },
-    peRatioHigh: {
-        type: String,
-        required: false
-    },
-    peRatioLow: {
-        type: String,
-        required: false
-    },
-    returnOnAssets: {
-        type: String,
-        required: false
-    },
-    returnOnCapital: {
-        type: String,
-        required: false
-    },
-    profitMargin: {
-        type: String,
-        required: false
-    },
-    priceToSales: {
-        type: String,
-        required: false
-    },
-    priceToSales: {
-        type: String,
-        required: false
-    },
-    priceToBook: {
-        type: String,
-        required: false
-    },
-    day200MovingAvg: {
-        type: String,
-        required: false
-    },
-    day50MovingAvg: {
-        type: String,
-        required: false
-    },
-    institutionPercent: {
-        type: String,
-        required: false
-    },
-    insiderPercent: {
-        type: String,
-        required: false
-    },
-    shortRatio: {
-        type: String,
-        required: false
-    },
+    // revenuePerShare: {
+    //     type: String,
+    //     required: false
+    // },
+    // revenuePerEmployee: {
+    //     type: String,
+    //     required: false
+    // },
+    // peRatioHigh: {
+    //     type: String,
+    //     required: false
+    // },
+    // peRatioLow: {
+    //     type: String,
+    //     required: false
+    // },
+    // returnOnAssets: {
+    //     type: String,
+    //     required: false
+    // },
+    // returnOnCapital: {
+    //     type: String,
+    //     required: false
+    // },
+    // profitMargin: {
+    //     type: String,
+    //     required: false
+    // },
+    // priceToSales: {
+    //     type: String,
+    //     required: false
+    // },
+    // priceToSales: {
+    //     type: String,
+    //     required: false
+    // },
+    // priceToBook: {
+    //     type: String,
+    //     required: false
+    // },
+    // day200MovingAvg: {
+    //     type: String,
+    //     required: false
+    // },
+    // day50MovingAvg: {
+    //     type: String,
+    //     required: false
+    // },
+    // institutionPercent: {
+    //     type: String,
+    //     required: false
+    // },
+    // insiderPercent: {
+    //     type: String,
+    //     required: false
+    // },
+    // shortRatio: {
+    //     type: String,
+    //     required: false
+    // },
     year5ChangePercent: {
-        type: String,
+        type: Number,
         required: false
     },
     year2ChangePercent: {
-        type: String,
+        type: Number,
         required: false
     },
     year1ChangePercent: {
-        type: String,
+        type: Number,
         required: false
     },
     ytdChangePercent: {
-        type: String,
+        type: Number,
         required: false
     },
     month6ChangePercent: {
-        type: String,
+        type: Number,
         required: false
     },
     month3ChangePercent: {
-        type: String,
+        type: Number,
         required: false
     },
     month1ChangePercent: {
-        type: String,
+        type: Number,
         required: false
     },
     day5ChangePercent: {
-        type: String,
+        type: Number,
         required: false
     },
     day30ChangePercent: {
-        type: String,
+        type: Number,
         required: false
     }
 });

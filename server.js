@@ -242,6 +242,148 @@ app.post('/api/screener/', (req, res) =>{
   }
 });
 
+//Filer Screener Data
+app.post('/api/filterScreener', (req, res) => {
+  //filter results here
+  var body = _.pick(req.body, ['marketcap', 'dividendYield', 'EPSSurprisePercent', 'beta']);
+  
+  //Query for Market Cap
+  var QmarketCap = {$exists: true}
+  if (body.marketcap === 'nanocap'){
+    QmarketCap = {
+      $lte: 50000000
+    }
+  } else if (body.marketcap === 'microcap'){
+    QmarketCap = {
+        $gte:50000000,
+        $lte:300000000
+    }
+  } else if (body.marketcap === 'smallcap'){
+    QmarketCap = {
+      $gte:300000000,
+      $lte:2000000000
+    }
+  } else if (body.marketcap === 'midcap'){
+    QmarketCap = {
+      $gte:2000000000,
+      $lte:10000000000
+    }
+  } else if (body.marketcap === 'largecap') {
+    QmarketCap = {
+      $gte:10000000000,
+      $lte:300000000000
+    }
+  } else if (body.marketcap === 'megacap') {
+    QmarketCap = {
+      $gte:300000000000,
+    }
+  }
+
+  //Query for dividend yield
+  var QdividendYield = {$exists: true}
+  if(body.dividendYield === 'none'){
+    QdividendYield = 0
+  } else if (body.dividendYield === 'positive'){
+    QdividendYield = {
+      $gt: 0
+    }
+  } else if (body.dividendYield === '1'){
+    QdividendYield = {
+      $gte: 1,
+      $lte: 3
+    }
+  } else if (body.dividendYield === '3'){
+    QdividendYield = {
+      $gte: 3,
+      $lte: 5
+    }
+  } else if (body.dividendYield === '5'){
+    QdividendYield = {
+      $gte: 5,
+      $lte: 7
+    }
+  } else if (body.dividendYield === '7'){
+    QdividendYield = {
+      $gte: 7,
+      $lte: 9
+    }
+  } else if (body.dividendYield === '9'){
+    QdividendYield = {
+      $gte: 9
+    }
+  }
+
+  var QEPSSurprisePercent = {$exists: true}
+  if (body.EPSSurprisePercent === '1'){
+    QEPSSurprisePercent = {
+      $gte:1,
+      $lte:3
+    }
+  } else if (body.EPSSurprisePercent === '3'){
+    QEPSSurprisePercent = {
+      $gte:3,
+      $lte:5
+    }
+  } else if (body.EPSSurprisePercent === '5'){
+    QEPSSurprisePercent = {
+      $gte:5
+    }
+  }
+
+  var Qbeta = {$exists: true}
+  if (body.beta === 'negative'){
+    Qbeta = {
+      lt: 0
+    }
+  } else if (body.beta === '0-0.5'){
+    Qbeta = {
+      gte: 0,
+      lte: 0.5
+    }
+  } else if (body.beta === '0.5-1'){
+    Qbeta = {
+      gte: 0.5,
+      lte: 1
+    }
+  } else if (body.beta === '1-1.5'){
+    Qbeta = {
+      gte: 1,
+      lte: 1.5
+    }
+  } else if (body.beta === '1.5-2'){
+    Qbeta = {
+      gte: 1.5,
+      lte: 2
+    }
+  } else if (body.beta === '2-3'){
+    Qbeta = {
+      gte: 2,
+      lte: 3
+    }
+  } else if (body.beta === '3-5'){
+    Qbeta = {
+      gte: 3,
+      lte: 5
+    }
+  } else if (body.beta === '5'){
+    Qbeta = {
+      gte: 5
+    }
+  }
+
+  Screener.find({
+    marketcap: QmarketCap,
+    dividendYield: QdividendYield,
+    EPSSurprisePercent: QEPSSurprisePercent,
+    beta: Qbeta
+  }).then((filteredData)=>{
+    res.status(200).send(filteredData);
+  }).catch (e => {
+    console.log(e);
+  });
+  // res.status(200).send(res);
+});
+
 // Update tickers in screener model
 
 ///////////////////
