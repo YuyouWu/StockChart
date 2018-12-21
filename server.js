@@ -221,13 +221,16 @@ app.post('/api/screener/', (req, res) => {
         arr[i].forEach(element => {
           symbolChunk = symbolChunk + element.symbol + ','
         });
-        axios.get('https://api.iextrading.com/1.0/stock/market/batch?symbols=' + symbolChunk + '&types=stats').then(stat => {
+        axios.get('https://api.iextrading.com/1.0/stock/market/batch?symbols=' + symbolChunk + '&types=quote,stats').then(stat => {
           for (key in stat.data) {
             if (stat.data.hasOwnProperty(key)) {
-              var statData = new Screener(stat.data[key].stats);
+              var statsAndQuote= Object.assign({}, stat.data[key].stats, stat.data[key].quote);
+              var statData = new Screener(statsAndQuote);
               statData.save().then(() => {
               }).catch(e => {
-                console.log(e);
+                if (e.errors.symbol.message !== "Path `symbol` is required."){
+                  console.log(e);
+                }
               });
             }
           }
@@ -469,13 +472,14 @@ schedule.scheduleJob('0 0 * * *', () => {
         arr[i].forEach(element => {
           symbolChunk = symbolChunk + element.symbol + ','
         });
-        axios.get('https://api.iextrading.com/1.0/stock/market/batch?symbols=' + symbolChunk + '&types=stats').then(stat => {
+        axios.get('https://api.iextrading.com/1.0/stock/market/batch?symbols=' + symbolChunk + '&types=quote,stats').then(stat => {
           for (key in stat.data) {
             if (stat.data.hasOwnProperty(key)) {
-              var statData = new Screener(stat.data[key].stats);
+              var statsAndQuote= Object.assign({}, stat.data[key].stats, stat.data[key].quote);
+              var statData = new Screener(statsAndQuote);
               statData.save().then(() => {
               }).catch(e => {
-                //console.log(e);
+                // console.log(e);
               });
             }
           }

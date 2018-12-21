@@ -9,6 +9,21 @@ var Screener = mongoose.model('Screener', {
     companyName: {
         type: String
     },
+    primaryExchange: {
+        type: String
+    },
+    sector: {
+        type: String
+    },
+    latestPrice: {
+        type: Number
+    },
+    changePercent: {
+        type: Number
+    },
+    peRatio: {
+        tyoe: Number
+    },
     marketcap: {
         type: Number,
         required: false
