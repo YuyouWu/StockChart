@@ -7,9 +7,9 @@ class LandingPage extends React.Component {
     return (
     	<div className="container">
 		    <Jumbotron style={{marginTop: 25+'px'}}>
-		        <h1 className="display-4">Welcome to Prophest</h1>
+		        <h1 className="display-4">Welcome to Pluisfolio</h1>
 		        <p className="lead">
-		        	Prophest is an online stock portfolio that provides easy access to market information, portfolio optimization, and techical analysis. 
+		        	Pluisfolio is an online stock portfolio that provides easy access to market information, portfolio optimization, and techical analysis. 
 		        </p>
 		        <p className="lead">
 		        	Register now to find out more.
