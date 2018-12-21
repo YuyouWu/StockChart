@@ -45,16 +45,30 @@ class Screener extends React.Component {
         const columns = [{
             title: 'Symbol',
             dataIndex: 'symbol',
-            key: 'symbol'
+            key: 'symbol',
+            width: 150,
         }, {
             title: 'Company Name',
             dataIndex: 'companyName',
-            key: 'companyName'
+            key: 'companyName',
+            width: 200,
         }, {
             title: 'Market Cap',
             dataIndex: 'marketcap',
             key: 'marketcap'
-        },{
+        }, { 
+            title: 'PE Ratio',
+            dataIndex: 'peRatio',
+            key: 'peRatio'
+        }, { 
+            title: '52 wks High',
+            dataIndex: 'week52high',
+            key: 'week52high'
+        }, { 
+            title: '52 wks Low',
+            dataIndex: 'week52low',
+            key: 'week52low'
+        }, {
             title: 'Dividend Yield',
             dataIndex: 'dividendYield',
             key: 'dividendYield'
@@ -255,11 +269,12 @@ class Screener extends React.Component {
                             onChange={this.setFilterState}
                         >
                             <option value=''> Any </option>
-                            <option value=''> 5% above price </option>
-                            <option value=''> 10% above price </option>
-                            <option value=''> 15% above price </option>
-                            <option value=''> 20% above price </option>
-                            <option value=''> 25% above price </option>
+                            <option value='1%aboveprice'> 1% above price </option>
+                            <option value='5%aboveprice'> 5% above price </option>
+                            <option value='10%aboveprice'> 10% above price </option>
+                            <option value='15%aboveprice'> 15% above price </option>
+                            <option value='20%aboveprice'> 20% above price </option>
+                            <option value='25%aboveprice'> 25% above price </option>
                         </HTMLSelect>
                     </Col>
 
@@ -274,11 +289,12 @@ class Screener extends React.Component {
                             onChange={this.setFilterState}
                         >
                             <option value=''> Any </option>
-                            <option value=''> 5% below price </option>
-                            <option value=''> 10% below price </option>
-                            <option value=''> 15% below price </option>
-                            <option value=''> 20% below price </option>
-                            <option value=''> 25% below price </option>
+                            <option value='1%belowprice'> 1% below price </option>
+                            <option value='5%belowprice'> 5% below price </option>
+                            <option value='10%belowprice'> 10% below price </option>
+                            <option value='15%belowprice'> 15% below price </option>
+                            <option value='20%belowprice'> 20% below price </option>
+                            <option value='25%belowprice'> 25% below price </option>
                         </HTMLSelect>
                     </Col>
                 </Row>
@@ -289,19 +305,20 @@ class Screener extends React.Component {
                 {
                     this.state.filterResult !== '' ? (
                         this.state.filterResult !== 'loading' ? (
-                            <Table 
-                                style={{marginTop:'10px'}}
-                                dataSource={this.state.filterResult} 
-                                columns={columns}
-                            >
-                            </Table>
+                            <div style={{marginTop:'10px', width:'1200px'}}>
+                                <Table 
+                                    dataSource={this.state.filterResult} 
+                                    columns={columns}
+                                >
+                                </Table>
+                            </div>
                         ):(
-                            <div style={{marginTop:'30px'}}>
-                            <Skeleton 
-                                active
-                                title = {false}
-                                paragraph={{ rows: 10 }}
-                            />
+                            <div style={{marginTop:'30px', width:'1200px'}}>
+                                <Skeleton 
+                                    active
+                                    title = {false}
+                                    paragraph={{ rows: 10 }}
+                                />
                             </div>
                         )
                     ):(

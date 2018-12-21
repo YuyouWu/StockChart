@@ -229,6 +229,8 @@ app.post('/api/screener/', (req, res) => {
               var tempDay200SMAtoPrice = (stat.data[key].stats.day200MovingAvg - stat.data[key].quote.latestPrice)/stat.data[key].quote.latestPrice;
               var tempDay50SMAtoDay200SMA = (stat.data[key].stats.day50MovingAvg - stat.data[key].stats.day200MovingAvg)/stat.data[key].stats.day200MovingAvg; 
               var tempDay200SMAtoDay50SMA = (stat.data[key].stats.day200MovingAvg - stat.data[key].stats.day50MovingAvg)/stat.data[key].stats.day50MovingAvg;
+              var tempweek52hightoPrice =  (stat.data[key].quote.week52High - stat.data[key].quote.latestPrice)/stat.data[key].quote.latestPrice;
+              var tempweek52lowtoPrice =  (stat.data[key].quote.latestPrice - stat.data[key].quote.week52Low)/stat.data[key].quote.latestPrice;
 
               var otherData = {
                 day50SMAAbovePrice: null,
@@ -237,7 +239,9 @@ app.post('/api/screener/', (req, res) => {
                 day50SMAtoPrice: null,
                 day200SMAtoPrice: null,
                 day50SMAtoDay200SMA: null,
-                day200SMAtoDay50SMA: null
+                day200SMAtoDay50SMA: null,
+                week52hightoPrice: null,
+                week52lowtoPrice: null
               }
               
               if (stat.data[key].stats.day50MovingAvg > stat.data[key].quote.latestPrice){
@@ -272,6 +276,14 @@ app.post('/api/screener/', (req, res) => {
 
               if(isNaN(tempDay200SMAtoDay50SMA) === false){
                 otherData.day200SMAtoDay50SMA = tempDay200SMAtoDay50SMA;
+              }
+
+              if(isNaN(tempweek52hightoPrice) === false){
+                otherData.week52hightoPrice = tempweek52hightoPrice;
+              }
+
+              if(isNaN(tempweek52lowtoPrice) === false){
+                otherData.week52lowtoPrice = tempweek52lowtoPrice;
               }
 
               //Joining stats and quotes then saving to Screener Model
@@ -631,6 +643,70 @@ app.post('/api/filterScreener', (req, res) => {
     }
   }
 
+  var Qweek52high = { $exists: true }
+  if (body.week52high === '1%aboveprice'){
+    Qweek52high = {
+      $gte:0.01,
+      $lte:0.05
+    }
+  } else if (body.week52high === '5%aboveprice'){
+    Qweek52high = {
+      $gte:0.05,
+      $lte:0.10
+    }
+  } else if (body.week52high === '10%aboveprice'){
+    Qweek52high = {
+      $gte:0.10,
+      $lte:0.15
+    }
+  } else if (body.week52high === '15%aboveprice'){
+    Qweek52high = {
+      $gte:0.15,
+      $lte:0.20
+    }
+  } else if (body.week52high === '20%aboveprice'){
+    Qweek52high = {
+      $gte:0.20,
+      $lte:0.25
+    }
+  } else if (body.week52high === '25%aboveprice'){
+    Qweek52high = {
+      $gte:0.25
+    }
+  }
+
+  var Qweek52low = { $exists: true }
+  if (body.week52low === '1%belowprice'){
+    Qweek52low = {
+      $gte:0.01,
+      $lte:0.05
+    }
+  } else if (body.week52low === '5%belowprice'){
+    Qweek52low = {
+      $gte:0.05,
+      $lte:0.10
+    }
+  } else if (body.week52low === '10%belowprice'){
+    Qweek52low = {
+      $gte:0.10,
+      $lte:0.15
+    }
+  } else if (body.week52low === '15%belowprice'){
+    Qweek52low = {
+      $gte:0.15,
+      $lte:0.20
+    }
+  } else if (body.week52low === '20%belowprice'){
+    Qweek52low = {
+      $gte:0.20,
+      $lte:0.25
+    }
+  } else if (body.week52low === '25%belowprice'){
+    Qweek52low = {
+      $gte:0.25
+    }
+  }
+
   Screener.find({
     marketcap: QmarketCap,
     dividendYield: QdividendYield,
@@ -643,7 +719,9 @@ app.post('/api/filterScreener', (req, res) => {
     day50SMAtoDay200SMA: Qday50SMAtoDay200SMA,
     day200SMAAbovePrice: Qday200SMAAbovePrice,
     day200SMAtoPrice: Qday200SMAtoPrice,
-    day200SMAtoDay50SMA: Qday200SMAtoDay50SMA
+    day200SMAtoDay50SMA: Qday200SMAtoDay50SMA,
+    week52high: Qweek52high,
+    week52low: Qweek52low
   }).then((filteredData) => {
     res.status(200).send(filteredData);
   }).catch(e => {

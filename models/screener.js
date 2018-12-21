@@ -196,6 +196,12 @@ var Screener = mongoose.model('Screener', {
     },
     day200SMAtoDay50SMA: {
         type: Number
+    }, 
+    week52hightoPrice: {
+        type:Number
+    },
+    week52lowtoPrice: {
+        type:Number
     }
 });
 
