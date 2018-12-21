@@ -7,16 +7,16 @@ const request = require('request');
 const axios = require('axios');
 // const yahooFinance = require('yahoo-finance');
 
-const {mongoose} = require('./db/mongoose');
-const {ObjectID} = require('mongodb');
+const { mongoose } = require('./db/mongoose');
+const { ObjectID } = require('mongodb');
 mongoose.set('useCreateIndex', true);
 
-var {Ticker} = require('./models/ticker');
-var {User} = require('./models/user');
-var {Portfolio} = require('./models/portfolio');
-var {Screener} = require('./models/screener');
+var { Ticker } = require('./models/ticker');
+var { User } = require('./models/user');
+var { Portfolio } = require('./models/portfolio');
+var { Screener } = require('./models/screener');
 
-var {authenticate} = require('./middleware/authenticate');
+var { authenticate } = require('./middleware/authenticate');
 
 var app = express();
 var PORT = process.env.PORT || 5000;
@@ -27,13 +27,13 @@ app.use(bodyParser.json({
 
 //Get a list of tickers inside portfolio with authentication
 app.get('/api/portfolio', authenticate, (req, res) => {
-	Ticker.find({
+  Ticker.find({
     _creator: req.user._id
-  }).then((tickers) =>{
-		res.send({tickers});
-	}, (e) => {
-		res.status(400).send(e);
-	});
+  }).then((tickers) => {
+    res.send({ tickers });
+  }, (e) => {
+    res.status(400).send(e);
+  });
 });
 
 //Get a specific ticker
@@ -49,7 +49,7 @@ app.get('/api/portfolio/:id', (req, res) => {
       return res.status(404).send();
     }
 
-    res.send({ticker});
+    res.send({ ticker });
   }).catch((e) => {
     res.status(400).send();
   });
@@ -60,7 +60,7 @@ app.post('/api/portfolio/add', authenticate, (req, res) => {
   //set new index based on how many tickers a user have
   Ticker.find({
     _creator: req.user._id
-  }).then((tickers) =>{
+  }).then((tickers) => {
 
     //create new ticker obj with new index
     var ticker = new Ticker({
@@ -96,25 +96,25 @@ app.delete('/api/portfolio/:id', authenticate, (req, res) => {
       return res.status(404).send();
     }
 
-    res.send({ticker});
+    res.send({ ticker });
   }).catch((e) => {
     res.status(400).send();
   });
 });
 
 //Update index of one tickers from a user
-app.patch('/api/portfolio/index', authenticate, (req, res) =>{
+app.patch('/api/portfolio/index', authenticate, (req, res) => {
   var body = _.pick(req.body, ['_id', 'index']);
   var id = body._id;
   if (!ObjectID.isValid(id)) {
     return res.status(404).send();
   }
 
-  Ticker.findOneAndUpdate({_id: id, _creator: req.user._id}, {$set: body}, {new: true}).then((ticker) => {
+  Ticker.findOneAndUpdate({ _id: id, _creator: req.user._id }, { $set: body }, { new: true }).then((ticker) => {
     if (!ticker) {
       return res.status(404).send();
     }
-    res.send({ticker});
+    res.send({ ticker });
   }).catch((e) => {
     res.status(400).send();
   })
@@ -126,27 +126,27 @@ app.patch('/api/portfolio/index', authenticate, (req, res) =>{
 
 //Get all portfolios from a user
 app.get('/api/allPortfolio/', authenticate, (req, res) => {
-	Portfolio.find({
+  Portfolio.find({
     _creator: req.user._id
-  }).then((portfolio) =>{
-		res.send({portfolio});
-	}, (e) => {
-		res.status(400).send(e);
-	});
+  }).then((portfolio) => {
+    res.send({ portfolio });
+  }, (e) => {
+    res.status(400).send(e);
+  });
 });
 
 //Create new Portfolio
 app.post('/api/newPortfolio/', authenticate, (req, res) => {
-    var portfolio = new Portfolio({
-      portfolioName: req.body.portfolioName,
-      _creator: req.user._id
-    });
+  var portfolio = new Portfolio({
+    portfolioName: req.body.portfolioName,
+    _creator: req.user._id
+  });
 
-    portfolio.save().then((doc) => {
-      res.send(doc);
-    }, (e) => {
-      res.status(400).send(e);
-    });
+  portfolio.save().then((doc) => {
+    res.send(doc);
+  }, (e) => {
+    res.status(400).send(e);
+  });
 });
 
 //Delete Portfolio
@@ -167,14 +167,14 @@ app.delete('/api/deletePortfolio/:id', authenticate, (req, res) => {
 
     //TODO: Delete tickers inside this portfolio
 
-    res.send({portfolio});
+    res.send({ portfolio });
   }).catch((e) => {
     res.status(400).send();
   });
 });
 
 //Rename Portfolio
-app.patch('/api/renamePortfolio/', authenticate, (req, res) =>{
+app.patch('/api/renamePortfolio/', authenticate, (req, res) => {
   var body = _.pick(req.body, ['_id', 'portfolioName']);
   var id = body._id;
 
@@ -182,14 +182,14 @@ app.patch('/api/renamePortfolio/', authenticate, (req, res) =>{
     return res.status(404).send();
   }
 
-  Portfolio.findOneAndUpdate({_id: id, _creator: req.user._id}, {$set: body}, {new: true}).then((portfolio) => {
+  Portfolio.findOneAndUpdate({ _id: id, _creator: req.user._id }, { $set: body }, { new: true }).then((portfolio) => {
     if (!portfolio) {
       return res.status(404).send();
     }
 
     //TODO: update tickers' portfolio name 
 
-    res.send({portfolio});
+    res.send({ portfolio });
   }).catch((e) => {
     res.status(400).send();
   })
@@ -200,31 +200,32 @@ app.patch('/api/renamePortfolio/', authenticate, (req, res) =>{
 ////////////
 
 //Add all tickers to screener model
-app.post('/api/screener/', (req, res) =>{
+app.post('/api/screener/', (req, res) => {
+  Screener.collection.drop();
   var symbolArr = [];
   var symbolChunk = '';
-  try{
+  try {
     axios.get('https://api.iextrading.com/1.0/ref-data/symbols').then(result => {
       var screenerDataArr = result.data;
       var chunk = 100;
       var j = 0
-      for (var i = 0; i < screenerDataArr.length; i=i+chunk) {
-        symbolArr[j] = screenerDataArr.slice(i, i+chunk); //Slice into chunks of 100 
+      for (var i = 0; i < screenerDataArr.length; i = i + chunk) {
+        symbolArr[j] = screenerDataArr.slice(i, i + chunk); //Slice into chunks of 100 
         j++;
       }
       console.log(screenerDataArr.length);
       return symbolArr;
     }).then(arr => {
-      for (var i = 0; i < arr.length; i++){
+      for (var i = 0; i < arr.length; i++) {
         symbolChunk = '';
         arr[i].forEach(element => {
           symbolChunk = symbolChunk + element.symbol + ','
         });
-        axios.get('https://api.iextrading.com/1.0/stock/market/batch?symbols='+symbolChunk+'&types=stats').then(stat => {
+        axios.get('https://api.iextrading.com/1.0/stock/market/batch?symbols=' + symbolChunk + '&types=stats').then(stat => {
           for (key in stat.data) {
-            if(stat.data.hasOwnProperty(key)) {
-              var statData = new Screener (stat.data[key].stats);
-              statData.save().then(()=> {
+            if (stat.data.hasOwnProperty(key)) {
+              var statData = new Screener(stat.data[key].stats);
+              statData.save().then(() => {
               }).catch(e => {
                 console.log(e);
               });
@@ -250,124 +251,124 @@ app.post('/api/filterScreener', (req, res) => {
   var body = _.pick(req.body, ['marketcap', 'dividendYield', 'EPSSurprisePercent', 'beta']);
   console.log(body);
   //Query for Market Cap
-  var QmarketCap = {$exists: true}
-  if (body.marketcap === 'nanocap'){
+  var QmarketCap = { $exists: true }
+  if (body.marketcap === 'nanocap') {
     QmarketCap = {
       $lte: 50000000
     }
-  } else if (body.marketcap === 'microcap'){
+  } else if (body.marketcap === 'microcap') {
     QmarketCap = {
-        $gte:50000000,
-        $lte:300000000
+      $gte: 50000000,
+      $lte: 300000000
     }
-  } else if (body.marketcap === 'smallcap'){
+  } else if (body.marketcap === 'smallcap') {
     QmarketCap = {
-      $gte:300000000,
-      $lte:2000000000
+      $gte: 300000000,
+      $lte: 2000000000
     }
-  } else if (body.marketcap === 'midcap'){
+  } else if (body.marketcap === 'midcap') {
     QmarketCap = {
-      $gte:2000000000,
-      $lte:10000000000
+      $gte: 2000000000,
+      $lte: 10000000000
     }
   } else if (body.marketcap === 'largecap') {
     QmarketCap = {
-      $gte:10000000000,
-      $lte:300000000000
+      $gte: 10000000000,
+      $lte: 300000000000
     }
   } else if (body.marketcap === 'megacap') {
     QmarketCap = {
-      $gte:300000000000,
+      $gte: 300000000000,
     }
   }
 
   //Query for dividend yield
-  var QdividendYield = {$exists: true}
-  if(body.dividendYield === 'none'){
+  var QdividendYield = { $exists: true }
+  if (body.dividendYield === 'none') {
     QdividendYield = 0
-  } else if (body.dividendYield === 'positive'){
+  } else if (body.dividendYield === 'positive') {
     QdividendYield = {
       $gt: 0
     }
-  } else if (body.dividendYield === '1'){
+  } else if (body.dividendYield === '1') {
     QdividendYield = {
       $gte: 1,
       $lte: 3
     }
-  } else if (body.dividendYield === '3'){
+  } else if (body.dividendYield === '3') {
     QdividendYield = {
       $gte: 3,
       $lte: 5
     }
-  } else if (body.dividendYield === '5'){
+  } else if (body.dividendYield === '5') {
     QdividendYield = {
       $gte: 5,
       $lte: 7
     }
-  } else if (body.dividendYield === '7'){
+  } else if (body.dividendYield === '7') {
     QdividendYield = {
       $gte: 7,
       $lte: 9
     }
-  } else if (body.dividendYield === '9'){
+  } else if (body.dividendYield === '9') {
     QdividendYield = {
       $gte: 9
     }
   }
 
-  var QEPSSurprisePercent = {$exists: true}
-  if (body.EPSSurprisePercent === '1'){
+  var QEPSSurprisePercent = { $exists: true }
+  if (body.EPSSurprisePercent === '1') {
     QEPSSurprisePercent = {
-      $gte:1,
-      $lte:3
+      $gte: 1,
+      $lte: 3
     }
-  } else if (body.EPSSurprisePercent === '3'){
+  } else if (body.EPSSurprisePercent === '3') {
     QEPSSurprisePercent = {
-      $gte:3,
-      $lte:5
+      $gte: 3,
+      $lte: 5
     }
-  } else if (body.EPSSurprisePercent === '5'){
+  } else if (body.EPSSurprisePercent === '5') {
     QEPSSurprisePercent = {
-      $gte:5
+      $gte: 5
     }
   }
 
-  var Qbeta = {$exists: true}
-  if (body.beta === 'negative'){
+  var Qbeta = { $exists: true }
+  if (body.beta === 'negative') {
     Qbeta = {
       lt: 0
     }
-  } else if (body.beta === '0-0.5'){
+  } else if (body.beta === '0-0.5') {
     Qbeta = {
       gte: 0,
       lte: 0.5
     }
-  } else if (body.beta === '0.5-1'){
+  } else if (body.beta === '0.5-1') {
     Qbeta = {
       gte: 0.5,
       lte: 1
     }
-  } else if (body.beta === '1-1.5'){
+  } else if (body.beta === '1-1.5') {
     Qbeta = {
       gte: 1,
       lte: 1.5
     }
-  } else if (body.beta === '1.5-2'){
+  } else if (body.beta === '1.5-2') {
     Qbeta = {
       gte: 1.5,
       lte: 2
     }
-  } else if (body.beta === '2-3'){
+  } else if (body.beta === '2-3') {
     Qbeta = {
       gte: 2,
       lte: 3
     }
-  } else if (body.beta === '3-5'){
+  } else if (body.beta === '3-5') {
     Qbeta = {
       gte: 3,
       lte: 5
     }
-  } else if (body.beta === '5'){
+  } else if (body.beta === '5') {
     Qbeta = {
       gte: 5
     }
@@ -378,9 +379,9 @@ app.post('/api/filterScreener', (req, res) => {
     dividendYield: QdividendYield,
     EPSSurprisePercent: QEPSSurprisePercent,
     beta: Qbeta
-  }).then((filteredData)=>{
+  }).then((filteredData) => {
     res.status(200).send(filteredData);
-  }).catch (e => {
+  }).catch(e => {
     console.log(e);
   });
   // res.status(200).send(res);
@@ -435,7 +436,7 @@ app.get('/api/users/me', authenticate, (req, res) => {
 //Find user by email
 app.post('/api/users/email', (req, res) => {
   var body = req.body;
-  User.findOne({email: body.email}).then((user) => {
+  User.findOne({ email: body.email }).then((user) => {
     if (!user) {
       return res.status(404).send();
     }
@@ -450,9 +451,9 @@ app.post('/api/users/email', (req, res) => {
 app.use(express.static(path.join(__dirname, "client", "build")))
 
 app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "client", "build", "index.html"));
+  res.sendFile(path.join(__dirname, "client", "build", "index.html"));
 });
 
 app.listen(PORT, () => {
-	console.log('Express listening on port ' + PORT + '!');
+  console.log('Express listening on port ' + PORT + '!');
 });
