@@ -5,7 +5,7 @@ const https = require('https');
 const bodyParser = require('body-parser');
 const request = require('request');
 const axios = require('axios');
-// const yahooFinance = require('yahoo-finance');
+const schedule = require('node-schedule');
 
 const { mongoose } = require('./db/mongoose');
 const { ObjectID } = require('mongodb');
@@ -447,8 +447,52 @@ app.post('/api/users/email', (req, res) => {
   });
 });
 
+//Update Screener Collection everyday at midnight
+schedule.scheduleJob('0 0 * * *', () => {
+  Screener.collection.drop();
+  var symbolArr = [];
+  var symbolChunk = '';
+  try {
+    axios.get('https://api.iextrading.com/1.0/ref-data/symbols').then(result => {
+      var screenerDataArr = result.data;
+      var chunk = 100;
+      var j = 0
+      for (var i = 0; i < screenerDataArr.length; i = i + chunk) {
+        symbolArr[j] = screenerDataArr.slice(i, i + chunk); //Slice into chunks of 100 
+        j++;
+      }
+      console.log(screenerDataArr.length);
+      return symbolArr;
+    }).then(arr => {
+      for (var i = 0; i < arr.length; i++) {
+        symbolChunk = '';
+        arr[i].forEach(element => {
+          symbolChunk = symbolChunk + element.symbol + ','
+        });
+        axios.get('https://api.iextrading.com/1.0/stock/market/batch?symbols=' + symbolChunk + '&types=stats').then(stat => {
+          for (key in stat.data) {
+            if (stat.data.hasOwnProperty(key)) {
+              var statData = new Screener(stat.data[key].stats);
+              statData.save().then(() => {
+              }).catch(e => {
+                //console.log(e);
+              });
+            }
+          }
+        }).catch(e => {
+          //console.log(e);
+        });
+      };
+      console.log('Screener Data Saved');
+    }).catch(e => {
+      //console.log(e);
+    });
+  } catch (e) {
+    // res.status(400).send();
+  }
+});
 
-app.use(express.static(path.join(__dirname, "client", "build")))
+app.use(express.static(path.join(__dirname, "client", "build")));
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "client", "build", "index.html"));
