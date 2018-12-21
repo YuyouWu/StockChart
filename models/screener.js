@@ -179,12 +179,18 @@ var Screener = mongoose.model('Screener', {
     day50SMAAbovePrice: {
         type: Boolean
     },
+    day200SMAAbovePrice: {
+        type: Boolean
+    },
     day50SMAAboveDay200SMA: {
         type: Boolean
     },
     day50SMAtoPrice: {
         type: Number
     }, 
+    day200SMAtoPrice: {
+        type: Number
+    },
     day50SMAtoDay200SMA: {
         type: Number 
     },

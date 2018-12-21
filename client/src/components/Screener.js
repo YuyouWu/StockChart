@@ -190,26 +190,26 @@ class Screener extends React.Component {
                         <HTMLSelect
                             style={{width:'100px'}}
                             id='day50MovingAvg'
-                            value={this.state.beta}
+                            value={this.state.day50MovingAvg}
                             onChange={this.setFilterState}
                         >
                             <option value=''> Any </option>
-                            <option value=''> below price</option>
-                            <option value=''> 1% below price </option>
-                            <option value=''> 5% below price </option>
-                            <option value=''> 10% below price </option>
-                            <option value=''> above price</option>
-                            <option value=''> 1% above price </option>
-                            <option value=''> 5% above price </option>
-                            <option value=''> 10% above price </option>
-                            <option value=''> below SMA200</option>
-                            <option value=''> 1% below SMA200 </option>
-                            <option value=''> 5% below SMA200 </option>
-                            <option value=''> 10% below SMA200 </option>
-                            <option value=''> above SMA200</option>
-                            <option value=''> 1% above SMA200 </option>
-                            <option value=''> 5% above SMA200 </option>
-                            <option value=''> 10% above SMA200 </option>
+                            <option value='belowPrice'> below price</option>
+                            <option value='1%belowPrice'> 1% below price </option>
+                            <option value='5%belowPrice'> 5% below price </option>
+                            <option value='10%belowPrice'> 10% below price </option>
+                            <option value='abovePrice'> above price</option>
+                            <option value='1%abovePrice'> 1% above price </option>
+                            <option value='5%abovePrice'> 5% above price </option>
+                            <option value='10%abovePrice'> 10% above price </option>
+                            <option value='belowSMA200'> below SMA200</option>
+                            <option value='1%belowSMA200'> 1% below SMA200 </option>
+                            <option value='5%belowSMA200'> 5% below SMA200 </option>
+                            <option value='10%belowSMA200'> 10% below SMA200 </option>
+                            <option value='aboveSMA200'> above SMA200</option>
+                            <option value='1%aboveSMA200'> 1% above SMA200 </option>
+                            <option value='5%aboveSMA200'> 5% above SMA200 </option>
+                            <option value='10%aboveSMA200'> 10% above SMA200 </option>
                         </HTMLSelect>
                     </Col>
                     <Col span={2}>
@@ -219,26 +219,26 @@ class Screener extends React.Component {
                         <HTMLSelect
                             style={{width:'100px'}}
                             id='day200MovingAvg'
-                            value={this.state.beta}
+                            value={this.state.day200MovingAvg}
                             onChange={this.setFilterState}
                         >
                             <option value=''> Any </option>
-                            <option value=''> below price</option>
-                            <option value=''> 1% below price </option>
-                            <option value=''> 5% below price </option>
-                            <option value=''> 10% below price </option>
-                            <option value=''> above price</option>
-                            <option value=''> 1% above price </option>
-                            <option value=''> 5% above price </option>
-                            <option value=''> 10% above price </option>
-                            <option value=''> below SMA50</option>
-                            <option value=''> 1% below SMA50 </option>
-                            <option value=''> 5% below SMA50 </option>
-                            <option value=''> 10% below SMA50 </option>
-                            <option value=''> above SMA50</option>
-                            <option value=''> 1% above SMA50 </option>
-                            <option value=''> 5% above SMA50 </option>
-                            <option value=''> 10% above SMA50 </option>
+                            <option value='belowPrice'> below price</option>
+                            <option value='1%belowPrice'> 1% below price </option>
+                            <option value='5%belowPrice'> 5% below price </option>
+                            <option value='10%belowPrice'> 10% below price </option>
+                            <option value='abovePrice'> above price</option>
+                            <option value='1%abovePrice'> 1% above price </option>
+                            <option value='5%abovePrice'> 5% above price </option>
+                            <option value='10%abovePrice'> 10% above price </option>
+                            <option value='belowSMA50'> below SMA50</option>
+                            <option value='1%belowSMA50'> 1% below SMA50 </option>
+                            <option value='5%belowSMA50'> 5% below SMA50 </option>
+                            <option value='10%belowSMA50'> 10% below SMA50 </option>
+                            <option value='aboveSMA50'> above SMA50</option>
+                            <option value='1%aboveSMA50'> 1% above SMA50 </option>
+                            <option value='5%aboveSMA50'> 5% above SMA50 </option>
+                            <option value='10%aboveSMA50'> 10% above SMA50 </option>
                         </HTMLSelect>
                     </Col>
                 </Row>
@@ -251,7 +251,7 @@ class Screener extends React.Component {
                         <HTMLSelect
                             style={{width:'100px'}}
                             id='week52high'
-                            value={this.state.beta}
+                            value={this.state.week52high}
                             onChange={this.setFilterState}
                         >
                             <option value=''> Any </option>
@@ -270,7 +270,7 @@ class Screener extends React.Component {
                         <HTMLSelect
                             style={{width:'100px'}}
                             id='week52low'
-                            value={this.state.beta}
+                            value={this.state.week52low}
                             onChange={this.setFilterState}
                         >
                             <option value=''> Any </option>

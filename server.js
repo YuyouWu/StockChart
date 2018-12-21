@@ -226,13 +226,16 @@ app.post('/api/screener/', (req, res) => {
             if (stat.data.hasOwnProperty(key)) {
               //Calculate other data needed for querying 
               var tempDay50SMAtoPrice = (stat.data[key].stats.day50MovingAvg - stat.data[key].quote.latestPrice)/stat.data[key].quote.latestPrice;
+              var tempDay200SMAtoPrice = (stat.data[key].stats.day200MovingAvg - stat.data[key].quote.latestPrice)/stat.data[key].quote.latestPrice;
               var tempDay50SMAtoDay200SMA = (stat.data[key].stats.day50MovingAvg - stat.data[key].stats.day200MovingAvg)/stat.data[key].stats.day200MovingAvg; 
               var tempDay200SMAtoDay50SMA = (stat.data[key].stats.day200MovingAvg - stat.data[key].stats.day50MovingAvg)/stat.data[key].stats.day50MovingAvg;
 
               var otherData = {
                 day50SMAAbovePrice: null,
+                day200SMAAbovePrice: null,
                 day50SMAAboveDay200SMA: null,
                 day50SMAtoPrice: null,
+                day200SMAtoPrice: null,
                 day50SMAtoDay200SMA: null,
                 day200SMAtoDay50SMA: null
               }
@@ -243,6 +246,12 @@ app.post('/api/screener/', (req, res) => {
                 otherData.day50SMAAbovePrice = false
               }
 
+              if (stat.data[key].stats.day200MovingAvg > stat.data[key].quote.latestPrice){
+                otherData.day200SMAAbovePrice = true
+              } else {
+                otherData.day200SMAAbovePrice = false
+              }
+
               if (stat.data[key].stats.day50MovingAvg > stat.data[key].stats.day200MovingAvg){
                 otherData.day50SMAAboveDay200SMA = true
               } else {
@@ -251,6 +260,10 @@ app.post('/api/screener/', (req, res) => {
 
               if(isNaN(tempDay50SMAtoPrice) === false){
                 otherData.day50SMAtoPrice = tempDay50SMAtoPrice;
+              }
+
+              if(isNaN(tempDay200SMAtoPrice) === false){
+                otherData.day200SMAtoPrice = tempDay200SMAtoPrice;
               }
 
               if(isNaN(tempDay50SMAtoDay200SMA) === false){
@@ -290,7 +303,6 @@ app.post('/api/screener/', (req, res) => {
 app.post('/api/filterScreener', (req, res) => {
   //filter results here
   var body = _.pick(req.body, ['marketcap', 'dividendYield', 'EPSSurprisePercent', 'beta', 'peRatio', 'day50MovingAvg','day200MovingAvg','week52high','week52low']);
-  console.log(body);
   //Query for Market Cap
   var QmarketCap = { $exists: true }
   if (body.marketcap === 'nanocap') {
@@ -462,13 +474,176 @@ app.post('/api/filterScreener', (req, res) => {
     }
   } 
  
+  var Qday50SMAAbovePrice = { $exists: true }
+  if (body.day50MovingAvg.indexOf('belowPrice') !== -1){
+    Qday50SMAAbovePrice = {
+      $eq: false
+    }
+  } else if (body.day50MovingAvg.indexOf('abovePrice') !== -1){
+    Qday50SMAAbovePrice = {
+      $eq: true
+    }
+  }
+
+  var Qday50SMAAboveDay200SMA = { $exists: true }
+  if (body.day50MovingAvg.indexOf('belowSMA200') !== -1) {
+    Qday50SMAAboveDay200SMA = {
+      $eq: false
+    }
+  } else if (body.day50MovingAvg.indexOf('aboveSMA200') !== -1) {
+    Qday50SMAAboveDay200SMA = {
+      $eq: true
+    }
+  }
+
+  var Qday50SMAtoPrice = { $exists: true }
+  if (body.day50MovingAvg === '1%belowPrice') {
+    Qday50SMAtoPrice = {
+      $gte:-0.01,
+      $lte:0
+    }
+  } else if (body.day50MovingAvg === '5%belowPrice') {
+    Qday50SMAtoPrice = {
+      $gte:-0.05,
+      $lte:-0.01
+    }
+  } else if (body.day50MovingAvg === '10%belowPrice') {
+    Qday50SMAtoPrice = {
+      $lte:-0.10
+    }
+  } else if (body.day50MovingAvg === '1%abovePrice') {
+    Qday50SMAtoPrice = {
+      $gte:0.01,
+      $lte:0.05
+    }
+  } else if (body.day50MovingAvg === '5%abovePrice') {
+    Qday50SMAtoPrice = {
+      $gte:0.05,
+      $lte:0.1
+    }
+  } else if (body.day50MovingAvg === '10%abovePrice') {
+    Qday50SMAtoPrice = {
+      $gte:0.10
+    }
+  }
+
+  var Qday50SMAtoDay200SMA = { $exists: true }
+  if (body.day50MovingAvg === '1%belowSMA200') {
+    Qday50SMAtoDay200SMA = {
+      $gte:-0.01,
+      $lte:0
+    }
+  } else if (body.day50MovingAvg === '5%belowSMA200') {
+    Qday50SMAtoDay200SMA = {
+      $gte:-0.05,
+      $lte:-0.01
+    }
+  } else if (body.day50MovingAvg === '10%belowSMA200') {
+    Qday50SMAtoDay200SMA = {
+      $lte:-0.10
+    }
+  } else if (body.day50MovingAvg === '1%aboveSMA200') {
+    Qday50SMAtoDay200SMA = {
+      $gte:0.01,
+      $lte:0.05
+    }
+  } else if (body.day50MovingAvg === '5%aboveSMA200') {
+    Qday50SMAtoDay200SMA = {
+      $gte:0.05,
+      $lte:0.1
+    }
+  } else if (body.day50MovingAvg === '10%aboveSMA200') {
+    Qday50SMAtoDay200SMA = {
+      $gte:0.10
+    }
+  }
+
+  var Qday200SMAAbovePrice = { $exists: true }
+  if (body.day200MovingAvg.indexOf('belowPrice') !== -1){
+    Qday200SMAAbovePrice = {
+      $eq: false
+    }
+  } else if (body.day200MovingAvg.indexOf('abovePrice') !== -1){
+    Qday200SMAAbovePrice = {
+      $eq: true
+    }
+  }
+
+  var Qday200SMAtoPrice = { $exists: true }
+  if (body.day200MovingAvg === '1%belowPrice') {
+    Qday200SMAtoPrice = {
+      $gte:-0.01,
+      $lte:0
+    }
+  } else if (body.day200MovingAvg === '5%belowPrice') {
+    Qday200SMAtoPrice = {
+      $gte:-0.05,
+      $lte:-0.01
+    }
+  } else if (body.day200MovingAvg === '10%belowPrice') {
+    Qday200SMAtoPrice = {
+      $lte:-0.10
+    }
+  } else if (body.day200MovingAvg === '1%abovePrice') {
+    Qday200SMAtoPrice = {
+      $gte:0.01,
+      $lte:0.05
+    }
+  } else if (body.day200MovingAvg === '5%abovePrice') {
+    Qday200SMAtoPrice = {
+      $gte:0.05,
+      $lte:0.1
+    }
+  } else if (body.day200MovingAvg === '10%abovePrice') {
+    Qday200SMAtoPrice = {
+      $gte:0.10
+    }
+  }
+
+  var Qday200SMAtoDay50SMA = { $exists: true }
+  if (body.day50MovingAvg === '1%belowSMA50') {
+    Qday200SMAtoDay50SMA = {
+      $gte:-0.01,
+      $lte:0
+    }
+  } else if (body.day50MovingAvg === '5%belowSMA50') {
+    Qday200SMAtoDay50SMA = {
+      $gte:-0.05,
+      $lte:-0.01
+    }
+  } else if (body.day50MovingAvg === '10%belowSMA50') {
+    Qday200SMAtoDay50SMA = {
+      $lte:-0.10
+    }
+  } else if (body.day50MovingAvg === '1%aboveSMA50') {
+    Qday200SMAtoDay50SMA = {
+      $gte:0.01,
+      $lte:0.05
+    }
+  } else if (body.day50MovingAvg === '5%aboveSMA50') {
+    Qday200SMAtoDay50SMA = {
+      $gte:0.05,
+      $lte:0.1
+    }
+  } else if (body.day50MovingAvg === '10%aboveSMA50') {
+    Qday200SMAtoDay50SMA = {
+      $gte:0.10
+    }
+  }
 
   Screener.find({
     marketcap: QmarketCap,
     dividendYield: QdividendYield,
     EPSSurprisePercent: QEPSSurprisePercent,
     beta: Qbeta,
-    peRatio: QpeRatio
+    peRatio: QpeRatio,
+    day50SMAAboveDay200SMA: Qday50SMAAboveDay200SMA,
+    day50SMAAbovePrice: Qday50SMAAbovePrice,
+    day50SMAtoPrice: Qday50SMAtoPrice,
+    day50SMAtoDay200SMA: Qday50SMAtoDay200SMA,
+    day200SMAAbovePrice: Qday200SMAAbovePrice,
+    day200SMAtoPrice: Qday200SMAtoPrice,
+    day200SMAtoDay50SMA: Qday200SMAtoDay50SMA
   }).then((filteredData) => {
     res.status(200).send(filteredData);
   }).catch(e => {
