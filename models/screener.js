@@ -22,7 +22,7 @@ var Screener = mongoose.model('Screener', {
         type: Number
     },
     peRatio: {
-        tyoe: Number
+        type: Number
     },
     marketcap: {
         type: Number,
@@ -56,10 +56,6 @@ var Screener = mongoose.model('Screener', {
         type: Number,
         required: false
     },
-    // EPSSurpriseDollar: {
-    //     type: String,
-    //     required: false
-    // },
     EPSSurprisePercent: {
         type: String,
         required: false
@@ -124,14 +120,6 @@ var Screener = mongoose.model('Screener', {
     //     type: String,
     //     required: false
     // },
-    // day200MovingAvg: {
-    //     type: String,
-    //     required: false
-    // },
-    // day50MovingAvg: {
-    //     type: String,
-    //     required: false
-    // },
     // institutionPercent: {
     //     type: String,
     //     required: false
@@ -144,6 +132,14 @@ var Screener = mongoose.model('Screener', {
     //     type: String,
     //     required: false
     // },
+    day200MovingAvg: {
+        type: Number,
+        required: false
+    },
+    day50MovingAvg: {
+        type: Number,
+        required: false
+    },
     year5ChangePercent: {
         type: Number,
         required: false
@@ -179,6 +175,21 @@ var Screener = mongoose.model('Screener', {
     day30ChangePercent: {
         type: Number,
         required: false
+    },
+    day50SMAAbovePrice: {
+        type: Boolean
+    },
+    day50SMAAboveDay200SMA: {
+        type: Boolean
+    },
+    day50SMAtoPrice: {
+        type: Number
+    }, 
+    day50SMAtoDay200SMA: {
+        type: Number 
+    },
+    day200SMAtoDay50SMA: {
+        type: Number
     }
 });
 

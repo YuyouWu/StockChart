@@ -224,7 +224,45 @@ app.post('/api/screener/', (req, res) => {
         axios.get('https://api.iextrading.com/1.0/stock/market/batch?symbols=' + symbolChunk + '&types=quote,stats').then(stat => {
           for (key in stat.data) {
             if (stat.data.hasOwnProperty(key)) {
-              var statsAndQuote= Object.assign({}, stat.data[key].stats, stat.data[key].quote);
+              //Calculate other data needed for querying 
+              var tempDay50SMAtoPrice = (stat.data[key].stats.day50MovingAvg - stat.data[key].quote.latestPrice)/stat.data[key].quote.latestPrice;
+              var tempDay50SMAtoDay200SMA = (stat.data[key].stats.day50MovingAvg - stat.data[key].stats.day200MovingAvg)/stat.data[key].stats.day200MovingAvg; 
+              var tempDay200SMAtoDay50SMA = (stat.data[key].stats.day200MovingAvg - stat.data[key].stats.day50MovingAvg)/stat.data[key].stats.day50MovingAvg;
+
+              var otherData = {
+                day50SMAAbovePrice: null,
+                day50SMAAboveDay200SMA: null,
+                day50SMAtoPrice: null,
+                day50SMAtoDay200SMA: null,
+                day200SMAtoDay50SMA: null
+              }
+              
+              if (stat.data[key].stats.day50MovingAvg > stat.data[key].quote.latestPrice){
+                otherData.day50SMAAbovePrice = true
+              } else {
+                otherData.day50SMAAbovePrice = false
+              }
+
+              if (stat.data[key].stats.day50MovingAvg > stat.data[key].stats.day200MovingAvg){
+                otherData.day50SMAAboveDay200SMA = true
+              } else {
+                otherData.day50SMAAboveDay200SMA = false
+              }
+
+              if(isNaN(tempDay50SMAtoPrice) === false){
+                otherData.day50SMAtoPrice = tempDay50SMAtoPrice;
+              }
+
+              if(isNaN(tempDay50SMAtoDay200SMA) === false){
+                otherData.day50SMAtoDay200SMA = tempDay50SMAtoDay200SMA;
+              }
+
+              if(isNaN(tempDay200SMAtoDay50SMA) === false){
+                otherData.day200SMAtoDay50SMA = tempDay200SMAtoDay50SMA;
+              }
+
+              //Joining stats and quotes then saving to Screener Model
+              var statsAndQuote = Object.assign({}, stat.data[key].stats, stat.data[key].quote, otherData);
               var statData = new Screener(statsAndQuote);
               statData.save().then(() => {
               }).catch(e => {
@@ -251,7 +289,7 @@ app.post('/api/screener/', (req, res) => {
 //Filer Screener Data
 app.post('/api/filterScreener', (req, res) => {
   //filter results here
-  var body = _.pick(req.body, ['marketcap', 'dividendYield', 'EPSSurprisePercent', 'beta']);
+  var body = _.pick(req.body, ['marketcap', 'dividendYield', 'EPSSurprisePercent', 'beta', 'peRatio', 'day50MovingAvg','day200MovingAvg','week52high','week52low']);
   console.log(body);
   //Query for Market Cap
   var QmarketCap = { $exists: true }
@@ -339,49 +377,98 @@ app.post('/api/filterScreener', (req, res) => {
   var Qbeta = { $exists: true }
   if (body.beta === 'negative') {
     Qbeta = {
-      lt: 0
+      $lt: 0
     }
   } else if (body.beta === '0-0.5') {
     Qbeta = {
-      gte: 0,
-      lte: 0.5
+      $gte: 0,
+      $lte: 0.5
     }
   } else if (body.beta === '0.5-1') {
     Qbeta = {
-      gte: 0.5,
-      lte: 1
+      $gte: 0.5,
+      $lte: 1
     }
   } else if (body.beta === '1-1.5') {
     Qbeta = {
-      gte: 1,
-      lte: 1.5
+      $gte: 1,
+      $lte: 1.5
     }
   } else if (body.beta === '1.5-2') {
     Qbeta = {
-      gte: 1.5,
-      lte: 2
+      $gte: 1.5,
+      $lte: 2
     }
   } else if (body.beta === '2-3') {
     Qbeta = {
-      gte: 2,
-      lte: 3
+      $gte: 2,
+      $lte: 3
     }
   } else if (body.beta === '3-5') {
     Qbeta = {
-      gte: 3,
-      lte: 5
+      $gte: 3,
+      $lte: 5
     }
   } else if (body.beta === '5') {
     Qbeta = {
-      gte: 5
+      $gte: 5
     }
   }
+
+  var QpeRatio = { $exists: true }
+  if (body.peRatio === 'profitable'){
+    QpeRatio = {
+      $gt: 0
+    }
+  } else if (body.peRatio === 'low'){
+    QpeRatio = {
+      $lte: 15
+    }
+  } else if (body.peRatio === 'high'){
+    QpeRatio = {
+      $gte: 50
+    }
+  } else if (body.peRatio === '<5'){
+    QpeRatio = {
+      $lte: 5
+    }
+  } else if (body.peRatio === '<10'){
+    QpeRatio = {
+      $lte: 10
+    }
+  } else if (body.peRatio === '<20'){
+    QpeRatio = {
+      $lte: 20
+    }
+  } else if (body.peRatio === '<30'){
+    QpeRatio = {
+      $lte: 30
+    }
+  } else if (body.peRatio === '>5'){
+    QpeRatio = {
+      $gte: 5
+    }
+  } else if (body.peRatio === '>10'){
+    QpeRatio = {
+      $gte: 10
+    }
+  } else if (body.peRatio === '>20'){
+    QpeRatio = {
+      $gte: 20
+    }
+  } else if (body.peRatio === '>30'){
+    QpeRatio = {
+      $gte: 30
+    }
+  } 
+ 
 
   Screener.find({
     marketcap: QmarketCap,
     dividendYield: QdividendYield,
     EPSSurprisePercent: QEPSSurprisePercent,
-    beta: Qbeta
+    beta: Qbeta,
+    peRatio: QpeRatio
   }).then((filteredData) => {
     res.status(200).send(filteredData);
   }).catch(e => {
@@ -389,8 +476,6 @@ app.post('/api/filterScreener', (req, res) => {
   });
   // res.status(200).send(res);
 });
-
-// Update tickers in screener model
 
 ///////////////////
 //USER MANAGEMENT//
@@ -479,7 +564,9 @@ schedule.scheduleJob('0 0 * * *', () => {
               var statData = new Screener(statsAndQuote);
               statData.save().then(() => {
               }).catch(e => {
-                // console.log(e);
+                if (e.errors.symbol.message !== "Path `symbol` is required."){
+                  console.log(e);
+                }
               });
             }
           }

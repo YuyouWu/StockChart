@@ -17,6 +17,7 @@ class Screener extends React.Component {
             day200MovingAvg:'',
             week52high:'',
             week52low:'',
+            peRatio:'',
             filterResult:''
         }
     }
@@ -60,8 +61,8 @@ class Screener extends React.Component {
         }];
 
         return (
-            <div>
-                <Row style={{ marginBottom: '10px' }}>
+            <div style={{width: '1500px'}}>
+                <Row style={{ marginBottom: '10px'}}>
                     <Col span={2}>
                         <label>Market Cap</label>
                     </Col>
@@ -118,7 +119,7 @@ class Screener extends React.Component {
                     </Col>
 
                     <Col span={2}>
-                        <label>EPS Surprise Percent</label>
+                        <label>EPS Surprise %</label>
                     </Col>
                     <Col span={3}>
                         <HTMLSelect
@@ -141,8 +142,22 @@ class Screener extends React.Component {
                     <Col span={3}>
                         <HTMLSelect
                             style={{width:'100px'}}
+                            id='peRatio'
+                            value={this.state.peRatio}
+                            onChange={this.setFilterState}
                         >
                             <option value=''> Any </option>
+                            <option value='profitable'> Profitable (&gt;0)</option>
+                            <option value='low'> Low (&lt;15) </option>
+                            <option value='high'> High (&gt;50) </option>
+                            <option value='<5'> under 5 </option>
+                            <option value='<10'> under 10 </option>
+                            <option value='<20'> under 20 </option>
+                            <option value='<30'> under 30 </option>
+                            <option value='>5'> over 5 </option>
+                            <option value='>10'> over 10 </option>
+                            <option value='>20'> over 20 </option>
+                            <option value='>30'> over 30 </option>
                         </HTMLSelect>
                     </Col>
 
