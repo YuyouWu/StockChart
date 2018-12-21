@@ -208,7 +208,7 @@ app.post('/api/screener/', (req, res) => {
     axios.get('https://api.iextrading.com/1.0/ref-data/symbols').then(result => {
       var screenerDataArr = result.data;
       var chunk = 100;
-      var j = 0
+      var j = 0;
       for (var i = 0; i < screenerDataArr.length; i = i + chunk) {
         symbolArr[j] = screenerDataArr.slice(i, i + chunk); //Slice into chunks of 100 
         j++;
@@ -456,7 +456,7 @@ schedule.scheduleJob('0 0 * * *', () => {
     axios.get('https://api.iextrading.com/1.0/ref-data/symbols').then(result => {
       var screenerDataArr = result.data;
       var chunk = 100;
-      var j = 0
+      var j = 0;
       for (var i = 0; i < screenerDataArr.length; i = i + chunk) {
         symbolArr[j] = screenerDataArr.slice(i, i + chunk); //Slice into chunks of 100 
         j++;
