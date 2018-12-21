@@ -21,7 +21,9 @@ var {authenticate} = require('./middleware/authenticate');
 var app = express();
 var PORT = process.env.PORT || 5000;
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({
+  limit: '50mb'
+}));
 
 //Get a list of tickers inside portfolio with authentication
 app.get('/api/portfolio', authenticate, (req, res) => {
@@ -246,7 +248,7 @@ app.post('/api/screener/', (req, res) =>{
 app.post('/api/filterScreener', (req, res) => {
   //filter results here
   var body = _.pick(req.body, ['marketcap', 'dividendYield', 'EPSSurprisePercent', 'beta']);
-  
+  console.log(body);
   //Query for Market Cap
   var QmarketCap = {$exists: true}
   if (body.marketcap === 'nanocap'){

@@ -1,6 +1,6 @@
 import React from 'react';
 import { HTMLSelect, Button, ButtonGroup, Intent } from "@blueprintjs/core";
-import { Row, Col, Table } from 'antd';
+import { Row, Col, Table, Skeleton } from 'antd';
 import axios from 'axios';
 
 //Class for rendering each individual tickers on portfolio
@@ -8,6 +8,15 @@ class Screener extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            marketcap:'',
+            dividendYield:'',
+            ttmEPS:'',
+            EPSSurprisePercent:'',
+            beta:'',
+            day50MovingAvg:'',
+            day200MovingAvg:'',
+            week52high:'',
+            week52low:'',
             filterResult:''
         }
     }
@@ -19,6 +28,9 @@ class Screener extends React.Component {
     }
 
     applyFiler = () => {
+        this.setState({
+            filterResult: 'loading'
+        });
         axios.post('/api/filterScreener', this.state).then(res => {
             this.setState({
                 filterResult: res.data
@@ -50,11 +62,12 @@ class Screener extends React.Component {
         return (
             <div>
                 <Row style={{ marginBottom: '10px' }}>
-                    <Col span={3}>
+                    <Col span={2}>
                         <label>Market Cap</label>
                     </Col>
                     <Col span={3}>
                         <HTMLSelect
+                            style={{width:'100px'}}
                             id='marketcap'
                             value={this.state.marketcap}
                             onChange={this.setFilterState}
@@ -69,11 +82,12 @@ class Screener extends React.Component {
                         </HTMLSelect>
                     </Col>
 
-                    <Col span={3}>
+                    <Col span={2}>
                         <label>Dividend Yield</label>
                     </Col>
                     <Col span={3}>
                         <HTMLSelect
+                            style={{width:'100px'}}
                             id='dividendYield'
                             value={this.state.dividendRate}
                             onChange={this.setFilterState}
@@ -89,11 +103,12 @@ class Screener extends React.Component {
                         </HTMLSelect>
                     </Col>
 
-                    <Col span={3}>
+                    <Col span={2}>
                         <label>EPS</label>
                     </Col>
                     <Col span={3}>
                         <HTMLSelect
+                            style={{width:'100px'}}
                             id='ttmEPS'
                             value={this.state.ttmEPS}
                             onChange={this.setFilterState}
@@ -102,11 +117,12 @@ class Screener extends React.Component {
                         </HTMLSelect>
                     </Col>
 
-                    <Col span={3}>
+                    <Col span={2}>
                         <label>EPS Surprise Percent</label>
                     </Col>
                     <Col span={3}>
                         <HTMLSelect
+                            style={{width:'100px'}}
                             id='EPSSurprisePercent'
                             value={this.state.EPSSurprisePercent}
                             onChange={this.setFilterState}
@@ -119,20 +135,23 @@ class Screener extends React.Component {
                     </Col>
                 </Row>
                 <Row style={{ marginBottom: '10px' }}>
-                    <Col span={3}>
+                    <Col span={2}>
                         <label>PE Ratio</label>
                     </Col>
                     <Col span={3}>
-                        <HTMLSelect>
+                        <HTMLSelect
+                            style={{width:'100px'}}
+                        >
                             <option value=''> Any </option>
                         </HTMLSelect>
                     </Col>
 
-                    <Col span={3}>
+                    <Col span={2}>
                         <label>Beta</label>
                     </Col>
                     <Col span={3}>
                         <HTMLSelect
+                            style={{width:'100px'}}
                             id='beta'
                             value={this.state.beta}
                             onChange={this.setFilterState}
@@ -149,11 +168,12 @@ class Screener extends React.Component {
                         </HTMLSelect>
                     </Col>
 
-                    <Col span={3}>
+                    <Col span={2}>
                         <label>50 Days SMA</label>
                     </Col>
                     <Col span={3}>
                         <HTMLSelect
+                            style={{width:'100px'}}
                             id='day50MovingAvg'
                             value={this.state.beta}
                             onChange={this.setFilterState}
@@ -177,11 +197,12 @@ class Screener extends React.Component {
                             <option value=''> 10% above SMA200 </option>
                         </HTMLSelect>
                     </Col>
-                    <Col span={3}>
+                    <Col span={2}>
                         <label>200 Days SMA</label>
                     </Col>
                     <Col span={3}>
                         <HTMLSelect
+                            style={{width:'100px'}}
                             id='day200MovingAvg'
                             value={this.state.beta}
                             onChange={this.setFilterState}
@@ -208,11 +229,12 @@ class Screener extends React.Component {
                 </Row>
 
                 <Row style={{ marginBottom: '10px' }}>
-                    <Col span={3}>
+                    <Col span={2}>
                         <label>52wks High</label>
                     </Col>
                     <Col span={3}>
                         <HTMLSelect
+                            style={{width:'100px'}}
                             id='week52high'
                             value={this.state.beta}
                             onChange={this.setFilterState}
@@ -226,11 +248,12 @@ class Screener extends React.Component {
                         </HTMLSelect>
                     </Col>
 
-                    <Col span={3}>
+                    <Col span={2}>
                         <label>52wks Low</label>
                     </Col>
                     <Col span={3}>
                         <HTMLSelect
+                            style={{width:'100px'}}
                             id='week52low'
                             value={this.state.beta}
                             onChange={this.setFilterState}
@@ -248,15 +271,27 @@ class Screener extends React.Component {
                     intent = {Intent.PRIMARY}    
                     onClick={this.applyFiler}
                 >Filter</Button>
-
                 {
-                    this.state.filterResult !== '' &&
-                        <Table 
-                            style={{marginTop:'10px'}}
-                            dataSource={this.state.filterResult} 
-                            columns={columns}
-                        >
-                        </Table>
+                    this.state.filterResult !== '' ? (
+                        this.state.filterResult !== 'loading' ? (
+                            <Table 
+                                style={{marginTop:'10px'}}
+                                dataSource={this.state.filterResult} 
+                                columns={columns}
+                            >
+                            </Table>
+                        ):(
+                            <div style={{marginTop:'30px'}}>
+                            <Skeleton 
+                                active
+                                title = {false}
+                                paragraph={{ rows: 10 }}
+                            />
+                            </div>
+                        )
+                    ):(
+                        <div></div> 
+                    ) 
                 }
             </div>
         );
