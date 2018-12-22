@@ -98,6 +98,31 @@ class Screener extends React.Component {
                     </Col>
 
                     <Col span={2}>
+                        <label>Sector</label>
+                    </Col>
+                    <Col span={3}>
+                        <HTMLSelect
+                            style={{width:'100px'}}
+                            id='sector'
+                            value={this.state.sector}
+                            onChange={this.setFilterState}
+                        >
+                            <option value=''> Any </option>
+                            <option value='Utilities'> Utilities </option>
+                            <option value='Basic Materials'> Materials </option>
+                            <option value='Healthcare'> Health Care </option>
+                            <option value='Energy'> Energy </option>
+                            <option value='Consumer Defensive'> Consumer Staples </option>
+                            <option value='Industrials'> Industrials </option>
+                            <option value='Financial Services'> Financials </option>
+                            <option value='Consumer Cyclical'> Consumer Discretionary </option>
+                            <option value='Real Estate'> Real Estate </option>
+                            <option value='Technology'> Technology </option>
+                            <option value='Communication Services'> Communication Services </option>
+                        </HTMLSelect>
+                    </Col>
+
+                    <Col span={2}>
                         <label>Dividend Yield</label>
                     </Col>
                     <Col span={3}>
@@ -118,7 +143,7 @@ class Screener extends React.Component {
                         </HTMLSelect>
                     </Col>
 
-                    <Col span={2}>
+                    {/* <Col span={2}>
                         <label>EPS</label>
                     </Col>
                     <Col span={3}>
@@ -130,7 +155,7 @@ class Screener extends React.Component {
                         >
                             <option value=''> Any </option>
                         </HTMLSelect>
-                    </Col>
+                    </Col> */}
 
                     <Col span={2}>
                         <label>EPS Surprise %</label>

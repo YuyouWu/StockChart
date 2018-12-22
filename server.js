@@ -314,7 +314,7 @@ app.post('/api/screener/', (req, res) => {
 //Filer Screener Data
 app.post('/api/filterScreener', (req, res) => {
   //filter results here
-  var body = _.pick(req.body, ['marketcap', 'dividendYield', 'EPSSurprisePercent', 'beta', 'peRatio', 'day50MovingAvg','day200MovingAvg','week52high','week52low']);
+  var body = _.pick(req.body, ['marketcap', 'sector', 'dividendYield', 'EPSSurprisePercent', 'beta', 'peRatio', 'day50MovingAvg','day200MovingAvg','week52high','week52low']);
   //Query for Market Cap
   var QmarketCap = { $exists: true }
   if (body.marketcap === 'nanocap') {
@@ -344,6 +344,53 @@ app.post('/api/filterScreener', (req, res) => {
   } else if (body.marketcap === 'megacap') {
     QmarketCap = {
       $gte: 300000000000,
+    }
+  }
+
+  var Qsector = { $exists: true }
+  if (body.sector === 'Utilities'){
+    Qsector = {
+      $eq: 'Utilities'
+    }
+  } else if (body.sector === 'Basic Materials'){
+    Qsector = {
+      $eq: 'Basic Materials'
+    }
+  } else if (body.sector === 'Healthcare'){
+    Qsector = {
+      $eq: 'Healthcare'
+    }
+  } else if (body.sector === 'Energy'){
+    Qsector = {
+      $eq: 'Energy'
+    }
+  } else if (body.sector === 'Consumer Defensive'){
+    Qsector = {
+      $eq: 'Consumer Defensive'
+    }
+  } else if (body.sector === 'Industrials'){
+    Qsector = {
+      $eq: 'Industrials'
+    }
+  } else if (body.sector === 'Financial Services'){
+    Qsector = {
+      $eq: 'Financial Services'
+    }
+  } else if (body.sector === 'Consumer Cyclical'){
+    Qsector = {
+      $eq: 'Consumer Cyclical'
+    }
+  } else if (body.sector === 'Real Estate'){
+    Qsector = {
+      $eq: 'Real Estate'
+    }
+  } else if (body.sector === 'Technology'){
+    Qsector = {
+      $eq: 'Technology'
+    }
+  } else if (body.sector === 'Communication Services'){
+    Qsector = {
+      $eq: 'Communication Services'
     }
   }
 
@@ -709,6 +756,7 @@ app.post('/api/filterScreener', (req, res) => {
 
   Screener.find({
     marketcap: QmarketCap,
+    sector: Qsector,
     dividendYield: QdividendYield,
     EPSSurprisePercent: QEPSSurprisePercent,
     beta: Qbeta,
