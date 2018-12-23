@@ -46,33 +46,40 @@ class Screener extends React.Component {
             title: 'Symbol',
             dataIndex: 'symbol',
             key: 'symbol',
-            width: 150,
+            sorter: (a, b) => a.symbol < b.symbol,
+            width: 150
         }, {
             title: 'Company Name',
             dataIndex: 'companyName',
             key: 'companyName',
-            width: 200,
+            sorter: (a, b) => a.symbol < b.symbol,
+            width: 200
         }, {
             title: 'Market Cap',
             dataIndex: 'marketcap',
             key: 'marketcap',
+            sorter: (a, b) => a.marketcap - b.marketcap,
             render: text => <p> {text.toLocaleString(undefined)}</p>
         }, { 
             title: 'PE Ratio',
             dataIndex: 'peRatio',
-            key: 'peRatio'
+            key: 'peRatio',
+            sorter: (a, b) => a.peRatio - b.peRatio
         }, { 
             title: '52 wks High',
             dataIndex: 'week52high',
-            key: 'week52high'
+            key: 'week52high',
+            sorter: (a, b) => a.week52high - b.week52high
         }, { 
             title: '52 wks Low',
             dataIndex: 'week52low',
-            key: 'week52low'
+            key: 'week52low',
+            sorter: (a, b) => a.week52low - b.week52low
         }, {
             title: 'Dividend Yield',
             dataIndex: 'dividendYield',
             key: 'dividendYield',
+            sorter: (a, b) => a.dividendYield - b.dividendYield,
             render: text => <p> {text.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
         }];
 

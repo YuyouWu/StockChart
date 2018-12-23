@@ -315,6 +315,7 @@ app.post('/api/screener/', (req, res) => {
 app.post('/api/filterScreener', (req, res) => {
   //filter results here
   var body = _.pick(req.body, ['marketcap', 'sector', 'dividendYield', 'EPSSurprisePercent', 'beta', 'peRatio', 'day50MovingAvg','day200MovingAvg','week52high','week52low']);
+  console.log(body);
   //Query for Market Cap
   var QmarketCap = { $exists: true }
   if (body.marketcap === 'nanocap') {
@@ -861,12 +862,75 @@ schedule.scheduleJob('0 0 * * *', () => {
         axios.get('https://api.iextrading.com/1.0/stock/market/batch?symbols=' + symbolChunk + '&types=quote,stats').then(stat => {
           for (key in stat.data) {
             if (stat.data.hasOwnProperty(key)) {
-              var statsAndQuote= Object.assign({}, stat.data[key].stats, stat.data[key].quote);
+              //Calculate other data needed for querying 
+              var tempDay50SMAtoPrice = (stat.data[key].stats.day50MovingAvg - stat.data[key].quote.latestPrice)/stat.data[key].quote.latestPrice;
+              var tempDay200SMAtoPrice = (stat.data[key].stats.day200MovingAvg - stat.data[key].quote.latestPrice)/stat.data[key].quote.latestPrice;
+              var tempDay50SMAtoDay200SMA = (stat.data[key].stats.day50MovingAvg - stat.data[key].stats.day200MovingAvg)/stat.data[key].stats.day200MovingAvg; 
+              var tempDay200SMAtoDay50SMA = (stat.data[key].stats.day200MovingAvg - stat.data[key].stats.day50MovingAvg)/stat.data[key].stats.day50MovingAvg;
+              var tempweek52hightoPrice =  (stat.data[key].quote.week52High - stat.data[key].quote.latestPrice)/stat.data[key].quote.latestPrice;
+              var tempweek52lowtoPrice =  (stat.data[key].quote.latestPrice - stat.data[key].quote.week52Low)/stat.data[key].quote.latestPrice;
+
+              var otherData = {
+                day50SMAAbovePrice: null,
+                day200SMAAbovePrice: null,
+                day50SMAAboveDay200SMA: null,
+                day50SMAtoPrice: null,
+                day200SMAtoPrice: null,
+                day50SMAtoDay200SMA: null,
+                day200SMAtoDay50SMA: null,
+                week52hightoPrice: null,
+                week52lowtoPrice: null
+              }
+              
+              if (stat.data[key].stats.day50MovingAvg > stat.data[key].quote.latestPrice){
+                otherData.day50SMAAbovePrice = true
+              } else {
+                otherData.day50SMAAbovePrice = false
+              }
+
+              if (stat.data[key].stats.day200MovingAvg > stat.data[key].quote.latestPrice){
+                otherData.day200SMAAbovePrice = true
+              } else {
+                otherData.day200SMAAbovePrice = false
+              }
+
+              if (stat.data[key].stats.day50MovingAvg > stat.data[key].stats.day200MovingAvg){
+                otherData.day50SMAAboveDay200SMA = true
+              } else {
+                otherData.day50SMAAboveDay200SMA = false
+              }
+
+              if(isNaN(tempDay50SMAtoPrice) === false){
+                otherData.day50SMAtoPrice = tempDay50SMAtoPrice;
+              }
+
+              if(isNaN(tempDay200SMAtoPrice) === false){
+                otherData.day200SMAtoPrice = tempDay200SMAtoPrice;
+              }
+
+              if(isNaN(tempDay50SMAtoDay200SMA) === false){
+                otherData.day50SMAtoDay200SMA = tempDay50SMAtoDay200SMA;
+              }
+
+              if(isNaN(tempDay200SMAtoDay50SMA) === false){
+                otherData.day200SMAtoDay50SMA = tempDay200SMAtoDay50SMA;
+              }
+
+              if(isNaN(tempweek52hightoPrice) === false){
+                otherData.week52hightoPrice = tempweek52hightoPrice;
+              }
+
+              if(isNaN(tempweek52lowtoPrice) === false){
+                otherData.week52lowtoPrice = tempweek52lowtoPrice;
+              }
+
+              //Joining stats and quotes then saving to Screener Model
+              var statsAndQuote = Object.assign({}, stat.data[key].stats, stat.data[key].quote, otherData);
               var statData = new Screener(statsAndQuote);
               statData.save().then(() => {
               }).catch(e => {
                 if (e.errors.symbol.message !== "Path `symbol` is required."){
-                  console.log(e);
+                  //console.log(e);
                 }
               });
             }
@@ -876,11 +940,12 @@ schedule.scheduleJob('0 0 * * *', () => {
         });
       };
       console.log('Screener Data Saved');
+      //res.status(200).send();
     }).catch(e => {
       //console.log(e);
     });
   } catch (e) {
-    // res.status(400).send();
+    //res.status(400).send();
   }
 });
 
