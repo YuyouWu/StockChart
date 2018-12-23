@@ -55,7 +55,8 @@ class Screener extends React.Component {
         }, {
             title: 'Market Cap',
             dataIndex: 'marketcap',
-            key: 'marketcap'
+            key: 'marketcap',
+            render: text => <p> {text.toLocaleString(undefined)}</p>
         }, { 
             title: 'PE Ratio',
             dataIndex: 'peRatio',
@@ -71,7 +72,8 @@ class Screener extends React.Component {
         }, {
             title: 'Dividend Yield',
             dataIndex: 'dividendYield',
-            key: 'dividendYield'
+            key: 'dividendYield',
+            render: text => <p> {text.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
         }];
 
         return (
