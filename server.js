@@ -839,6 +839,7 @@ app.post('/api/users/email', (req, res) => {
 
 //Update Screener Collection everyday at midnight
 schedule.scheduleJob('0 0 * * *', () => {
+  console.log("Update screener model start");
   Screener.collection.drop();
   var symbolArr = [];
   var symbolChunk = '';
