@@ -199,7 +199,7 @@ class CandleStickStockScaleChart extends React.Component {
 
 	onKeyPress(e) {
 		const keyCode = e.which;
-		console.log(keyCode);
+		//console.log(keyCode);
 		switch (keyCode) {
 			case 46: { // DEL
 

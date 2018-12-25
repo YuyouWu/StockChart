@@ -84,7 +84,7 @@ class Screener extends React.Component {
         }];
 
         return (
-            <div style={{width: '1500px'}}>
+            <div style={{width: '1300px'}}>
                 <Row style={{ marginBottom: '10px'}}>
                     <Col span={2}>
                         <label>Market Cap</label>
@@ -347,7 +347,7 @@ class Screener extends React.Component {
                                 </Table>
                             </div>
                         ):(
-                            <div style={{marginTop:'30px', width:'1200px'}}>
+                            <div style={{marginTop:'30px', width:'1100px'}}>
                                 <Skeleton 
                                     active
                                     title = {false}

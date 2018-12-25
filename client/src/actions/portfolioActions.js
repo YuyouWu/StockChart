@@ -3,6 +3,7 @@ import {
   GET_TICKERS, 
   ADD_TICKER, 
   DELETE_TICKER, 
+  EDIT_QUANTITY,
   UPDATE_INDEX, 
   GET_ALL_PORTFOLIO,
   CREATE_NEW_PORTFOLIO,
@@ -50,6 +51,17 @@ export const deleteTicker = tickerId => dispatch => {
     axios.delete('/api/portfolio/' + tickerId, {headers: headers}).then(res =>
       dispatch({
         type: DELETE_TICKER,
+        payload: res.data
+      })
+    )
+  )
+};
+
+export const editQuantity = ticker => dispatch => {
+  return(
+    axios.patch('/api/editQuantity/', ticker, {headers: headers}).then(res =>
+      dispatch({
+        type: EDIT_QUANTITY,
         payload: res.data
       })
     )

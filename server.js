@@ -80,6 +80,26 @@ app.post('/api/portfolio/add', authenticate, (req, res) => {
   });
 });
 
+//Edit quantity of shares
+app.patch('/api/editQuantity/', authenticate, (req, res) => {
+  var body = _.pick(req.body, ['_id', 'quantity']);
+  var id = body._id;
+  var quantity = body.quantity;
+
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send();
+  }
+
+  Ticker.findOneAndUpdate({ _id: id, _creator: req.user._id }, { $set: body }, { new: true }).then((ticker) => {
+    if (!ticker) {
+      return res.status(404).send();
+    }
+    res.send({ ticker });
+  }).catch((e) => {
+    res.status(400).send();
+  });
+});
+
 //Delete ticker inside portfolio
 app.delete('/api/portfolio/:id', authenticate, (req, res) => {
   var id = req.params.id;
@@ -201,6 +221,7 @@ app.patch('/api/renamePortfolio/', authenticate, (req, res) => {
 
 //Add all tickers to screener model
 app.post('/api/screener/', (req, res) => {
+  console.log("Update screener model start");
   Screener.collection.drop();
   var symbolArr = [];
   var symbolChunk = '';

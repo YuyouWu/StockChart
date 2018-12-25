@@ -1,6 +1,7 @@
 export const GET_TICKERS = 'GET_TICKERS';
 export const ADD_TICKER = 'ADD_TICKER';
 export const DELETE_TICKER = 'DELETE_TICKER';
+export const EDIT_QUANTITY = 'EDIT_QUANTITY';
 export const UPDATE_INDEX = 'UPDATE_INDEX';
 
 export const GET_ALL_PORTFOLIO = 'GET_ALL_PORTFOLIO';

@@ -6,6 +6,7 @@ import NewsList from './NewsList';
 import Overview from './Overview';
 import Screener from './Screener';
 import AddTickerSubMenu from './AddTickerSubMenu';
+import EditQuantityMenu from './EditQuantityMenu';
 
 // const TabPane = Tabs.TabPane;
 
@@ -15,6 +16,8 @@ class ContentView extends Component{
 		FocusStyleManager.onlyShowFocusOnTabs();
 		this.state = {
 			currentTicker: this.props.ticker,
+			currentTickerId: this.props.tickerId,
+			currentQuantity: this.props.quantity,
 			currentPortfolio: this.props.portfolio
 		}
 	}
@@ -22,6 +25,8 @@ class ContentView extends Component{
 	componentWillReceiveProps = (newProps) =>{
 		this.setState({
 			currentTicker: newProps.ticker,
+			currentTickerId: newProps.tickerId,
+			currentQuantity: newProps.quantity,
 			currentPortfolio: newProps.portfolio
 		});
 	}
@@ -29,6 +34,10 @@ class ContentView extends Component{
 	render() {	
 		const addTickerMenu = (
 			<AddTickerSubMenu ticker={this.state.currentTicker} currentPortfolio={this.state.currentPortfolio} getTickersList={this.props.getTickersList}/>
+		)
+
+		const editQuantityMenu = (
+			<EditQuantityMenu ticker={this.state.currentTicker} tickerId={this.state.currentTickerId} quantity={this.state.currentQuantity} getTickersList={this.props.getTickersList}/>
 		)
 
 		return(
@@ -51,6 +60,15 @@ class ContentView extends Component{
 										disabled={this.state.currentPortfolio === 'Holding' ? true : false}
 									>
 										Add {this.state.currentTicker}
+									</Button>
+								</Popover>
+								<Popover content={editQuantityMenu} position={Position.BOTTOM}>
+									<Button 
+										intent = {Intent.PRIMARY} 
+										style={{marginBottom:'5px'}}
+										disabled={this.state.currentTickerId === '' ? true : false}
+									>
+										Edit Quantity
 									</Button>
 								</Popover>
 							</Tabs>				

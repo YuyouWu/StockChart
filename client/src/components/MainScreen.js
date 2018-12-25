@@ -239,7 +239,7 @@ class TickerList extends Component{
 
 	//For searching Ticker
 	resetComponent = () => this.setState({ isLoading: false, results: [], value: '' });
-	handleResultSelect = (e, { result }) => this.setState({ value: result.symbol, currentTicker: result.symbol });
+	handleResultSelect = (e, { result }) => this.setState({ value: result.symbol, currentTicker: result.symbol, currentTickerId: '' });
 	handleSearchChange = (e, { value }) => {
 	    this.setState({ isLoading: true, value })
 
