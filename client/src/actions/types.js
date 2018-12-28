@@ -1,4 +1,5 @@
 export const GET_TICKERS = 'GET_TICKERS';
+export const GET_ONE_TICKER = 'GET_ONE_TICKER';
 export const ADD_TICKER = 'ADD_TICKER';
 export const DELETE_TICKER = 'DELETE_TICKER';
 export const EDIT_QUANTITY = 'EDIT_QUANTITY';

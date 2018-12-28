@@ -219,7 +219,7 @@ app.patch('/api/renamePortfolio/', authenticate, (req, res) => {
 //Chart//
 /////////
 
-app.post('/api/newDrawing', authenticate, (req, res) =>{
+app.post('/api/newDrawing', authenticate, (req, res) => {
   var body = _.pick(req.body, ['_id', 'drawing', 'drawingName']);
   console.log(body);
   if (body.drawingName === 'trend') {

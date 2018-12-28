@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { 
   GET_TICKERS, 
+  GET_ONE_TICKER,
   ADD_TICKER, 
   DELETE_TICKER, 
   EDIT_QUANTITY,
@@ -30,6 +31,17 @@ export const getTickers = () => (dispatch,getState) => {
       dispatch({
         type: GET_ERRORS,
           payload: err.response.data
+      })
+    )
+  )
+};
+
+export const getOneTicker = tickerId => (dispatch,getState) => {
+  return(
+    axios.get('/api/portfolio/' + tickerId, {headers: headers}).then(res =>
+      dispatch({
+        type: GET_ONE_TICKER,
+        payload: res.data
       })
     )
   )

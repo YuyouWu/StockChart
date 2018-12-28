@@ -41,6 +41,7 @@ import { Button, ButtonGroup } from "@blueprintjs/core";
 import { Layout } from 'antd';
 import { connect } from 'react-redux';
 import { newDrawingAction } from '../actions/chartActions';
+import { getOneTicker } from '../actions/portfolioActions';
 
 const { Sider, Content } = Layout;
 
@@ -94,7 +95,6 @@ class CandleStickStockScaleChart extends React.Component {
 			currentTickerId: this.props.tickerId
 		};
 
-		console.log(this.props.tickerId);
 		//Custom chart control
 		this.handleTrendLine = this.handleTrendLine.bind(this);
 		this.handleFib = this.handleFib.bind(this);
@@ -102,11 +102,19 @@ class CandleStickStockScaleChart extends React.Component {
 		this.handleEqChannel = this.handleEqChannel.bind(this);
 		this.handleStdChannel = this.handleStdChannel.bind(this);
 		this.handleClearDrawings = this.handleClearDrawings.bind(this);
-
-		//Load existing drawings here
 	}
 
 	componentDidMount() {
+
+		this.props.getOneTicker(this.state.currentTickerId).then(res => {
+			console.log(res.payload.ticker.trend);
+			if (res.payload.ticker.trend){
+				this.setState({
+					trends_1: res.payload.ticker.trend
+				});
+			}
+		});
+
 		document.addEventListener("keyup", this.onKeyPress);
 	}
 	
@@ -536,5 +544,5 @@ CandleStickStockScaleChart.defaultProps = {
 CandleStickStockScaleChart = fitWidth(CandleStickStockScaleChart);
 
 const mapStateToProps = state => ({});
-export default connect(mapStateToProps,{newDrawingAction})(CandleStickStockScaleChart);
+export default connect(mapStateToProps,{newDrawingAction, getOneTicker})(CandleStickStockScaleChart);
 
