@@ -221,10 +221,25 @@ app.patch('/api/renamePortfolio/', authenticate, (req, res) => {
 
 app.post('/api/newDrawing', authenticate, (req, res) => {
   var body = _.pick(req.body, ['_id', 'drawing', 'drawingName']);
-  console.log(body);
   if (body.drawingName === 'trend') {
     var drawing = {
       trend: body.drawing
+    }
+  } else if (body.drawingName === 'channel') {
+    var drawing = {
+      channel: body.drawing
+    }
+  } else if (body.drawingName === 'stdchannel') {
+    var drawing = {
+      stdchannel: body.drawing
+    }
+  } else if (body.drawingName === 'retracement') {
+    var drawing = {
+      retracement: body.drawing
+    }
+  } else if (body.drawingName === 'fan') {
+    var drawing = {
+      fan: body.drawing
     }
   }
 

@@ -24,6 +24,22 @@ var Ticker = mongoose.model('Ticker', {
     type: Array,
     required: false
   },
+  channel: {
+    type: Array,
+    required: false
+  },
+  stdchannel: {
+    type: Array,
+    required: false
+  },
+  retracement: {
+    type: Array,
+    required: false
+  },
+  fan: {
+    type: Array,
+    required: false
+  },
   _creator: {
   	type: mongoose.Schema.Types.ObjectId,
   	required: true

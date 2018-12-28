@@ -24,13 +24,14 @@ import { last, toObject } from "react-stockcharts/lib/utils";
 import { ema, wma, sma, tma } from "react-stockcharts/lib/indicator";
 
 //Interaction
-import { 
-	TrendLine, 
+import {
+	TrendLine,
 	EquidistantChannel,
-	FibonacciRetracement, 
+	FibonacciRetracement,
 	StandardDeviationChannel,
-	GannFan, 
-	DrawingObjectSelector } from "react-stockcharts/lib/interactive";
+	GannFan,
+	DrawingObjectSelector
+} from "react-stockcharts/lib/interactive";
 import {
 	saveInteractiveNodes,
 	getInteractiveNodes,
@@ -50,7 +51,7 @@ const candlesAppearance = {
 		return d.close > d.open ? "rgba(0,128,0, 0.8)" : "rgba(255,0,0, 0.8)";
 	},
 	fill: function fill(d) {
-	  return d.close > d.open ? "rgba(0,128,0, 0.8)" : "rgba(255,0,0, 0.8)";
+		return d.close > d.open ? "rgba(0,128,0, 0.8)" : "rgba(255,0,0, 0.8)";
 	},
 	stroke: function stoke(d) {
 		return d.close > d.open ? "rgba(0,128,0, 0.8)" : "rgba(255,0,0, 0.8)";
@@ -61,7 +62,7 @@ const candlesAppearance = {
 }
 
 class CandleStickStockScaleChart extends React.Component {
-	constructor(props){
+	constructor(props) {
 		super(props);
 		this.saveNode = this.saveNode.bind(this);
 		this.resetYDomain = this.resetYDomain.bind(this);
@@ -72,7 +73,7 @@ class CandleStickStockScaleChart extends React.Component {
 		this.onEqChannelComplete = this.onEqChannelComplete.bind(this);
 		this.onStdChannelComplete = this.onStdChannelComplete.bind(this);
 		this.onFibComplete = this.onFibComplete.bind(this);
-	    this.onFanComplete = this.onFanComplete.bind(this);
+		this.onFanComplete = this.onFanComplete.bind(this);
 
 		this.handleSelection = this.handleSelection.bind(this);
 
@@ -83,13 +84,13 @@ class CandleStickStockScaleChart extends React.Component {
 
 		this.state = {
 			enableTrendLine: false,
-			trends_1: [],
+			trends: [],
 			enableFib: false,
-			retracements_1: [],
+			retracements: [],
 			enableFans: false,
 			fans: [],
 			enableEqChannel: false,
-			channels_1: [],
+			channels: [],
 			enableStdChannel: false,
 			stdchannels: [],
 			currentTickerId: this.props.tickerId
@@ -105,19 +106,43 @@ class CandleStickStockScaleChart extends React.Component {
 	}
 
 	componentDidMount() {
-
+		//load drawing
 		this.props.getOneTicker(this.state.currentTickerId).then(res => {
-			console.log(res.payload.ticker.trend);
-			if (res.payload.ticker.trend){
+			if (res.payload.ticker.trend) {
 				this.setState({
-					trends_1: res.payload.ticker.trend
+					trends: res.payload.ticker.trend
 				});
 			}
+
+			if (res.payload.ticker.channel) {
+				this.setState({
+					channels: res.payload.ticker.channel
+				});
+			}
+
+			if (res.payload.ticker.stdchannel) {
+				this.setState({
+					stdchannels: res.payload.ticker.stdchannel
+				});
+			}
+
+			if (res.payload.ticker.retracement) {
+				this.setState({
+					retracements: res.payload.ticker.retracement
+				});
+			}
+
+			if (res.payload.ticker.fan) {
+				this.setState({
+					fans: res.payload.ticker.fan
+				});
+			}
+
 		});
 
 		document.addEventListener("keyup", this.onKeyPress);
 	}
-	
+
 	componentWillMount() {
 		this.setState({
 			suffix: 1
@@ -143,7 +168,7 @@ class CandleStickStockScaleChart extends React.Component {
 	saveInteractiveNode(node) {
 		this.node = node;
 	}
-	
+
 	resetYDomain() {
 		this.node.resetYDomain();
 	}
@@ -157,76 +182,111 @@ class CandleStickStockScaleChart extends React.Component {
 	handleSelection(interactives) {
 		//console.log(interactives)
 		if (interactives[0].type === "Trendline") {
-		  const state = toObject([interactives[0]], each => {
-			return [`trends_${each.chartId}`, each.objects];
-		  });
-		  this.setState(state);
+			const state = toObject([interactives[0]], each => {
+				return [`trends`, each.objects];
+			});
+			this.setState(state);
 		}
 		if (interactives[1].type === "EquidistantChannel") {
 			const state = toObject([interactives[1]], each => {
-			  return [`channels_${each.chartId}`, each.objects];
+				return [`channels`, each.objects];
 			});
 			this.setState(state);
 		}
 		if (interactives[2].type === "StandardDeviationChannel") {
 			const state = toObject([interactives[2]], each => {
-			  return ["stdchannels", each.objects];
+				return ["stdchannels", each.objects];
 			});
 			this.setState(state);
 		}
 		if (interactives[3].type === "FibonacciRetracement") {
-		  const state = toObject([interactives[3]], each => {
-			return [`retracements_${each.chartId}`, each.objects];
-		  });
-		  this.setState(state);
+			const state = toObject([interactives[3]], each => {
+				return [`retracements`, each.objects];
+			});
+			this.setState(state);
 		}
 		if (interactives[4].type === "GannFan") {
-		  const state = toObject([interactives[4]], each => {
-			return ["fans", each.objects];
-		  });
-		  this.setState(state);
+			const state = toObject([interactives[4]], each => {
+				return ["fans", each.objects];
+			});
+			this.setState(state);
 		}
 	}
 
-	onDrawComplete(trends_1) {
+	onDrawComplete(trends) {
 		this.setState({
-		  enableTrendLine: false,
-		  trends_1
-		}, () =>{
+			enableTrendLine: false,
+			trends
+		}, () => {
 			var drawingObj = {
 				_id: this.state.currentTickerId,
-				drawing: trends_1,
+				drawing: trends,
 				drawingName: 'trend'
 			}
-			console.log(drawingObj);
 			this.props.newDrawingAction(drawingObj).then(res => {
 				console.log(res);
 			});
 		});
 	}
-	onEqChannelComplete(channels_1) {
+	onEqChannelComplete(channels) {
 		this.setState({
 			enableEqChannel: false,
-			channels_1
+			channels
+		}, () => {
+			var drawingObj = {
+				_id: this.state.currentTickerId,
+				drawing: channels,
+				drawingName: 'channel'
+			}
+			this.props.newDrawingAction(drawingObj).then(res => {
+				console.log(res);
+			});
 		});
 	}
 	onStdChannelComplete(stdchannels) {
 		this.setState({
 			enableStdChannel: false,
 			stdchannels
+		}, () => {
+			var drawingObj = {
+				_id: this.state.currentTickerId,
+				drawing: stdchannels,
+				drawingName: 'stdchannel'
+			}
+			this.props.newDrawingAction(drawingObj).then(res => {
+				console.log(res);
+			});
 		});
 	}
-	onFibComplete(retracements_1) {
+	onFibComplete(retracements) {
 		this.setState({
-		  retracements_1,
-		  enableFib: false
+			retracements,
+			enableFib: false
+		}, () => {
+			var drawingObj = {
+				_id: this.state.currentTickerId,
+				drawing: retracements,
+				drawingName: 'retracement'
+			}
+			this.props.newDrawingAction(drawingObj).then(res => {
+				console.log(res);
+			});
 		});
 	}
-	
+
 	onFanComplete(fans) {
 		this.setState({
-		  enableFans: false,
-		  fans
+			enableFans: false,
+			fans
+		}, () => {
+			var drawingObj = {
+				_id: this.state.currentTickerId,
+				drawing: fans,
+				drawingName: 'fan'
+			}
+			this.props.newDrawingAction(drawingObj).then(res => {
+				console.log(res);
+			});
 		});
 	}
 
@@ -236,31 +296,66 @@ class CandleStickStockScaleChart extends React.Component {
 		switch (keyCode) {
 			case 46: { // DEL
 
-				const trends_1 = this.state.trends_1.filter(each => !each.selected);
-				const retracements_1 = this.state.retracements_1.filter(
-				  each => !each.selected
+				const trends = this.state.trends.filter(each => !each.selected);
+				const retracements = this.state.retracements.filter(
+					each => !each.selected
 				);
-				const channels_1 = this.state.channels_1.filter(
+				const channels = this.state.channels.filter(
 					each => !each.selected
 				);
 				const stdchannels = this.state.stdchannels.filter(
 					each => !each.selected
 				);
 				const fans = this.state.fans.filter(each => !each.selected);
-				if(this.canvasNode){
+				if (this.canvasNode) {
 					this.canvasNode.cancelDrag();
 				}
 				this.setState({
-				  trends_1,
-				  channels_1,
-				  stdchannels,
-				  retracements_1,
-				  fans
+					trends,
+					channels,
+					stdchannels,
+					retracements,
+					fans
+				}, () => {
+					var drawingObj = {
+						_id: this.state.currentTickerId,
+						drawing: this.state.trends,
+						drawingName: 'trend'
+					}
+					this.props.newDrawingAction(drawingObj);
+
+					drawingObj = {
+						_id: this.state.currentTickerId,
+						drawing: this.state.channels,
+						drawingName: 'channel'
+					}
+					this.props.newDrawingAction(drawingObj);
+
+					drawingObj = {
+						_id: this.state.currentTickerId,
+						drawing: this.state.stdchannels,
+						drawingName: 'stdchannel'
+					}
+					this.props.newDrawingAction(drawingObj);
+
+					drawingObj = {
+						_id: this.state.currentTickerId,
+						drawing: this.state.retracements,
+						drawingName: 'retracement'
+					}
+					this.props.newDrawingAction(drawingObj);
+
+					drawingObj = {
+						_id: this.state.currentTickerId,
+						drawing: this.state.fans,
+						drawingName: 'fan'
+					}
+					this.props.newDrawingAction(drawingObj);
 				});
 				break;
 			}
 			case 27: { // ESC
-				if(this.canvasNode){
+				if (this.canvasNode) {
 					this.canvasNode.cancelDrag();
 				}
 				this.setState({
@@ -301,28 +396,63 @@ class CandleStickStockScaleChart extends React.Component {
 			enableStdChannel: true
 		});
 	}
-	handleFib(){
+	handleFib() {
 		this.setState({
 			enableFib: true
 		});
 	}
-	handleFan(){
+	handleFan() {
 		this.setState({
 			enableFans: true
 		});
 	}
-	handleClearDrawings(){
+	handleClearDrawings() {
 		this.setState({
 			enableTrendLine: false,
-			trends_1: [],
+			trends: [],
 			enableFib: false,
-			retracements_1: [],
+			retracements: [],
 			enableFans: false,
 			fans: [],
 			enableEqChannel: false,
-			channels_1: [],
+			channels: [],
 			enableStdChannel: false,
 			stdchannels: []
+		}, () => {
+			var drawingObj = {
+				_id: this.state.currentTickerId,
+				drawing: this.state.trends,
+				drawingName: 'trend'
+			}
+			this.props.newDrawingAction(drawingObj);
+
+			drawingObj = {
+				_id: this.state.currentTickerId,
+				drawing: this.state.channels,
+				drawingName: 'channel'
+			}
+			this.props.newDrawingAction(drawingObj);
+
+			drawingObj = {
+				_id: this.state.currentTickerId,
+				drawing: this.state.stdchannels,
+				drawingName: 'stdchannel'
+			}
+			this.props.newDrawingAction(drawingObj);
+
+			drawingObj = {
+				_id: this.state.currentTickerId,
+				drawing: this.state.retracements,
+				drawingName: 'retracement'
+			}
+			this.props.newDrawingAction(drawingObj);
+
+			drawingObj = {
+				_id: this.state.currentTickerId,
+				drawing: this.state.fans,
+				drawingName: 'fan'
+			}
+			this.props.newDrawingAction(drawingObj);
 		});
 	}
 
@@ -336,10 +466,10 @@ class CandleStickStockScaleChart extends React.Component {
 				sourcePath: "close", // optional will default to close as the source
 			})
 			.skipUndefined(true) // defaults to true
-			.merge((d, c) => {d.ema20 = c;}) // Required, if not provided, log a error
+			.merge((d, c) => { d.ema20 = c; }) // Required, if not provided, log a error
 			.accessor(d => d.ema20) // Required, if not provided, log an error during calculation
 			.stroke("blue"); // Optional
-		
+
 		const calculatedData = ema20(initialData);
 
 		const xScaleProvider = discontinuousTimeScaleProvider
@@ -350,49 +480,49 @@ class CandleStickStockScaleChart extends React.Component {
 			xAccessor,
 			displayXAccessor,
 		} = xScaleProvider(calculatedData);
-		
+
 		const xExtents = [
 			xAccessor(last(data)),
 			xAccessor(data[data.length - 100])
 		];
 
-		const gheight = window.innerHeight-200;
+		const gheight = window.innerHeight - 200;
 
-		var margin = {left: 70, right: 70, top:20, bottom: 30};
+		var margin = { left: 70, right: 70, top: 20, bottom: 30 };
 		var gridHeight = gheight - margin.top - margin.bottom;
 		var gridWidth = width - 80 - margin.right;
 
 		var showGrid = true;
-		var yGrid = showGrid ? { 
-		    innerTickSize: -1 * gridWidth,
-		    tickStrokeDasharray: 'Solid',
-		    tickStrokeOpacity: 0.2,
-		    tickStrokeWidth: 1
+		var yGrid = showGrid ? {
+			innerTickSize: -1 * gridWidth,
+			tickStrokeDasharray: 'Solid',
+			tickStrokeOpacity: 0.2,
+			tickStrokeWidth: 1
 		} : {};
-		var xGrid = showGrid ? { 
-		    innerTickSize: -1 * gridHeight,
-		    tickStrokeDasharray: 'Solid',
-		    tickStrokeOpacity: 0.2,
-		    tickStrokeWidth: 1
+		var xGrid = showGrid ? {
+			innerTickSize: -1 * gridHeight,
+			tickStrokeDasharray: 'Solid',
+			tickStrokeOpacity: 0.2,
+			tickStrokeWidth: 1
 		} : {};
 
 		return (
 			<div>
 				<Layout>
 					<Sider width={30} style={{ background: '#fff' }}>
-					<ButtonGroup vertical style={{marginTop:'0px'}}>
-						<Button icon="minus" onClick={this.handleTrendLine}></Button>
-						<Button icon="vertical-distribution" onClick={this.handleEqChannel}></Button>
-						<Button icon="menu" onClick={this.handleStdChannel}></Button>
-						<Button icon="align-justify" onClick={this.handleFib}></Button>
-						<Button icon="curved-range-chart" onClick={this.handleFan}></Button>
-						<Button icon="cross" onClick={this.handleClearDrawings}></Button>
-					</ButtonGroup>
+						<ButtonGroup vertical style={{ marginTop: '0px' }}>
+							<Button icon="minus" onClick={this.handleTrendLine}></Button>
+							<Button icon="vertical-distribution" onClick={this.handleEqChannel}></Button>
+							<Button icon="menu" onClick={this.handleStdChannel}></Button>
+							<Button icon="align-justify" onClick={this.handleFib}></Button>
+							<Button icon="curved-range-chart" onClick={this.handleFan}></Button>
+							<Button icon="cross" onClick={this.handleClearDrawings}></Button>
+						</ButtonGroup>
 					</Sider>
 					<Layout>
-						<Content style={{ background: '#fff', borderStyle: "solid", borderWidth: '1px', borderRadius:'5px', borderColor:'#DADADA' }} >
-							<ChartCanvas ref={this.saveCanvasNode} 
-								height={window.innerHeight-200}
+						<Content style={{ background: '#fff', borderStyle: "solid", borderWidth: '1px', borderRadius: '5px', borderColor: '#DADADA' }} >
+							<ChartCanvas ref={this.saveCanvasNode}
+								height={window.innerHeight - 200}
 								ratio={ratio}
 								width={width - 50}
 								margin={{ left: 50, right: 50, top: 10, bottom: 30 }}
@@ -406,16 +536,16 @@ class CandleStickStockScaleChart extends React.Component {
 							>
 
 								<Chart id={1} yExtents={[d => [d.high, d.low], ema20.accessor()]}>
-									<XAxis axisAt="bottom" orient="bottom" ticks={10} {...xGrid}/>
-									<YAxis axisAt="right" orient="right" ticks={10} {...yGrid}/>
+									<XAxis axisAt="bottom" orient="bottom" ticks={10} {...xGrid} />
+									<YAxis axisAt="right" orient="right" ticks={10} {...yGrid} />
 									<MouseCoordinateY
 										at="right"
 										orient="right"
 										displayFormat={format(".2f")}
 									/>
-									<CandlestickSeries {...candlesAppearance}/>
+									<CandlestickSeries {...candlesAppearance} />
 
-									<LineSeries yAccessor={ema20.accessor()} stroke={ema20.stroke()}/>
+									<LineSeries yAccessor={ema20.accessor()} stroke={ema20.stroke()} />
 									<CurrentCoordinate yAccessor={ema20.accessor()} fill={ema20.stroke()} />
 
 									<OHLCTooltip forChart={1} origin={[-38, 0]} />
@@ -441,14 +571,14 @@ class CandleStickStockScaleChart extends React.Component {
 										type="LINE"
 										snap={false}
 										snapTo={d => [d.high, d.low]}
-										trends={this.state.trends_1}
+										trends={this.state.trends}
 										onComplete={this.onDrawComplete}
 									/>
 									<EquidistantChannel
 										ref={this.saveInteractiveNodes("EquidistantChannel", 1)}
 										enabled={this.state.enableEqChannel}
 										onComplete={this.onEqChannelComplete}
-										channels={this.state.channels_1}
+										channels={this.state.channels}
 									/>
 									<StandardDeviationChannel
 										ref={this.saveInteractiveNodes("StandardDeviationChannel", 1)}
@@ -459,7 +589,7 @@ class CandleStickStockScaleChart extends React.Component {
 									<FibonacciRetracement
 										ref={this.saveInteractiveNodes("FibonacciRetracement", 1)}
 										enabled={this.state.enableFib}
-										retracements={this.state.retracements_1}
+										retracements={this.state.retracements}
 										onComplete={this.onFibComplete}
 									/>
 
@@ -473,21 +603,21 @@ class CandleStickStockScaleChart extends React.Component {
 								</Chart>
 								<DrawingObjectSelector
 									enabled={
-									!(
-										this.state.enableTrendLine &&
-										this.state.enableEqChannel &&
-										this.state.enableStdChannel &&
-										this.state.enableFib &&
-										this.state.enableFans
-									)
+										!(
+											this.state.enableTrendLine &&
+											this.state.enableEqChannel &&
+											this.state.enableStdChannel &&
+											this.state.enableFib &&
+											this.state.enableFans
+										)
 									}
 									getInteractiveNodes={this.getInteractiveNodes}
 									drawingObjectMap={{
-									FibonacciRetracement: "retracements",
-									EquidistantChannel: "channels",
-									StandardDeviationChannel: "channels",
-									Trendline: "trends",
-									GannFan: "fans"
+										FibonacciRetracement: "retracements",
+										EquidistantChannel: "channels",
+										StandardDeviationChannel: "channels",
+										Trendline: "trends",
+										GannFan: "fans"
 									}}
 									onSelect={this.handleSelection}
 								/>
@@ -544,5 +674,5 @@ CandleStickStockScaleChart.defaultProps = {
 CandleStickStockScaleChart = fitWidth(CandleStickStockScaleChart);
 
 const mapStateToProps = state => ({});
-export default connect(mapStateToProps,{newDrawingAction, getOneTicker})(CandleStickStockScaleChart);
+export default connect(mapStateToProps, { newDrawingAction, getOneTicker })(CandleStickStockScaleChart);
 
