@@ -1,7 +1,7 @@
 import React from 'react';
 import { newPortfolio } from '../actions/portfolioActions';
 import { Form, InputGroup, Input, Button } from 'reactstrap';
-import { Modal } from 'antd';
+import { Modal, message } from 'antd';
 import { connect } from 'react-redux';
 
 //Class for rendering each individual tickers on portfolio
@@ -15,7 +15,8 @@ class NewPortfolioModal extends React.Component {
 		}
 
 		this.props.newPortfolio(portfolioObj).then(res => {
-            this.props.getAllPortfolio();
+			this.props.getAllPortfolio();
+			message.success('New list ' + portfolioName + ' created.');			
         });
 		this.props.hideModal();
 	}

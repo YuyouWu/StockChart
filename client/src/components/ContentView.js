@@ -50,7 +50,7 @@ class ContentView extends Component{
 					):(
 						<div style={{marginTop:'-6px'}}>
 							<Tabs id="ContentView">
-								<Tab id="Summary" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>{this.state.currentTicker}</p>} panel={<Summary ticker = {this.state.currentTicker} quantity={this.props.quantity}/>} />
+								<Tab id="Summary" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>{this.state.currentTicker}</p>} panel={<Summary ticker = {this.state.currentTicker} tickerId = {this.state.currentTickerId} quantity={this.props.quantity}/>} />
 								<Tab id="Financial" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>Financial</p>} panel={<Financial ticker = {this.state.currentTicker}/>} />
 								<Tab id="News" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>News</p>} panel={<NewsList ticker = {this.state.currentTicker}/>} />
 								<Popover content={addTickerMenu} position={Position.BOTTOM}>

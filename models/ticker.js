@@ -20,6 +20,10 @@ var Ticker = mongoose.model('Ticker', {
     required: true,
     default: 'Watch List'
   },
+  trend: {
+    type: Array,
+    required: false
+  },
   _creator: {
   	type: mongoose.Schema.Types.ObjectId,
   	required: true

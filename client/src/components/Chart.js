@@ -36,8 +36,12 @@ import {
 	getInteractiveNodes,
 } from "./interactiveutils";
 
+
 import { Button, ButtonGroup } from "@blueprintjs/core";
 import { Layout } from 'antd';
+import { connect } from 'react-redux';
+import { newDrawingAction } from '../actions/chartActions';
+
 const { Sider, Content } = Layout;
 
 const candlesAppearance = {
@@ -86,9 +90,11 @@ class CandleStickStockScaleChart extends React.Component {
 			enableEqChannel: false,
 			channels_1: [],
 			enableStdChannel: false,
-			stdchannels: []
+			stdchannels: [],
+			currentTickerId: this.props.tickerId
 		};
 
+		console.log(this.props.tickerId);
 		//Custom chart control
 		this.handleTrendLine = this.handleTrendLine.bind(this);
 		this.handleFib = this.handleFib.bind(this);
@@ -96,6 +102,8 @@ class CandleStickStockScaleChart extends React.Component {
 		this.handleEqChannel = this.handleEqChannel.bind(this);
 		this.handleStdChannel = this.handleStdChannel.bind(this);
 		this.handleClearDrawings = this.handleClearDrawings.bind(this);
+
+		//Load existing drawings here
 	}
 
 	componentDidMount() {
@@ -108,6 +116,13 @@ class CandleStickStockScaleChart extends React.Component {
 		});
 		document.removeEventListener("keyup", this.onKeyPress);
 	}
+
+	componentWillReceiveProps(newProps) {
+		this.setState({
+			currentTickerId: newProps.tickerId
+		});
+	}
+
 
 	saveNode(node) {
 		this.node = node;
@@ -169,6 +184,16 @@ class CandleStickStockScaleChart extends React.Component {
 		this.setState({
 		  enableTrendLine: false,
 		  trends_1
+		}, () =>{
+			var drawingObj = {
+				_id: this.state.currentTickerId,
+				drawing: trends_1,
+				drawingName: 'trend'
+			}
+			console.log(drawingObj);
+			this.props.newDrawingAction(drawingObj).then(res => {
+				console.log(res);
+			});
 		});
 	}
 	onEqChannelComplete(channels_1) {
@@ -510,5 +535,6 @@ CandleStickStockScaleChart.defaultProps = {
 };
 CandleStickStockScaleChart = fitWidth(CandleStickStockScaleChart);
 
-export default CandleStickStockScaleChart;
+const mapStateToProps = state => ({});
+export default connect(mapStateToProps,{newDrawingAction})(CandleStickStockScaleChart);
 

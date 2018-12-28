@@ -7,7 +7,7 @@ import DeletePortfolioModal from './DeletePortfolioModal';
 import { getTickers, getCurrentPrice, addTicker, deleteTicker, getAllPortfolio, updateIndex } from '../actions/portfolioActions';
 import { setCurrentUser } from '../actions/authActions';
 import { Button } from 'reactstrap';
-import { Layout, Row, Col } from 'antd';
+import { Layout, Row, Col, message } from 'antd';
 import { Search} from 'semantic-ui-react';
 import { Classes, Menu, Popover, MenuItem, Position, Intent, Divider, HTMLTable} from "@blueprintjs/core";
 import { Button as BPButton, ButtonGroup as BPButtonGroup} from "@blueprintjs/core";

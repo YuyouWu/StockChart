@@ -215,6 +215,29 @@ app.patch('/api/renamePortfolio/', authenticate, (req, res) => {
   })
 });
 
+/////////
+//Chart//
+/////////
+
+app.post('/api/newDrawing', authenticate, (req, res) =>{
+  var body = _.pick(req.body, ['_id', 'drawing', 'drawingName']);
+  console.log(body);
+  if (body.drawingName === 'trend') {
+    var drawing = {
+      trend: body.drawing
+    }
+  }
+
+  Ticker.findOneAndUpdate({ _id: body._id, _creator: req.user._id }, { $set: drawing }, { new: true }).then((ticker) => {
+    if (!ticker) {
+      return res.status(404).send();
+    }
+    res.send({ ticker });
+  }).catch((e) => {
+    res.status(400).send();
+  });
+});
+
 ////////////
 //Screener//
 ////////////

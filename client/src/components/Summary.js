@@ -15,9 +15,10 @@ class Summary extends React.Component {
 	    	statData: '',
 	    	chartData: '',
 	    	notFound: false,
-	    	textColor: 'green'
+			textColor: 'green',
+			currentTickerId: this.props.tickerId
 	    }
-	    this.loadData = this.loadData.bind(this);
+		this.loadData = this.loadData.bind(this);
 	}
 
 	componentDidMount(){
@@ -43,7 +44,8 @@ class Summary extends React.Component {
 	componentWillReceiveProps(newProps){
 		this.setState({
 			chartData: '',
-			notFound: false
+			notFound: false,
+			currentTickerId: newProps.tickerId
 		});
 		this.loadData(newProps.ticker);	  	
 		//get chart data
@@ -118,7 +120,7 @@ class Summary extends React.Component {
 				    			<p style={{fontSize:12+'px'}}>{this.props.quantity} shares</p>
 				    		</Col>
 			    		</Row>
-						<Chart type="hybrid" data={this.state.chartData} />
+						<Chart type="hybrid" data={this.state.chartData} tickerId={this.state.currentTickerId} />
 					</div>
 					) : ( 
 					<div>
