@@ -93,7 +93,8 @@ class CandleStickStockScaleChart extends React.Component {
 			channels: [],
 			enableStdChannel: false,
 			stdchannels: [],
-			currentTickerId: this.props.tickerId
+			currentTickerId: this.props.tickerId,
+			loading: true
 		};
 
 		//Custom chart control
@@ -102,54 +103,22 @@ class CandleStickStockScaleChart extends React.Component {
 		this.handleFan = this.handleFan.bind(this);
 		this.handleEqChannel = this.handleEqChannel.bind(this);
 		this.handleStdChannel = this.handleStdChannel.bind(this);
-		this.handleClearDrawings = this.handleClearDrawings.bind(this);
+		this.handleClearDrawings = this.handleClearDrawings.bind(this);		
 	}
 
 	componentDidMount() {
-		//load drawing
-		this.props.getOneTicker(this.state.currentTickerId).then(res => {
-			if (res.payload.ticker.trend) {
-				this.setState({
-					trends: res.payload.ticker.trend
-				});
-			}
-
-			if (res.payload.ticker.channel) {
-				this.setState({
-					channels: res.payload.ticker.channel
-				});
-			}
-
-			if (res.payload.ticker.stdchannel) {
-				this.setState({
-					stdchannels: res.payload.ticker.stdchannel
-				});
-			}
-
-			if (res.payload.ticker.retracement) {
-				this.setState({
-					retracements: res.payload.ticker.retracement
-				});
-			}
-
-			if (res.payload.ticker.fan) {
-				this.setState({
-					fans: res.payload.ticker.fan
-				});
-			}
-
-		});
-
 		document.addEventListener("keyup", this.onKeyPress);
 	}
 
 	componentWillMount() {
+		this.loadDrawings();
 		this.setState({
 			suffix: 1
 		});
 		document.removeEventListener("keyup", this.onKeyPress);
 	}
 
+	//Not called at all?
 	componentWillReceiveProps(newProps) {
 		this.setState({
 			currentTickerId: newProps.tickerId
@@ -179,6 +148,81 @@ class CandleStickStockScaleChart extends React.Component {
 		});
 	}
 
+	loadDrawings() {
+		if(this.state.currentTickerId && this.state.currentTickerId !== '0'){
+			this.props.getOneTicker(this.state.currentTickerId).then(res => {
+				if (res.payload.ticker.trend) {
+					this.setState({
+						trends: res.payload.ticker.trend
+					});
+				}
+
+				if (res.payload.ticker.channel) {
+					this.setState({
+						channels: res.payload.ticker.channel
+					});
+				}
+
+				if (res.payload.ticker.stdchannel) {
+					this.setState({
+						stdchannels: res.payload.ticker.stdchannel
+					});
+				}
+
+				if (res.payload.ticker.retracement) {
+					this.setState({
+						retracements: res.payload.ticker.retracement
+					});
+				}
+
+				if (res.payload.ticker.fan) {
+					this.setState({
+						fans: res.payload.ticker.fan
+					});
+				}
+			});
+		}
+	}
+
+	saveDrawings() {
+		if(this.state.currentTickerId && this.state.currentTickerId !== '0'){
+			var drawingObj = {
+				_id: this.state.currentTickerId,
+				drawing: this.state.trends,
+				drawingName: 'trend'
+			}
+			this.props.newDrawingAction(drawingObj);
+
+			drawingObj = {
+				_id: this.state.currentTickerId,
+				drawing: this.state.channels,
+				drawingName: 'channel'
+			}
+			this.props.newDrawingAction(drawingObj);
+
+			drawingObj = {
+				_id: this.state.currentTickerId,
+				drawing: this.state.stdchannels,
+				drawingName: 'stdchannel'
+			}
+			this.props.newDrawingAction(drawingObj);
+
+			drawingObj = {
+				_id: this.state.currentTickerId,
+				drawing: this.state.retracements,
+				drawingName: 'retracement'
+			}
+			this.props.newDrawingAction(drawingObj);
+
+			drawingObj = {
+				_id: this.state.currentTickerId,
+				drawing: this.state.fans,
+				drawingName: 'fan'
+			}
+			this.props.newDrawingAction(drawingObj);
+		}
+	}
+	
 	handleSelection(interactives) {
 		//console.log(interactives)
 		if (interactives[0].type === "Trendline") {
@@ -211,6 +255,8 @@ class CandleStickStockScaleChart extends React.Component {
 			});
 			this.setState(state);
 		}
+
+		this.saveDrawings();
 	}
 
 	onDrawComplete(trends) {
@@ -317,40 +363,7 @@ class CandleStickStockScaleChart extends React.Component {
 					retracements,
 					fans
 				}, () => {
-					var drawingObj = {
-						_id: this.state.currentTickerId,
-						drawing: this.state.trends,
-						drawingName: 'trend'
-					}
-					this.props.newDrawingAction(drawingObj);
-
-					drawingObj = {
-						_id: this.state.currentTickerId,
-						drawing: this.state.channels,
-						drawingName: 'channel'
-					}
-					this.props.newDrawingAction(drawingObj);
-
-					drawingObj = {
-						_id: this.state.currentTickerId,
-						drawing: this.state.stdchannels,
-						drawingName: 'stdchannel'
-					}
-					this.props.newDrawingAction(drawingObj);
-
-					drawingObj = {
-						_id: this.state.currentTickerId,
-						drawing: this.state.retracements,
-						drawingName: 'retracement'
-					}
-					this.props.newDrawingAction(drawingObj);
-
-					drawingObj = {
-						_id: this.state.currentTickerId,
-						drawing: this.state.fans,
-						drawingName: 'fan'
-					}
-					this.props.newDrawingAction(drawingObj);
+					this.saveDrawings();
 				});
 				break;
 			}
@@ -521,7 +534,8 @@ class CandleStickStockScaleChart extends React.Component {
 					</Sider>
 					<Layout>
 						<Content style={{ background: '#fff', borderStyle: "solid", borderWidth: '1px', borderRadius: '5px', borderColor: '#DADADA' }} >
-							<ChartCanvas ref={this.saveCanvasNode}
+							<ChartCanvas 
+								ref={this.saveCanvasNode}
 								height={window.innerHeight - 200}
 								ratio={ratio}
 								width={width - 50}
@@ -553,7 +567,10 @@ class CandleStickStockScaleChart extends React.Component {
 										onReset={this.handleReset}
 									/>
 									<MovingAverageTooltip
-										onClick={e => console.log(e)}
+										onClick={(e) => {
+											console.log(e);
+											console.log(this.state.currentTickerId);
+										}}
 										origin={[-38, 15]}
 										options={[
 											{
