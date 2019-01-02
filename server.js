@@ -67,7 +67,7 @@ app.post('/api/portfolio/add', authenticate, (req, res) => {
       ticker: req.body.ticker,
       quantity: req.body.quantity,
       _creator: req.user._id,
-      portfolioName: req.body.portfolioName,
+      portfolioId: req.body.portfolioId,
       index: tickers.length
     });
     ticker.save().then((doc) => {

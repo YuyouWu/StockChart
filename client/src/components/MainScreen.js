@@ -47,6 +47,7 @@ class TickerList extends Component{
 			}],
 			portfolios: ['Loading'],
 			currentPortfolio: 'Watch List',
+			currentPortfolioId: 'WatchList',
 			allTickers: [''],
 	    	currentTicker: 'Overview',
 	    	currentTickerId: 0,
@@ -102,13 +103,13 @@ class TickerList extends Component{
 					tickers: res.payload,
 				});
 
-				if (this.state.currentPortfolio === 'Holding'){
+				if (this.state.currentPortfolioId === 'Holding'){
 					this.setState({
 						filteredTickers: res.payload.filter(ticker => ticker.quantity > 0)
 					});
 				} else {
 					this.setState({
-						filteredTickers: res.payload.filter(ticker => ticker.portfolioName === this.state.currentPortfolio)
+						filteredTickers: res.payload.filter(ticker => ticker.portfolioId === this.state.currentPortfolioId)
 					});
 				}
 			}	
@@ -128,20 +129,26 @@ class TickerList extends Component{
 	}
 
 	setCurrentPortfolio = (e) =>{
-		//var portfolioName = e.target.name;
-		var portfolioName = e.target.textContent;
+		//Why does it sometimes print parentNode?
+		var portfolioId = '';
+		if(e.target.id){
+			portfolioId = e.target.id;
+		} else {
+			portfolioId = e.target.parentNode.id;
+		}
 		this.getTickersList();
 		this.setState({
-			currentPortfolio: portfolioName,
+			currentPortfolio: e.target.textContent,
+			currentPortfolioId: portfolioId
 		});
 
-		if (portfolioName === 'Holding'){
+		if (e.target.textContent === 'Holding'){
 			this.setState({
 				filteredTickers: this.state.tickers.filter(ticker => ticker.quantity > 0)
 			});
 		} else {
 			this.setState({
-				filteredTickers: this.state.tickers.filter(ticker => ticker.portfolioName === portfolioName)
+				filteredTickers: this.state.tickers.filter(ticker => ticker.portfolioId === this.state.currentPortfolioId)
 			});
 		}
 	}
@@ -191,7 +198,7 @@ class TickerList extends Component{
 	showDeletePortfolioModal = (e) => {
     	this.setState({
 			deletePortfolioModalTogle: true,
-			currentPortfolioID: e.target.id,
+			currentPortfolioId: e.target.id,
 			deletePortfolioName: e.target.name
     	});
   	}
@@ -325,13 +332,12 @@ class TickerList extends Component{
 
 		const listMenu = (
             <Menu>
-				<MenuItem onClick={this.setCurrentPortfolio} name='Watch List' text='Watch List'/>
-				<MenuItem onClick={this.setCurrentPortfolio} name='Holding' text='Holding'/>
+				<MenuItem onClick={this.setCurrentPortfolio} id='WatchList' text='Watch List'/>
+				<MenuItem onClick={this.setCurrentPortfolio} id='Holding' text='Holding'/>
 				{this.state.portfolios.map((portfolio) =>
-					<div>
 					<Row>
 						<Col span={this.state.editMode ? 19 : 24}>
-							<MenuItem onClick={this.setCurrentPortfolio} name={portfolio.portfolioName} text={portfolio.portfolioName}/>
+							<MenuItem onClick={this.setCurrentPortfolio} id={portfolio._id} text={portfolio.portfolioName}/>
 						</Col>
 						<Col span={4}>
 							<BPButton 
@@ -341,12 +347,11 @@ class TickerList extends Component{
 								intent={Intent.DANGER} 
 								style={{marginLeft:'5px'}}
 								onClick = {this.showDeletePortfolioModal}
-								id={portfolio._id} 
+								id={portfolio._id}
 								name={portfolio.portfolioName}
 							/>
 						</Col>
 					</Row>
-					</div>
 				)}
 				<Divider/>
 				<MenuItem onClick={this.showPortfolioModal} name='Create New List' text='Create New List'/>
@@ -354,7 +359,7 @@ class TickerList extends Component{
 		);
 		
 		const addTickerMenu = (
-			<AddTickerMenu currentPortfolio={this.state.currentPortfolio} getTickersList={this.getTickersList}/>
+			<AddTickerMenu currentPortfolio={this.state.currentPortfolio} currentPortfolioId={this.state.currentPortfolioId} getTickersList={this.getTickersList}/>
 		)
 
 		return(
@@ -388,7 +393,7 @@ class TickerList extends Component{
 						handleCancel={this.handleDeletePortfolioCancel} 
 						visible={this.state.deletePortfolioModalTogle}
 						getAllPortfolio={this.getAllPortfolio}
-						portfolioID={this.state.currentPortfolioID}
+						portfolioId={this.state.currentPortfolioId}
 						portfolioName={this.state.deletePortfolioName}
 					/>
 
@@ -444,6 +449,7 @@ class TickerList extends Component{
 							tickerId={this.state.currentTickerId} 
 							quantity={this.state.currentQuantity}
 							portfolio={this.state.currentPortfolio}
+							portfolioId={this.state.currentPortfolioId}
 							setCurrentTicker={this.setCurrentTicker}
 							getTickersList={this.getTickersList}
 						/>

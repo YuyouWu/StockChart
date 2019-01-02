@@ -9,6 +9,7 @@ class AddTickerMenu extends React.Component {
 	constructor(props){
 		super(props);
 		this.state = {
+			currentPortfolioId: this.props.currentPortfolioId,
 			currentPortfolio: this.props.currentPortfolio,
 			ticker: '',
 			quantity: 0,
@@ -17,6 +18,7 @@ class AddTickerMenu extends React.Component {
 
 	componentWillReceiveProps = (newProps) => {
 		this.setState({
+			currentPortfolioId: newProps.currentPortfolioId,
 			currentPortfolio: newProps.currentPortfolio
 		});
 	}
@@ -39,9 +41,9 @@ class AddTickerMenu extends React.Component {
 		var tickerObj = {
 			"ticker": this.state.ticker,
 			"quantity": this.state.quantity,
-			"portfolioName": this.props.currentPortfolio
+			"portfolioId": this.state.currentPortfolioId
 		}
-		
+	
 		this.props.addTicker(tickerObj).then((res) =>{
 			this.props.getTickersList();
 			message.success(this.state.quantity + ' shares of ' + this.state.ticker + ' is added to ' + this.state.currentPortfolio);

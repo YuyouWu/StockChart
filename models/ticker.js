@@ -15,10 +15,10 @@ var Ticker = mongoose.model('Ticker', {
     type: Number,
     required: true
   },
-  portfolioName:{
+  portfolioId:{
     type: String,
     required: true,
-    default: 'Watch List'
+    default: 'WatchList'
   },
   trend: {
     type: Array,

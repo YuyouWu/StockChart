@@ -8,9 +8,9 @@ import { connect } from 'react-redux';
 class DeletePortfolioModal extends React.Component {
 	handleDeletePortfolio= (e) => {
 		e.preventDefault();
-        var portfolioID = this.props.portfolioID;
+        var portfolioId = this.props.portfolioId;
         
-		this.props.deletePortfolio(portfolioID).then(res => {
+		this.props.deletePortfolio(portfolioId).then(res => {
             this.props.getAllPortfolio();
         });
         this.props.hideModal();    

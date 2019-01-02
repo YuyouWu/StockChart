@@ -5,11 +5,12 @@ import { message } from 'antd';
 import { connect } from 'react-redux';
 
 //Class for rendering each individual tickers on portfolio
-class AddTickerMenu extends React.Component {
+class AddTickerSubMenu extends React.Component {
 	constructor(props){
 		super(props);
 		this.state = {
 			currentPortfolio: this.props.currentPortfolio,
+			currentPortfolioId: this.props.currentPortfolioId,
 			ticker: this.props.ticker,
 			quantity: 0,
 		}
@@ -18,7 +19,8 @@ class AddTickerMenu extends React.Component {
 	componentWillReceiveProps = (newProps) => {
 		this.setState({
 			ticker: newProps.ticker,
-			currentPortfolio: newProps.currentPortfolio
+			currentPortfolio: newProps.currentPortfolio,
+			currentPortfolioId: newProps.currentPortfolioId
 		});
 	}
 
@@ -34,9 +36,9 @@ class AddTickerMenu extends React.Component {
 		var tickerObj = {
 			"ticker": this.state.ticker,
 			"quantity": this.state.quantity,
-			"portfolioName": this.props.currentPortfolio
+			"portfolioId": this.state.currentPortfolioId
 		}
-		
+		// console.log(tickerObj);		
 		this.props.addTicker(tickerObj).then((res) =>{
 			this.props.getTickersList();
 			message.success(this.state.quantity + ' shares of ' + this.state.ticker + ' is added to ' + this.state.currentPortfolio);
@@ -71,5 +73,5 @@ class AddTickerMenu extends React.Component {
 }
 
 const mapStateToProps = state => ({});
-export default connect(mapStateToProps,{addTicker, getAllPortfolio})(AddTickerMenu);
+export default connect(mapStateToProps,{addTicker, getAllPortfolio})(AddTickerSubMenu);
   

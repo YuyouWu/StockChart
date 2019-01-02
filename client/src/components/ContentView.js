@@ -18,7 +18,8 @@ class ContentView extends Component{
 			currentTicker: this.props.ticker,
 			currentTickerId: this.props.tickerId,
 			currentQuantity: this.props.quantity,
-			currentPortfolio: this.props.portfolio
+			currentPortfolio: this.props.portfolio,
+			currentPortfolioId: this.props.portfolioId
 		}
 	}
 
@@ -27,13 +28,14 @@ class ContentView extends Component{
 			currentTicker: newProps.ticker,
 			currentTickerId: newProps.tickerId,
 			currentQuantity: newProps.quantity,
-			currentPortfolio: newProps.portfolio
+			currentPortfolio: newProps.portfolio,
+			currentPortfolioId: newProps.portfolioId
 		});
 	}
 
 	render() {	
 		const addTickerMenu = (
-			<AddTickerSubMenu ticker={this.state.currentTicker} currentPortfolio={this.state.currentPortfolio} getTickersList={this.props.getTickersList}/>
+			<AddTickerSubMenu ticker={this.state.currentTicker} currentPortfolioId={this.state.currentPortfolioId} currentPortfolio={this.state.currentPortfolio} getTickersList={this.props.getTickersList}/>
 		)
 
 		const editQuantityMenu = (
