@@ -157,21 +157,24 @@ class OverviewSummary extends React.Component {
 				</Row>
 
 				<Row style={{marginTop: '20px'}}>
-					<Col span={4} style={{marginRight: '20px'}}>
+					<Col span={3} style={{marginRight: '50px', width: '150px'}}>
 					<h3 style={{marginTop: '20px'}}>Top Gainers</h3>
 					<Table 
 						dataSource={this.state.topGainers} 
 						columns={columns} 
 						showHeader={false} 
-						pagination={false}/>
+						pagination={false}
+						size="middle"
+					/>
 					</Col>
-					<Col span={4}>
+					<Col span={3} style={{width: '150px'}}>
 					<h3 style={{marginTop: '20px'}}>Top Losers</h3>
 					<Table 
 						dataSource={this.state.topLosers} 
 						columns={columns} 
 						showHeader={false} 
 						pagination={false}
+						size="middle"
 					/>
 					</Col>
 				</Row>

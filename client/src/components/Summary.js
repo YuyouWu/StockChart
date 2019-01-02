@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getCurrentPrice, getCompanyStat } from '../actions/portfolioActions';
 import { Row, Col } from 'antd';
-import { Divider, Spinner } from '@blueprintjs/core';
+import { Divider, Spinner, NonIdealState } from '@blueprintjs/core';
 import axios from 'axios';
 import Chart from './Chart';
 
@@ -117,9 +117,17 @@ class Summary extends React.Component {
 				) : (
 						<div>
 							{this.state.notFound ? (
-								<p>Ticker Symbol Not Found. Please make sure you have the correct ticker.</p>
+								<div style={{ marginTop: '50px' }}>
+									<NonIdealState
+										title="Ticker Symbol Not Found"
+										description="Please make sure you have the correct ticker."
+									/>
+								</div>
 							) : (
-								<Spinner size={Spinner.SIZE_STANDARD} value={null} />
+									<div style={{ marginTop: '50px' }}>
+										<Spinner size={100} value={null} />
+									</div>
+
 								)
 							}
 						</div>
