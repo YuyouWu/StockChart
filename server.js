@@ -177,6 +177,12 @@ app.delete('/api/deletePortfolio/:id', authenticate, (req, res) => {
     return res.status(404).send();
   }
 
+  Ticker.deleteMany({
+    portfolioId: id
+  }, () => {
+    console.log('Tickers inside ' + id + ' are deleted.');
+  });
+
   Portfolio.findOneAndRemove({
     _id: id,
     _creator: req.user._id
@@ -184,9 +190,6 @@ app.delete('/api/deletePortfolio/:id', authenticate, (req, res) => {
     if (!portfolio) {
       return res.status(404).send();
     }
-
-    //TODO: Delete tickers inside this portfolio
-
     res.send({ portfolio });
   }).catch((e) => {
     res.status(400).send();

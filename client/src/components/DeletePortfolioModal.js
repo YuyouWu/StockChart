@@ -13,7 +13,7 @@ class DeletePortfolioModal extends React.Component {
 		this.props.deletePortfolio(portfolioId).then(res => {
             this.props.getAllPortfolio();
         });
-        this.props.hideModal();    
+        this.props.hideModal();
 	}
 
   	render() {
