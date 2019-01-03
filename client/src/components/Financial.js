@@ -246,30 +246,8 @@ class Financial extends Component{
 
 		return (
 			<div>
-			{this.state.priceData && this.state.statData ? (
-				<div>
 				<Divider style={{marginTop:'-21px'}}/>
-				<Row style={{marginLeft:10+'px'}}>
-					<Col span={7}>
-						<p>Open {this.state.priceData.open}</p>
-						<p>High {this.state.priceData.high}</p>
-						<p>Low {this.state.priceData.low}</p>
-						<p>Market Cap {this.state.priceData.marketCap.toLocaleString(undefined)}</p>
-						<p>PE Ratio {this.state.priceData.peRatio}</p>
-					</Col>
-					<Col span={7}>
-						<p>52 wk High {this.state.priceData.week52High}</p>
-						<p>52 wk Low {this.state.priceData.week52Low}</p>
-						<p>EPS {this.state.statData.ttmEPS.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-						<p>Dividend Rate {this.state.statData.dividendRate.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-						<p>Dividend Yield {this.state.statData.dividendYield.toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-					</Col>
-				</Row>
-				</div>
-			) : (
-				<p> - </p>
-			)}
-			<Tab panes={panes} style={{marginTop:30+'px'}}/>
+				<Tab panes={panes} style={{marginTop:'20px'}}/>
 			</div>
 		);
 	}

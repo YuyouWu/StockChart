@@ -6,7 +6,7 @@ import { format } from "d3-format";
 import { timeFormat } from "d3-time-format";
 
 import { ChartCanvas, Chart, ZoomButtons } from "react-stockcharts";
-import { BarSeries, CandlestickSeries, LineSeries } from "react-stockcharts/lib/series";
+import { BarSeries, CandlestickSeries, LineSeries, RSISeries } from "react-stockcharts/lib/series";
 import { XAxis, YAxis } from "react-stockcharts/lib/axes";
 import {
 	CrossHairCursor,
@@ -16,12 +16,12 @@ import {
 } from "react-stockcharts/lib/coordinates";
 
 import { discontinuousTimeScaleProvider } from "react-stockcharts/lib/scale";
-import { OHLCTooltip, MovingAverageTooltip } from "react-stockcharts/lib/tooltip";
+import { OHLCTooltip, MovingAverageTooltip, RSITooltip } from "react-stockcharts/lib/tooltip";
 import { fitWidth } from "react-stockcharts/lib/helper";
 import { last, toObject } from "react-stockcharts/lib/utils";
 
 //Indicator
-import { ema, wma, sma, tma } from "react-stockcharts/lib/indicator";
+import { ema, wma, sma, tma, rsi } from "react-stockcharts/lib/indicator";
 
 //Interaction
 import {
@@ -473,6 +473,7 @@ class CandleStickStockScaleChart extends React.Component {
 		const { type, data: initialData, width, ratio } = this.props;
 
 		//Indicator
+		//EMA
 		const ema20 = ema()
 			.options({
 				windowSize: 20, // optional will default to 10
@@ -483,7 +484,14 @@ class CandleStickStockScaleChart extends React.Component {
 			.accessor(d => d.ema20) // Required, if not provided, log an error during calculation
 			.stroke("blue"); // Optional
 
-		const calculatedData = ema20(initialData);
+		//RSI
+		const rsiCalculator = rsi()
+			.options({ windowSize: 14 })
+			.merge((d, c) => {d.rsi = c;})
+			.accessor(d => d.rsi);
+
+
+		const calculatedData = ema20(rsiCalculator(initialData));
 
 		const xScaleProvider = discontinuousTimeScaleProvider
 			.inputDateAccessor(d => d.date);
@@ -549,8 +557,12 @@ class CandleStickStockScaleChart extends React.Component {
 								xExtents={xExtents}
 							>
 
-								<Chart id={1} yExtents={[d => [d.high, d.low], ema20.accessor()]}>
-									<XAxis axisAt="bottom" orient="bottom" ticks={10} {...xGrid} />
+								<Chart 
+									id={1} 
+									height={window.innerHeight - 360}
+									yExtents={[d => [d.high, d.low-d.low*0.1], ema20.accessor()]}
+								>
+									<XAxis axisAt="bottom" orient="bottom" showTicks={false} outerTickSize={0} {...xGrid} />
 									<YAxis axisAt="right" orient="right" ticks={10} {...yGrid} />
 									<MouseCoordinateY
 										at="right"
@@ -643,7 +655,7 @@ class CandleStickStockScaleChart extends React.Component {
 									id={2}
 									height={100}
 									yExtents={d => d.volume}
-									origin={(w, h) => [0, h - 100]}
+									origin={(w, h) => [0, h - 220]}
 								>
 									<YAxis
 										axisAt="left"
@@ -667,6 +679,26 @@ class CandleStickStockScaleChart extends React.Component {
 										yAccessor={d => d.volume}
 										fill={d => (d.close > d.open ? "#6BA583" : "#FF0000")}
 									/>
+								</Chart>
+								<Chart id={3}
+									yExtents={[0, 100]}
+									height={100} 
+									origin={(w, h) => [0, h - 120]}
+								>
+									<XAxis axisAt="bottom" orient="bottom"/>
+									<YAxis axisAt="right"
+										orient="right"
+										tickValues={[30, 50, 70]}/>
+									<MouseCoordinateY
+										at="right"
+										orient="right"
+										displayFormat={format(".2f")} />
+
+									<RSISeries yAccessor={d => d.rsi} />
+
+									<RSITooltip origin={[-38, 15]}
+										yAccessor={d => d.rsi}
+										options={rsiCalculator.options()} />
 								</Chart>
 								<CrossHairCursor />
 							</ChartCanvas>
