@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import { getCompanyNews } from '../actions/portfolioActions';
 import { ListGroup } from 'reactstrap';
 import { Divider } from '@blueprintjs/core';
-import NewsItem from './NewsItem';
+import { List } from 'antd';
+import { ItemDescription } from 'semantic-ui-react';
 
 class NewsList extends React.Component {
 	constructor() {
@@ -36,15 +37,19 @@ class NewsList extends React.Component {
 		return (
 			<div>
 				<Divider style={{marginTop:'-21px'}}/>
-				<ListGroup flush>
-					{this.state.newsArray &&
-						this.state.newsArray.map((newsItem, index) => {
-							return(
-								<NewsItem news={newsItem} key={index} />
-							)
-						})
-					}
-				</ListGroup>
+				<List
+					itemLayout="horizontal"
+					dataSource={this.state.newsArray}
+					size="large"
+					renderItem={item => (
+					<List.Item>
+						<List.Item.Meta
+						title={<a href={item.url}>{item.headline}</a>}
+						description={new Date(item.datetime).toLocaleDateString() + ' ' + new Date(item.datetime).toLocaleTimeString()}
+						/>
+					</List.Item>
+					)}
+				/>
 			</div>
 		);
   	}
