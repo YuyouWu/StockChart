@@ -123,10 +123,10 @@ class Summary extends React.Component {
 								<p style={{ fontSize: '12px' }}>Low {this.state.priceData.low}</p>
 							</Col>
 							<Col span={4}>
-								<p style={{ fontSize: '12px' }}>Market Cap {this.state.priceData.marketCap.toLocaleString(undefined)}</p>
-							</Col>
-							<Col span={4}>
 								<p style={{ fontSize: '12px' }}>PE Ratio {this.state.priceData.peRatio}</p>
+							</Col>
+							<Col span={6}>
+								<p style={{ fontSize: '12px' }}>Market Cap {this.state.priceData.marketCap.toLocaleString(undefined)}</p>
 							</Col>
 						</Row>
 						<Row gutter={24}>

@@ -6,7 +6,7 @@ import { format } from "d3-format";
 import { timeFormat } from "d3-time-format";
 
 import { ChartCanvas, Chart, ZoomButtons } from "react-stockcharts";
-import { BarSeries, CandlestickSeries, LineSeries, RSISeries } from "react-stockcharts/lib/series";
+import { BarSeries, CandlestickSeries, LineSeries, RSISeries, MACDSeries } from "react-stockcharts/lib/series";
 import { XAxis, YAxis } from "react-stockcharts/lib/axes";
 import {
 	CrossHairCursor,
@@ -16,12 +16,12 @@ import {
 } from "react-stockcharts/lib/coordinates";
 
 import { discontinuousTimeScaleProvider } from "react-stockcharts/lib/scale";
-import { OHLCTooltip, MovingAverageTooltip, RSITooltip } from "react-stockcharts/lib/tooltip";
+import { OHLCTooltip, MovingAverageTooltip, RSITooltip, MACDTooltip } from "react-stockcharts/lib/tooltip";
 import { fitWidth } from "react-stockcharts/lib/helper";
 import { last, toObject } from "react-stockcharts/lib/utils";
 
 //Indicator
-import { ema, wma, sma, tma, rsi } from "react-stockcharts/lib/indicator";
+import { ema, wma, sma, tma, rsi, macd } from "react-stockcharts/lib/indicator";
 
 //Interaction
 import {
@@ -57,9 +57,19 @@ const candlesAppearance = {
 		return d.close > d.open ? "rgba(0,128,0, 0.8)" : "rgba(255,0,0, 0.8)";
 	},
 	candleStrokeWidth: 1,
-	widthRatio: 0.8,
+	widthRatio: 0.6,
 	opacity: 1,
 }
+
+const macdAppearance = {
+	stroke: {
+		macd: "#FF0000",
+		signal: "#00F300",
+	},
+	fill: {
+		divergence: "#4682B4"
+	},
+};
 
 class CandleStickStockScaleChart extends React.Component {
 	constructor(props) {
@@ -103,7 +113,7 @@ class CandleStickStockScaleChart extends React.Component {
 		this.handleFan = this.handleFan.bind(this);
 		this.handleEqChannel = this.handleEqChannel.bind(this);
 		this.handleStdChannel = this.handleStdChannel.bind(this);
-		this.handleClearDrawings = this.handleClearDrawings.bind(this);		
+		this.handleClearDrawings = this.handleClearDrawings.bind(this);
 	}
 
 	componentDidMount() {
@@ -149,7 +159,7 @@ class CandleStickStockScaleChart extends React.Component {
 	}
 
 	loadDrawings() {
-		if(this.state.currentTickerId && this.state.currentTickerId !== '0'){
+		if (this.state.currentTickerId && this.state.currentTickerId !== '0') {
 			this.props.getOneTicker(this.state.currentTickerId).then(res => {
 				if (res.payload.ticker.trend) {
 					this.setState({
@@ -185,7 +195,7 @@ class CandleStickStockScaleChart extends React.Component {
 	}
 
 	saveDrawings() {
-		if(this.state.currentTickerId && this.state.currentTickerId !== '0'){
+		if (this.state.currentTickerId && this.state.currentTickerId !== '0') {
 			var drawingObj = {
 				_id: this.state.currentTickerId,
 				drawing: this.state.trends,
@@ -222,7 +232,7 @@ class CandleStickStockScaleChart extends React.Component {
 			this.props.newDrawingAction(drawingObj);
 		}
 	}
-	
+
 	handleSelection(interactives) {
 		//console.log(interactives)
 		if (interactives[0].type === "Trendline") {
@@ -487,11 +497,20 @@ class CandleStickStockScaleChart extends React.Component {
 		//RSI
 		const rsiCalculator = rsi()
 			.options({ windowSize: 14 })
-			.merge((d, c) => {d.rsi = c;})
+			.merge((d, c) => { d.rsi = c; })
 			.accessor(d => d.rsi);
 
+		const macdCalculator = macd()
+			.options({
+				fast: 12,
+				slow: 26,
+				signal: 9,
+			})
+			.merge((d, c) => { d.macd = c; })
+			.accessor(d => d.macd);
 
-		const calculatedData = ema20(rsiCalculator(initialData));
+
+		const calculatedData = ema20(rsiCalculator(macdCalculator(initialData)));
 
 		const xScaleProvider = discontinuousTimeScaleProvider
 			.inputDateAccessor(d => d.date);
@@ -512,6 +531,13 @@ class CandleStickStockScaleChart extends React.Component {
 		var margin = { left: 70, right: 70, top: 20, bottom: 30 };
 		var gridHeight = gheight - margin.top - margin.bottom;
 		var gridWidth = width - 80 - margin.right;
+
+		var bottomMargin = 100;
+		var rsiHeight = 100;
+		var macdHeight = 100;
+		var volHeight = 100;
+		var stockchartHeight = window.innerHeight - 140 - (bottomMargin + rsiHeight + macdHeight);
+		// var stockchartHeight = 500;
 
 		var showGrid = true;
 		var yGrid = showGrid ? {
@@ -542,7 +568,7 @@ class CandleStickStockScaleChart extends React.Component {
 					</Sider>
 					<Layout>
 						<Content style={{ background: '#fff', borderStyle: "solid", borderWidth: '1px', borderRadius: '5px', borderColor: '#DADADA' }} >
-							<ChartCanvas 
+							<ChartCanvas
 								ref={this.saveCanvasNode}
 								height={window.innerHeight - 200}
 								ratio={ratio}
@@ -557,10 +583,10 @@ class CandleStickStockScaleChart extends React.Component {
 								xExtents={xExtents}
 							>
 
-								<Chart 
-									id={1} 
-									height={window.innerHeight - 360}
-									yExtents={[d => [d.high, d.low-d.low*0.1], ema20.accessor()]}
+								<Chart
+									id={1}
+									height={stockchartHeight}
+									yExtents={[d => [d.high, d.low - d.low * 0.1], ema20.accessor()]}
 								>
 									<XAxis axisAt="bottom" orient="bottom" showTicks={false} outerTickSize={0} {...xGrid} />
 									<YAxis axisAt="right" orient="right" ticks={10} {...yGrid} />
@@ -653,9 +679,9 @@ class CandleStickStockScaleChart extends React.Component {
 
 								<Chart
 									id={2}
-									height={100}
+									height={volHeight}
 									yExtents={d => d.volume}
-									origin={(w, h) => [0, h - 220]}
+									origin={(w, h) => [0, h - (rsiHeight + macdHeight+ bottomMargin)]}
 								>
 									<YAxis
 										axisAt="left"
@@ -682,13 +708,13 @@ class CandleStickStockScaleChart extends React.Component {
 								</Chart>
 								<Chart id={3}
 									yExtents={[0, 100]}
-									height={100} 
-									origin={(w, h) => [0, h - 120]}
+									height={rsiHeight}
+									origin={(w, h) => [0, h - (macdHeight + bottomMargin)]}
 								>
-									<XAxis axisAt="bottom" orient="bottom"/>
+									<XAxis axisAt="bottom" orient="bottom" showTicks={false}/>
 									<YAxis axisAt="right"
 										orient="right"
-										tickValues={[30, 50, 70]}/>
+										tickValues={[30, 50, 70]} />
 									<MouseCoordinateY
 										at="right"
 										orient="right"
@@ -699,6 +725,35 @@ class CandleStickStockScaleChart extends React.Component {
 									<RSITooltip origin={[-38, 15]}
 										yAccessor={d => d.rsi}
 										options={rsiCalculator.options()} />
+								</Chart>
+
+								<Chart id={4} height={macdHeight}
+									yExtents={macdCalculator.accessor()}
+									origin={(w, h) => [0, h - bottomMargin]} padding={{ top: 10, bottom: 10 }}
+								>
+									<XAxis axisAt="bottom" orient="bottom" />
+									<YAxis axisAt="right" orient="right" ticks={2} />
+
+									<MouseCoordinateX
+										at="bottom"
+										orient="bottom"
+										displayFormat={timeFormat("%Y-%m-%d")}
+										rectRadius={5}
+									/>
+									<MouseCoordinateY
+										at="right"
+										orient="right"
+										displayFormat={format(".2f")}
+									/>
+
+									<MACDSeries yAccessor={d => d.macd}
+										{...macdAppearance} />
+									<MACDTooltip
+										origin={[-38, 15]}
+										yAccessor={d => d.macd}
+										options={macdCalculator.options()}
+										appearance={macdAppearance}
+									/>
 								</Chart>
 								<CrossHairCursor />
 							</ChartCanvas>
