@@ -38,8 +38,8 @@ import {
 } from "./interactiveutils";
 
 
-import { Button, ButtonGroup } from "@blueprintjs/core";
-import { Layout } from 'antd';
+import { Button, ButtonGroup, Tooltip, Popover, Menu, MenuItem, MenuDivider, Position } from "@blueprintjs/core";
+import { Layout, Row, Col } from 'antd';
 import { connect } from 'react-redux';
 import { newDrawingAction } from '../actions/chartActions';
 import { getOneTicker } from '../actions/portfolioActions';
@@ -104,7 +104,9 @@ class CandleStickStockScaleChart extends React.Component {
 			enableStdChannel: false,
 			stdchannels: [],
 			currentTickerId: this.props.tickerId,
-			loading: true
+			loading: true,
+			showMACD: false,
+			showRSI: false
 		};
 
 		//Custom chart control
@@ -114,6 +116,8 @@ class CandleStickStockScaleChart extends React.Component {
 		this.handleEqChannel = this.handleEqChannel.bind(this);
 		this.handleStdChannel = this.handleStdChannel.bind(this);
 		this.handleClearDrawings = this.handleClearDrawings.bind(this);
+		this.toggleMACD = this.toggleMACD.bind(this);
+		this.toggleRSI = this.toggleRSI.bind(this);
 	}
 
 	componentDidMount() {
@@ -479,6 +483,20 @@ class CandleStickStockScaleChart extends React.Component {
 		});
 	}
 
+
+	//Indicator Control
+	toggleMACD() {
+		this.setState(prevState => ({
+			showMACD: !prevState.showMACD
+		}));
+	}
+
+	toggleRSI() {
+		this.setState(prevState => ({
+			showRSI: !prevState.showRSI
+		}));
+	}
+
 	render() {
 		const { type, data: initialData, width, ratio } = this.props;
 
@@ -533,10 +551,10 @@ class CandleStickStockScaleChart extends React.Component {
 		var gridWidth = width - 80 - margin.right;
 
 		var bottomMargin = 100;
-		var rsiHeight = 100;
-		var macdHeight = 100;
+		var rsiHeight = this.state.showRSI ? 100 : 0;
+		var macdHeight = this.state.showMACD ? 100 : 0;
 		var volHeight = 100;
-		var stockchartHeight = window.innerHeight - 140 - (bottomMargin + rsiHeight + macdHeight);
+		var stockchartHeight = window.innerHeight - 170 - (bottomMargin + rsiHeight + macdHeight);
 		// var stockchartHeight = 500;
 
 		var showGrid = true;
@@ -556,7 +574,7 @@ class CandleStickStockScaleChart extends React.Component {
 		return (
 			<div>
 				<Layout>
-					<Sider width={30} style={{ background: '#fff' }}>
+					{/* <Sider width={30} style={{ background: '#fff' }}>
 						<ButtonGroup vertical style={{ marginTop: '0px' }}>
 							<Button icon="minus" onClick={this.handleTrendLine}></Button>
 							<Button icon="vertical-distribution" onClick={this.handleEqChannel}></Button>
@@ -565,12 +583,90 @@ class CandleStickStockScaleChart extends React.Component {
 							<Button icon="curved-range-chart" onClick={this.handleFan}></Button>
 							<Button icon="cross" onClick={this.handleClearDrawings}></Button>
 						</ButtonGroup>
-					</Sider>
-					<Layout>
+					</Sider> */}
+					<Layout style={{ background: '#fff' }}>
+
+						<Row>
+							<ButtonGroup style={{ marginRight: '10px' }}>
+								<Tooltip
+									content={<p>Trend Line</p>}
+									position={Position.BOTTOM}
+									usePortal={false}
+								>
+
+									<Button icon="minus" onClick={this.handleTrendLine}></Button>
+								</Tooltip>
+								<Tooltip
+									content={<p>Channel</p>}
+									position={Position.BOTTOM}
+									usePortal={false}
+								>
+									<Button icon="vertical-distribution" onClick={this.handleEqChannel}></Button>
+								</Tooltip>
+								<Tooltip
+									content={<p>Standard Deviation</p>}
+									position={Position.BOTTOM}
+									usePortal={false}
+								>
+									<Button icon="menu" onClick={this.handleStdChannel}></Button>
+								</Tooltip>
+								<Tooltip
+									content={<p>Fibonacci Retracement</p>}
+									position={Position.BOTTOM}
+									usePortal={false}
+								>
+									<Button icon="align-justify" onClick={this.handleFib}></Button>
+								</Tooltip>
+								<Tooltip
+									content={<p>Gann Fan</p>}
+									position={Position.BOTTOM}
+									usePortal={false}
+								>
+									<Button icon="curved-range-chart" onClick={this.handleFan}></Button>
+								</Tooltip>
+								<Tooltip
+									content={<p>Clear All Drawings</p>}
+									position={Position.BOTTOM}
+									usePortal={false}
+								>
+									<Button icon="cross" onClick={this.handleClearDrawings}></Button>
+								</Tooltip>
+							</ButtonGroup>
+
+							<ButtonGroup style={{ marginRight: '10px' }}>
+								<Popover
+									content={
+										<Menu>
+											<MenuItem text='SMA'></MenuItem>
+											<MenuItem text='EMA'></MenuItem>
+											<MenuDivider />
+											<MenuItem 
+												text='RSI'
+												onClick={this.toggleRSI}
+											/>
+											<MenuItem
+												text='MACD'
+												onClick={this.toggleMACD}
+											/>
+										</Menu>
+									}
+									position={Position.BOTTOM}
+								>
+									<Tooltip
+										content={<p>Indicators</p>}
+										position={Position.BOTTOM}
+										usePortal={false}
+									>
+										<Button icon="timeline-line-chart"></Button>
+									</Tooltip>
+								</Popover>
+							</ButtonGroup>
+						</Row>
+
 						<Content style={{ background: '#fff', borderStyle: "solid", borderWidth: '1px', borderRadius: '5px', borderColor: '#DADADA' }} >
 							<ChartCanvas
 								ref={this.saveCanvasNode}
-								height={window.innerHeight - 200}
+								height={window.innerHeight - 230}
 								ratio={ratio}
 								width={width - 50}
 								margin={{ left: 50, right: 50, top: 10, bottom: 30 }}
@@ -681,7 +777,7 @@ class CandleStickStockScaleChart extends React.Component {
 									id={2}
 									height={volHeight}
 									yExtents={d => d.volume}
-									origin={(w, h) => [0, h - (rsiHeight + macdHeight+ bottomMargin)]}
+									origin={(w, h) => [0, h - (rsiHeight + macdHeight + bottomMargin)]}
 								>
 									<YAxis
 										axisAt="left"
@@ -706,55 +802,63 @@ class CandleStickStockScaleChart extends React.Component {
 										fill={d => (d.close > d.open ? "#6BA583" : "#FF0000")}
 									/>
 								</Chart>
-								<Chart id={3}
-									yExtents={[0, 100]}
-									height={rsiHeight}
-									origin={(w, h) => [0, h - (macdHeight + bottomMargin)]}
-								>
-									<XAxis axisAt="bottom" orient="bottom" showTicks={false}/>
-									<YAxis axisAt="right"
-										orient="right"
-										tickValues={[30, 50, 70]} />
-									<MouseCoordinateY
-										at="right"
-										orient="right"
-										displayFormat={format(".2f")} />
+								{this.state.showRSI ? (
+									<Chart id={3}
+										yExtents={[0, 100]}
+										height={rsiHeight}
+										origin={(w, h) => [0, h - (macdHeight + bottomMargin)]}
+									>
+										<XAxis axisAt="bottom" orient="bottom" showTicks={false} />
+										<YAxis axisAt="right"
+											orient="right"
+											tickValues={[30, 50, 70]} />
+										<MouseCoordinateY
+											at="right"
+											orient="right"
+											displayFormat={format(".2f")} />
 
-									<RSISeries yAccessor={d => d.rsi} />
+										<RSISeries yAccessor={d => d.rsi} />
 
-									<RSITooltip origin={[-38, 15]}
-										yAccessor={d => d.rsi}
-										options={rsiCalculator.options()} />
-								</Chart>
+										<RSITooltip origin={[-38, 15]}
+											yAccessor={d => d.rsi}
+											options={rsiCalculator.options()} />
+									</Chart>
 
-								<Chart id={4} height={macdHeight}
-									yExtents={macdCalculator.accessor()}
-									origin={(w, h) => [0, h - bottomMargin]} padding={{ top: 10, bottom: 10 }}
-								>
-									<XAxis axisAt="bottom" orient="bottom" />
-									<YAxis axisAt="right" orient="right" ticks={2} />
+								) : (
+									<div></div>
+								)}
+								{this.state.showMACD ? (
+									<Chart id={4} height={macdHeight}
+										yExtents={macdCalculator.accessor()}
+										origin={(w, h) => [0, h - bottomMargin]} padding={{ top: 10, bottom: 10 }}
+									>
+										<XAxis axisAt="bottom" orient="bottom" />
+										<YAxis axisAt="right" orient="right" ticks={2} />
 
-									<MouseCoordinateX
-										at="bottom"
-										orient="bottom"
-										displayFormat={timeFormat("%Y-%m-%d")}
-										rectRadius={5}
-									/>
-									<MouseCoordinateY
-										at="right"
-										orient="right"
-										displayFormat={format(".2f")}
-									/>
+										<MouseCoordinateX
+											at="bottom"
+											orient="bottom"
+											displayFormat={timeFormat("%Y-%m-%d")}
+											rectRadius={5}
+										/>
+										<MouseCoordinateY
+											at="right"
+											orient="right"
+											displayFormat={format(".2f")}
+										/>
 
-									<MACDSeries yAccessor={d => d.macd}
-										{...macdAppearance} />
-									<MACDTooltip
-										origin={[-38, 15]}
-										yAccessor={d => d.macd}
-										options={macdCalculator.options()}
-										appearance={macdAppearance}
-									/>
-								</Chart>
+										<MACDSeries yAccessor={d => d.macd}
+											{...macdAppearance} />
+										<MACDTooltip
+											origin={[-38, 15]}
+											yAccessor={d => d.macd}
+											options={macdCalculator.options()}
+											appearance={macdAppearance}
+										/>
+									</Chart>
+								) : (
+									<div></div>
+								)}
 								<CrossHairCursor />
 							</ChartCanvas>
 						</Content>
