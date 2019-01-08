@@ -1,5 +1,5 @@
 import React from 'react';
-import { HTMLSelect, Button, ButtonGroup, Intent } from "@blueprintjs/core";
+import { HTMLSelect, Button, Intent } from "@blueprintjs/core";
 import { Row, Col, Table, Skeleton } from 'antd';
 import axios from 'axios';
 

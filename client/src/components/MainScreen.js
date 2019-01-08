@@ -16,6 +16,8 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import _ from 'lodash';
 
+const socket = require('socket.io-client')('https://ws-api.iextrading.com/1.0/last');
+
 const { Content, Sider } = Layout;
 
 //For rendering ticker search result
@@ -27,8 +29,11 @@ resultRenderer.propTypes = {
   description: PropTypes.string,
 }
 
+var tickerList = '';
+var tempTickerObj = [];
 //Class for rendering list of tickers
 class TickerList extends Component{
+	
 	constructor(props) {
 	    super(props);
 	    this.state = {
@@ -72,17 +77,42 @@ class TickerList extends Component{
 				allTickers: res.data
 			});
 		});
+
+		socket.on('message', (message) => {
+			var symbol = JSON.parse(message).symbol;
+			var price = JSON.parse(message).price;
+			this.updatePrice(symbol, price);
+		});
 	}
 
 	componentWillMount() {
     	this.resetComponent();
-  	}
+	}
+	
+	//Real time price update based on LAST subscription from IEX
+	updatePrice = (symbol, price) => {
+		var res = this.state.filteredTickers.findIndex(stock => stock.ticker === symbol);
+		//Temp solution
+		if (res >= 0){
+			var previousClose = tempTickerObj[res].previousClose;
+			tempTickerObj[res].price = price;
+			tempTickerObj[res].change = (((price - previousClose)/previousClose)*100).toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2});
+			this.setState({
+				filteredTickers: tempTickerObj
+			});	
+		}	
+	}
 
 	getTickersList = () => {
 		//API to get the list of tickers
 		this.props.getTickers().then((res) => {
 			if(res.payload) {
 				var i = 0;
+				//WIP: convert tickers to a list of string
+				//Subscribe to last or tops here 
+				//return object for rendering 
+
+
 				res.payload.forEach((obj) => {
 					obj.key = i;
 					obj.edit = false;
@@ -90,11 +120,20 @@ class TickerList extends Component{
 					this.props.getCurrentPrice(obj.ticker).then((res) =>{
 						obj.price = res.payload.delayedPrice;
 						obj.change = (res.payload.changePercent * 100).toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2}); 
+						obj.previousClose = res.payload.previousClose;
 						this.setState({
 							forceUpdate: ''
 						});
 					});
+
+					tickerList = tickerList + obj.ticker + ',';
 				});
+
+				//Subsribe to LAST socket 
+				socket.on('connect', () => {
+					socket.emit('subscribe', tickerList);
+				});
+				
 				//sort tickers based on their index value 
 				res.payload.sort((a, b) => {
 		    		return a.index - b.index;
@@ -106,10 +145,14 @@ class TickerList extends Component{
 				if (this.state.currentPortfolioId === 'Holding'){
 					this.setState({
 						filteredTickers: res.payload.filter(ticker => ticker.quantity > 0)
+					}, () => {
+						tempTickerObj = this.state.filteredTickers;
 					});
 				} else {
 					this.setState({
 						filteredTickers: res.payload.filter(ticker => ticker.portfolioId === this.state.currentPortfolioId)
+					}, () => {
+						tempTickerObj = this.state.filteredTickers;
 					});
 				}
 			}	
@@ -117,6 +160,11 @@ class TickerList extends Component{
 			console.log(err);
 		});
 	}
+	
+	
+	//function to batch requet on filtered ticker and return quotes
+	//use table to display returned symbol, change percent, and price 
+	//run every minute in render()
 
 	getAllPortfolio = () => {
 		this.props.getAllPortfolio().then((res) => {
@@ -145,10 +193,14 @@ class TickerList extends Component{
 		if (e.target.textContent === 'Holding'){
 			this.setState({
 				filteredTickers: this.state.tickers.filter(ticker => ticker.quantity > 0)
+			}, () => {
+				tempTickerObj = this.state.filteredTickers;
 			});
 		} else {
 			this.setState({
 				filteredTickers: this.state.tickers.filter(ticker => ticker.portfolioId === this.state.currentPortfolioId)
+			}, () => {
+				tempTickerObj = this.state.filteredTickers;
 			});
 		}
 	}

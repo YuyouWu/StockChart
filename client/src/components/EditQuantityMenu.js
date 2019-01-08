@@ -3,7 +3,6 @@ import { editQuantity } from '../actions/portfolioActions';
 import { Menu, FormGroup, InputGroup, Button, Intent } from "@blueprintjs/core";
 import { message } from 'antd';
 import { connect } from 'react-redux';
-import axios from 'axios';
 
 //Class for rendering each individual tickers on portfolio
 class EditQuantityMenu extends React.Component {

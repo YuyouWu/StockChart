@@ -1,10 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCurrentPrice, getCompanyStat } from '../actions/portfolioActions';
-import { Row, Col } from 'antd';
+import { Row, Col, Divider as AntDivider } from 'antd';
 import { Divider, Spinner, NonIdealState } from '@blueprintjs/core';
 import axios from 'axios';
 import Chart from './Chart';
+
+const socket = require('socket.io-client')('https://ws-api.iextrading.com/1.0/last');
 
 //Class for rendering each individual tickers on portfolio
 class Summary extends React.Component {
@@ -16,12 +18,22 @@ class Summary extends React.Component {
 			chartData: '',
 			notFound: false,
 			textColor: 'green',
+			afterHourColor: 'green',
 			currentTickerId: this.props.tickerId
 		}
 		this.loadData = this.loadData.bind(this);
 	}
 
 	componentDidMount() {
+		socket.on('message', (message) => {
+			console.log(message);
+			var priceDataObj = this.state.priceData;
+			priceDataObj.price = JSON.parse(message).price
+			this.setState({
+				priceData: priceDataObj
+			});
+		});
+
 		this.setState({
 			chartData: '',
 			notFound: false
@@ -39,12 +51,17 @@ class Summary extends React.Component {
 	}
 
 	loadData(ticker) {
+		socket.on('disconnect', () => console.log('Disconnected.'));
+		socket.on('connect', () => {
+			socket.emit('subscribe', ticker);
+		});
 		//Get current price for ticker 
 		this.props.getCurrentPrice(ticker).then((res) => {
 			this.setState({
 				priceData: res.payload,
 				changePercent: res.payload.changePercent * 100
 			});
+			
 			if (this.state.priceData.change > 0) {
 				this.setState({
 					textColor: 'green'
@@ -54,6 +71,17 @@ class Summary extends React.Component {
 					textColor: 'red'
 				});
 			}
+
+			if (this.state.priceData.extendedChangePercent > 0){
+				this.setState({
+					afterHourColor: 'green'
+				});
+			} else {
+				this.setState({
+					afterHourColor: 'red'
+				});
+			}
+
 		}).catch(error => {
 			this.setState({
 				priceData: null,
@@ -84,7 +112,6 @@ class Summary extends React.Component {
 				});
 			}
 		});
-
 	}
 
 	render() {
@@ -111,6 +138,22 @@ class Summary extends React.Component {
 							<Col span={2}>
 								<p>{this.props.quantity} shares</p>
 							</Col>
+							{this.state.priceData.extendedPrice && 
+								<div>
+									<Col span={1}>
+										<AntDivider type="vertical"/>
+									</Col>
+									<Col span={2}>
+										<p>After Hour:</p>
+									</Col>
+									<Col span={2}>
+										<p style={{ color: this.state.afterHourColor }}>${this.state.priceData.extendedPrice}</p>
+									</Col>
+									<Col span={2}>
+									<p style={{ color: this.state.afterHourColor }}>{this.state.priceData.extendedChangePercent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</p>
+									</Col>
+								</div>
+							}
 						</Row>
 						<Row gutter={24} style={{marginTop:'5px'}}>
 							<Col span={4}>

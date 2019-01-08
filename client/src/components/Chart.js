@@ -640,7 +640,7 @@ class CandleStickStockScaleChart extends React.Component {
 											<MenuItem text='SMA'></MenuItem>
 											<MenuItem text='EMA'></MenuItem>
 											<MenuDivider />
-											<MenuItem 
+											<MenuItem
 												text='RSI'
 												onClick={this.toggleRSI}
 											/>
@@ -825,8 +825,8 @@ class CandleStickStockScaleChart extends React.Component {
 									</Chart>
 
 								) : (
-									<div></div>
-								)}
+										<div></div>
+									)}
 								{this.state.showMACD ? (
 									<Chart id={4} height={macdHeight}
 										yExtents={macdCalculator.accessor()}
@@ -857,8 +857,8 @@ class CandleStickStockScaleChart extends React.Component {
 										/>
 									</Chart>
 								) : (
-									<div></div>
-								)}
+										<div></div>
+									)}
 								<CrossHairCursor />
 							</ChartCanvas>
 						</Content>

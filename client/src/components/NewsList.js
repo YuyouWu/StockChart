@@ -1,10 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCompanyNews } from '../actions/portfolioActions';
-import { ListGroup } from 'reactstrap';
 import { Divider } from '@blueprintjs/core';
 import { List } from 'antd';
-import { ItemDescription } from 'semantic-ui-react';
 
 class NewsList extends React.Component {
 	constructor() {
