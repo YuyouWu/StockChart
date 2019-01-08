@@ -118,7 +118,7 @@ class TickerList extends Component{
 					obj.edit = false;
 					i++;
 					this.props.getCurrentPrice(obj.ticker).then((res) =>{
-						obj.price = res.payload.delayedPrice;
+						obj.price = res.payload.latestPrice;
 						obj.change = (res.payload.changePercent * 100).toLocaleString(undefined,{minimumFractionDigits: 2, maximumFractionDigits: 2}); 
 						obj.previousClose = res.payload.previousClose;
 						this.setState({

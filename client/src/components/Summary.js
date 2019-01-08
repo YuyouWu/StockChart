@@ -7,6 +7,9 @@ import axios from 'axios';
 import Chart from './Chart';
 
 const socket = require('socket.io-client')('https://ws-api.iextrading.com/1.0/last');
+// socket.on('connect', () => {
+// 	socket.emit('subscribe', 'AAPL');
+// });
 
 //Class for rendering each individual tickers on portfolio
 class Summary extends React.Component {
@@ -26,12 +29,13 @@ class Summary extends React.Component {
 
 	componentDidMount() {
 		socket.on('message', (message) => {
-			console.log(message);
-			var priceDataObj = this.state.priceData;
-			priceDataObj.price = JSON.parse(message).price
-			this.setState({
-				priceData: priceDataObj
-			});
+			if(this.state.priceData){
+				var priceDataObj = this.state.priceData;
+				priceDataObj.price = JSON.parse(message).price;
+				this.setState({
+					priceData: priceDataObj
+				});
+			}
 		});
 
 		this.setState({
@@ -42,26 +46,27 @@ class Summary extends React.Component {
 	}
 
 	componentWillReceiveProps(newProps) {
+		//socket.emit('unsubscribe', this.props.ticker.toString());
 		this.setState({
 			chartData: '',
 			notFound: false,
-			currentTickerId: newProps.tickerId
+			currentTickerId: newProps.tickerId,
 		});
 		this.loadData(newProps.ticker);
 	}
 
 	loadData(ticker) {
-		socket.on('disconnect', () => console.log('Disconnected.'));
-		socket.on('connect', () => {
-			socket.emit('subscribe', ticker);
-		});
+		console.log(this.props.ticker);
+		socket.emit('unsubscribe', this.props.ticker.toString());
+		socket.emit('subscribe', ticker.toString());
+
 		//Get current price for ticker 
 		this.props.getCurrentPrice(ticker).then((res) => {
 			this.setState({
 				priceData: res.payload,
 				changePercent: res.payload.changePercent * 100
 			});
-			
+
 			if (this.state.priceData.change > 0) {
 				this.setState({
 					textColor: 'green'
@@ -127,7 +132,13 @@ class Summary extends React.Component {
 						</Row>
 						<Row>
 							<Col span={2}>
-								<p style={{ color: this.state.textColor }}>${this.state.priceData.delayedPrice}</p>
+								{
+									this.state.priceData.extendedPriceTime ===  this.state.priceData.latestUpdate && this.state.priceData.price ? (
+										<p style={{ color: this.state.textColor }}>${this.state.priceData.price}</p>
+									):(
+										<p style={{ color: this.state.textColor }}>${this.state.priceData.latestPrice}</p>
+									)
+								}
 							</Col>
 							<Col span={2}>
 								<p style={{ color: this.state.textColor }}>{this.state.priceData.change.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
@@ -138,7 +149,7 @@ class Summary extends React.Component {
 							<Col span={2}>
 								<p>{this.props.quantity} shares</p>
 							</Col>
-							{this.state.priceData.extendedPrice && 
+							{this.state.priceData.extendedPriceTime !==  this.state.priceData.latestUpdate && 
 								<div>
 									<Col span={1}>
 										<AntDivider type="vertical"/>
@@ -150,7 +161,7 @@ class Summary extends React.Component {
 										<p style={{ color: this.state.afterHourColor }}>${this.state.priceData.extendedPrice}</p>
 									</Col>
 									<Col span={2}>
-									<p style={{ color: this.state.afterHourColor }}>{this.state.priceData.extendedChangePercent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</p>
+									<p style={{ color: this.state.afterHourColor }}>{(this.state.priceData.extendedChangePercent*100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</p>
 									</Col>
 								</div>
 							}
