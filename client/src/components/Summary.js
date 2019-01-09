@@ -19,22 +19,49 @@ class Summary extends React.Component {
 			priceData: '',
 			statData: '',
 			chartData: '',
+			changePercent: 0,
 			notFound: false,
 			textColor: 'green',
 			afterHourColor: 'green',
-			currentTickerId: this.props.tickerId
+			currentTickerId: this.props.tickerId,
+			currentTicker: this.props.ticker
 		}
 		this.loadData = this.loadData.bind(this);
 	}
 
 	componentDidMount() {
 		socket.on('message', (message) => {
-			if(this.state.priceData){
+			//Update price data 
+			if (this.state.priceData) {
 				var priceDataObj = this.state.priceData;
 				priceDataObj.price = JSON.parse(message).price;
 				this.setState({
-					priceData: priceDataObj
+					priceData: priceDataObj,
+					changePercent: ((priceDataObj.price - priceDataObj.previousClose) / priceDataObj.previousClose) * 100
 				});
+			}
+
+			//Update Chart data
+			if (this.state.chartData) {
+				var chartDataObj = this.state.chartData;
+				var chartDate = this.state.chartData[this.state.chartData.length - 1].date;
+				var priceDate = new Date(this.state.priceData.latestUpdate);
+				//Check if date of price is the same the last element of chart
+				if (chartDate.toDateString() === priceDate.toDateString()) {
+					var chartDataObj = this.state.chartData;
+					//update last element of chartData
+					chartDataObj[chartDataObj.length - 1] = {
+						date: new Date(this.state.priceData.latestUpdate),
+						open: this.state.priceData.open,
+						high: this.state.priceData.high,
+						low: this.state.priceData.low,
+						close: this.state.latestPrice,
+						volume: this.state.priceData.latestVolume
+					};
+					this.setState({
+						chartData: chartDataObj
+					});
+				}
 			}
 		});
 
@@ -51,12 +78,17 @@ class Summary extends React.Component {
 			chartData: '',
 			notFound: false,
 			currentTickerId: newProps.tickerId,
+			currentTicker: newProps.ticker
 		});
 		this.loadData(newProps.ticker);
 	}
 
+	componentWillUnmount() {
+		console.log(this.state.currentTicker);
+		socket.emit('unsubscribe', this.state.currentTicker.toString());
+	}
+
 	loadData(ticker) {
-		console.log(this.props.ticker);
 		socket.emit('unsubscribe', this.props.ticker.toString());
 		socket.emit('subscribe', ticker.toString());
 
@@ -64,6 +96,7 @@ class Summary extends React.Component {
 		this.props.getCurrentPrice(ticker).then((res) => {
 			this.setState({
 				priceData: res.payload,
+				latestPrice: res.payload.latestPrice,
 				changePercent: res.payload.changePercent * 100
 			});
 
@@ -77,7 +110,7 @@ class Summary extends React.Component {
 				});
 			}
 
-			if (this.state.priceData.extendedChangePercent > 0){
+			if (this.state.priceData.extendedChangePercent > 0) {
 				this.setState({
 					afterHourColor: 'green'
 				});
@@ -110,14 +143,33 @@ class Summary extends React.Component {
 		axios.get('https://api.iextrading.com/1.0/stock/' + ticker + '/chart/5y').then((res) => {
 			if (res.data) {
 				res.data.forEach((obj) => {
-					obj.date = new Date(obj.date);
+					obj.date = new Date(obj.date + 'T21:00:00.000Z');
 				});
 				this.setState({
 					chartData: res.data
+				}, () => {
+					var chartDate = this.state.chartData[this.state.chartData.length - 1].date;
+					var priceDate = new Date(this.state.priceData.latestUpdate);
+					//Push current priceData to chartData if priceData is one day ahead
+					if (chartDate.toDateString() !== priceDate.toDateString()) {
+						var chartDataObj = this.state.chartData;
+						chartDataObj.push({
+							date: new Date(this.state.priceData.latestUpdate),
+							open: this.state.priceData.open,
+							high: this.state.priceData.high,
+							low: this.state.priceData.low,
+							close: this.state.latestPrice,
+							volume: this.state.priceData.latestVolume
+						});
+						this.setState({
+							chartData: chartDataObj
+						});
+					}
 				});
 			}
-		});
+		})
 	}
+
 
 	render() {
 		return (
@@ -131,28 +183,37 @@ class Summary extends React.Component {
 							</Col>
 						</Row>
 						<Row>
-							<Col span={2}>
-								{
-									this.state.priceData.extendedPriceTime ===  this.state.priceData.latestUpdate && this.state.priceData.price ? (
-										<p style={{ color: this.state.textColor }}>${this.state.priceData.price}</p>
-									):(
-										<p style={{ color: this.state.textColor }}>${this.state.priceData.latestPrice}</p>
+							{
+								this.state.priceData.extendedPriceTime === this.state.priceData.latestUpdate && this.state.priceData.price ? (
+									<div>
+										<Col span={2}>
+											<p style={{ color: this.state.textColor }}>${this.state.priceData.price}</p>
+										</Col>
+										<Col span={2}>
+											<p style={{ color: this.state.textColor }}>{(this.state.priceData.price - this.state.priceData.previousClose).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+										</Col>
+									</div>
+								) : (
+										<div>
+											<Col span={2}>
+												<p style={{ color: this.state.textColor }}>${this.state.priceData.latestPrice}</p>
+											</Col>
+											<Col span={2}>
+												<p style={{ color: this.state.textColor }}>{this.state.priceData.change.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+											</Col>
+										</div>
 									)
-								}
-							</Col>
-							<Col span={2}>
-								<p style={{ color: this.state.textColor }}>{this.state.priceData.change.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-							</Col>
+							}
 							<Col span={2}>
 								<p style={{ color: this.state.textColor }}>{this.state.changePercent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</p>
 							</Col>
 							<Col span={2}>
 								<p>{this.props.quantity} shares</p>
 							</Col>
-							{this.state.priceData.extendedPriceTime !==  this.state.priceData.latestUpdate && 
+							{this.state.priceData.extendedPriceTime !== this.state.priceData.latestUpdate &&
 								<div>
 									<Col span={1}>
-										<AntDivider type="vertical"/>
+										<AntDivider type="vertical" />
 									</Col>
 									<Col span={2}>
 										<p>After Hour:</p>
@@ -161,12 +222,12 @@ class Summary extends React.Component {
 										<p style={{ color: this.state.afterHourColor }}>${this.state.priceData.extendedPrice}</p>
 									</Col>
 									<Col span={2}>
-									<p style={{ color: this.state.afterHourColor }}>{(this.state.priceData.extendedChangePercent*100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</p>
+										<p style={{ color: this.state.afterHourColor }}>{(this.state.priceData.extendedChangePercent * 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</p>
 									</Col>
 								</div>
 							}
 						</Row>
-						<Row gutter={24} style={{marginTop:'5px'}}>
+						<Row gutter={24} style={{ marginTop: '5px' }}>
 							<Col span={4}>
 								<p style={{ fontSize: '12px' }}>Open {this.state.priceData.open}</p>
 							</Col>
@@ -200,10 +261,10 @@ class Summary extends React.Component {
 								<p style={{ fontSize: '12px' }}>Dividend Yield {this.state.statData.dividendYield.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
 							</Col>
 						</Row>
-						<div style={{marginTop:'5px'}}>
-							<Chart 
-								type="hybrid" 
-								data={this.state.chartData} 
+						<div style={{ marginTop: '5px' }}>
+							<Chart
+								type="hybrid"
+								data={this.state.chartData}
 								tickerId={this.state.currentTickerId}
 							/>
 						</div>
