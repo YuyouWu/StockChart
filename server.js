@@ -6,6 +6,8 @@ const bodyParser = require('body-parser');
 const request = require('request');
 const axios = require('axios');
 const schedule = require('node-schedule');
+const nodemailer = require('nodemailer');
+const xoauth2 = require('xoauth2');
 
 const { mongoose } = require('./db/mongoose');
 const { ObjectID } = require('mongodb');
@@ -899,6 +901,53 @@ app.post('/api/users/email', (req, res) => {
   });
 });
 
+//Update Password
+app.post('/api/updatePassword', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password', 'newPassword']);
+  User.findByCredentials(body.email, body.password).then((user) => {
+    if (!user) {
+      return res.status(404).send();
+    }
+
+    user.password = body.newPassword;
+    user.save();
+
+    res.send(user);
+  }).catch((e) => {
+    res.status(400).send();
+  });
+});
+
+//Send user email
+app.post('/api/updatePasswordEmail', (req, res) => {
+  let smtpTransport = nodemailer.createTransport({
+    host: 'smtp.office365.com',
+    secure: false,
+    port: 587,
+    name: 'Plusfolio',
+    auth: {
+      user: 'support@plusfolio.com',
+      pass: 'Fedexedef1_'
+    },
+    tls: {
+      ciphers: 'SSLv3'
+    }
+  });
+  
+  var mailOptions = {
+    from: 'support@plusfolio.com',
+    to: 'yuyouwu5@gmail.com',
+    subject: 'Hello world!',
+    text: 'Plaintext message example.'
+  };
+
+  smtpTransport.sendMail(mailOptions, function(err) {
+    console.log('Message sent!');
+    res.status(200).send(mailOptions);
+  });
+});
+
+//Scheduled Code
 //Update Screener Collection everyday at midnight
 schedule.scheduleJob('0 0 * * *', () => {
   console.log("Update screener model start");

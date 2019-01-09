@@ -31,6 +31,7 @@ class Summary extends React.Component {
 
 	componentDidMount() {
 		socket.on('message', (message) => {
+			console.log(message);
 			//Update price data 
 			if (this.state.priceData) {
 				var priceDataObj = this.state.priceData;
@@ -73,9 +74,10 @@ class Summary extends React.Component {
 	}
 
 	componentWillReceiveProps(newProps) {
-		//socket.emit('unsubscribe', this.props.ticker.toString());
+		socket.emit('unsubscribe', this.props.ticker.toString());
 		this.setState({
 			chartData: '',
+			priceData: '',
 			notFound: false,
 			currentTickerId: newProps.tickerId,
 			currentTicker: newProps.ticker
@@ -88,7 +90,7 @@ class Summary extends React.Component {
 	}
 
 	loadData(ticker) {
-		socket.emit('unsubscribe', this.props.ticker.toString());
+		// socket.emit('unsubscribe', this.props.ticker.toString());
 		socket.emit('subscribe', ticker.toString());
 
 		//Get current price for ticker 

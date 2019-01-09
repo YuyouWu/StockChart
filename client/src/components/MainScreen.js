@@ -68,6 +68,12 @@ class TickerList extends Component{
 	}
 
 	componentDidMount(){
+		socket.on('message', (message) => {
+			var symbol = JSON.parse(message).symbol;
+			var price = JSON.parse(message).price;
+			this.updatePrice(symbol, price);
+		});
+
 		this.getTickersList();
 		this.getAllPortfolio();
 
@@ -76,12 +82,6 @@ class TickerList extends Component{
 			this.setState({
 				allTickers: res.data
 			});
-		});
-
-		socket.on('message', (message) => {
-			var symbol = JSON.parse(message).symbol;
-			var price = JSON.parse(message).price;
-			this.updatePrice(symbol, price);
 		});
 	}
 
@@ -358,8 +358,7 @@ class TickerList extends Component{
 			  			</Button>
 			  		):(
 			  			<p style={{marginTop:'5px', fontSize:'13px'}}>{price}</p>
-			  		)
-			  		}
+			  		)}
 			  	</td>
 			</tr>
 		);
