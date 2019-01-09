@@ -84,7 +84,6 @@ class Summary extends React.Component {
 	}
 
 	componentWillUnmount() {
-		console.log(this.state.currentTicker);
 		socket.emit('unsubscribe', this.state.currentTicker.toString());
 	}
 

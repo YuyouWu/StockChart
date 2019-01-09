@@ -832,7 +832,7 @@ class CandleStickStockScaleChart extends React.Component {
 										yExtents={macdCalculator.accessor()}
 										origin={(w, h) => [0, h - bottomMargin]} padding={{ top: 10, bottom: 10 }}
 									>
-										<XAxis axisAt="bottom" orient="bottom" />
+										<XAxis axisAt="bottom" orient="bottom" showTicks={false}/>
 										<YAxis axisAt="right" orient="right" ticks={2} />
 
 										<MouseCoordinateX
@@ -859,6 +859,25 @@ class CandleStickStockScaleChart extends React.Component {
 								) : (
 										<div></div>
 									)}
+									<Chart id={5} height={20}
+										yExtents={macdCalculator.accessor()}
+										origin={(w, h) => [0, h - 20]} padding={{ top: 10, bottom: 10 }}
+									>
+										<XAxis axisAt="bottom" orient="bottom" />
+
+										<MouseCoordinateX
+											at="bottom"
+											orient="bottom"
+											displayFormat={timeFormat("%Y-%m-%d")}
+											rectRadius={5}
+										/>
+										<MouseCoordinateY
+											at="right"
+											orient="right"
+											displayFormat={format(".2f")}
+										/>
+
+									</Chart>
 								<CrossHairCursor />
 							</ChartCanvas>
 						</Content>
