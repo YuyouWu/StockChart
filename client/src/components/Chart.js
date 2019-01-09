@@ -786,11 +786,6 @@ class CandleStickStockScaleChart extends React.Component {
 										tickFormat={format(".2s")}
 									/>
 
-									<MouseCoordinateX
-										at="bottom"
-										orient="bottom"
-										displayFormat={timeFormat("%Y-%m-%d")}
-									/>
 									<MouseCoordinateY
 										at="left"
 										orient="left"
@@ -835,12 +830,6 @@ class CandleStickStockScaleChart extends React.Component {
 										<XAxis axisAt="bottom" orient="bottom" showTicks={false}/>
 										<YAxis axisAt="right" orient="right" ticks={2} />
 
-										<MouseCoordinateX
-											at="bottom"
-											orient="bottom"
-											displayFormat={timeFormat("%Y-%m-%d")}
-											rectRadius={5}
-										/>
 										<MouseCoordinateY
 											at="right"
 											orient="right"
