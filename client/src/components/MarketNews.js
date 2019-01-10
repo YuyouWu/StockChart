@@ -36,7 +36,7 @@ class MarketNews extends React.Component {
 					<List.Item>
 						<List.Item.Meta
 						title={<a href={item.url}>{item.headline}</a>}
-						description={new Date(item.datetime).toLocaleDateString() + ' ' + new Date(item.datetime).toLocaleTimeString()}
+						description={new Date(item.datetime).toLocaleDateString() + ' ' + new Date(item.datetime).toLocaleTimeString() + ' - ' + item.source}
 						/>
 					</List.Item>
 					)}

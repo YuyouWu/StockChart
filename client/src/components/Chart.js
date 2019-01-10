@@ -10,7 +10,8 @@ import { BarSeries, CandlestickSeries, LineSeries, RSISeries, MACDSeries } from 
 import { XAxis, YAxis } from "react-stockcharts/lib/axes";
 import {
 	CrossHairCursor,
-	CurrentCoordinate,
+    CurrentCoordinate,
+    EdgeIndicator,
 	MouseCoordinateX,
 	MouseCoordinateY
 } from "react-stockcharts/lib/coordinates";
@@ -106,7 +107,8 @@ class CandleStickStockScaleChart extends React.Component {
 			currentTickerId: this.props.tickerId,
 			loading: true,
 			showMACD: false,
-			showRSI: false
+            showRSI: false,
+            data: this.props.data
 		};
 
 		//Custom chart control
@@ -132,13 +134,15 @@ class CandleStickStockScaleChart extends React.Component {
 		document.removeEventListener("keyup", this.onKeyPress);
 	}
 
-	//Not called at all?
+	// Not called at all?
 	componentWillReceiveProps(newProps) {
+        console.log('here2');
 		this.setState({
-			currentTickerId: newProps.tickerId
+            currentTickerId: newProps.tickerId,
+            data: newProps.data,
+            forceUpdate: newProps.forceUpdate
 		});
-	}
-
+    }
 
 	saveNode(node) {
 		this.node = node;
@@ -333,7 +337,6 @@ class CandleStickStockScaleChart extends React.Component {
 			});
 		});
 	}
-
 	onFanComplete(fans) {
 		this.setState({
 			enableFans: false,
@@ -517,7 +520,7 @@ class CandleStickStockScaleChart extends React.Component {
 			.options({ windowSize: 14 })
 			.merge((d, c) => { d.rsi = c; })
 			.accessor(d => d.rsi);
-
+        //MACD
 		const macdCalculator = macd()
 			.options({
 				fast: 12,
@@ -665,7 +668,7 @@ class CandleStickStockScaleChart extends React.Component {
 
 						<Content style={{ background: '#fff', borderStyle: "solid", borderWidth: '1px', borderRadius: '5px', borderColor: '#DADADA' }} >
 							<ChartCanvas
-								ref={this.saveCanvasNode}
+								// ref={this.saveCanvasNode}
 								height={window.innerHeight - 230}
 								ratio={ratio}
 								width={width - 50}
@@ -695,6 +698,9 @@ class CandleStickStockScaleChart extends React.Component {
 
 									<LineSeries yAccessor={ema20.accessor()} stroke={ema20.stroke()} />
 									<CurrentCoordinate yAccessor={ema20.accessor()} fill={ema20.stroke()} />
+
+                                    <EdgeIndicator itemType="last" orient="right" edgeAt="right"
+                                        yAccessor={d => d.close} fill={d => d.close > d.open ? "#6BA583" : "#FF0000"}/>
 
 									<OHLCTooltip forChart={1} origin={[-38, 0]} />
 									<ZoomButtons

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCurrentPrice, getCompanyStat } from '../actions/portfolioActions';
-import { Row, Col, Divider as AntDivider } from 'antd';
+import { Row, Col, Divider as AntDivider, Button } from 'antd';
 import { Divider, Spinner, NonIdealState } from '@blueprintjs/core';
 import axios from 'axios';
 import Chart from './Chart';
@@ -24,12 +24,11 @@ class Summary extends React.Component {
 			textColor: 'green',
 			afterHourColor: 'green',
 			currentTickerId: this.props.tickerId,
-			currentTicker: this.props.ticker
+			currentTicker: this.props.ticker,
+			forceUpdate: ''
 		}
 		this.loadData = this.loadData.bind(this);
-	}
 
-	componentDidMount() {
 		socket.on('message', (message) => {
 			console.log(message);
 			//Update price data 
@@ -56,18 +55,21 @@ class Summary extends React.Component {
 						open: this.state.priceData.open,
 						high: this.state.priceData.high,
 						low: this.state.priceData.low,
-						close: this.state.latestPrice,
+						close: priceDataObj.price,
 						volume: this.state.priceData.latestVolume
 					};
 					this.setState({
-						chartData: chartDataObj
+						chartData: chartDataObj,
+						forceUpdate: priceDataObj.price
 					});
 				}
 			}
 		});
+	}
 
+	componentDidMount() {
 		this.setState({
-			chartData: '',
+			//chartData: '',
 			notFound: false
 		});
 		this.loadData(this.props.ticker);
@@ -76,7 +78,7 @@ class Summary extends React.Component {
 	componentWillReceiveProps(newProps) {
 		socket.emit('unsubscribe', this.props.ticker.toString());
 		this.setState({
-			chartData: '',
+			//chartData: '',
 			priceData: '',
 			notFound: false,
 			currentTickerId: newProps.tickerId,
@@ -159,7 +161,7 @@ class Summary extends React.Component {
 							open: this.state.priceData.open,
 							high: this.state.priceData.high,
 							low: this.state.priceData.low,
-							close: this.state.latestPrice,
+							close: this.state.priceData.latestPrice,
 							volume: this.state.priceData.latestVolume
 						});
 						this.setState({
@@ -267,6 +269,7 @@ class Summary extends React.Component {
 								type="hybrid"
 								data={this.state.chartData}
 								tickerId={this.state.currentTickerId}
+								forceUpdate = {this.state.forceUpdate}
 							/>
 						</div>
 					</div>
