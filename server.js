@@ -901,7 +901,7 @@ app.post('/api/users/email', (req, res) => {
   });
 });
 
-//Update Password
+//Update Password with old password
 app.post('/api/updatePassword', (req, res) => {
   var body = _.pick(req.body, ['email', 'password', 'newPassword']);
   User.findByCredentials(body.email, body.password).then((user) => {
@@ -918,32 +918,61 @@ app.post('/api/updatePassword', (req, res) => {
   });
 });
 
-//Send user email
-app.post('/api/updatePasswordEmail', (req, res) => {
-  let smtpTransport = nodemailer.createTransport({
-    host: 'smtp.office365.com',
-    secure: false,
-    port: 587,
-    name: 'Plusfolio',
-    auth: {
-      user: 'support@plusfolio.com',
-      pass: 'Fedexedef1_'
-    },
-    tls: {
-      ciphers: 'SSLv3'
+//Update Password with Token 
+app.post('/api/updatePasswordToken/:token', (req, res) => {
+  var body = _.pick(req.body, ['newPassword']);
+  var token =  req.params.token;
+ 
+  User.findByToken(token).then((user) => {
+    if (!user) {
+      return res.status(404).send();
     }
-  });
-  
-  var mailOptions = {
-    from: 'support@plusfolio.com',
-    to: 'yuyouwu5@gmail.com',
-    subject: 'Hello world!',
-    text: 'Plaintext message example.'
-  };
+    
+    user.password = body.newPassword;
+    user.save();
 
-  smtpTransport.sendMail(mailOptions, function(err) {
-    console.log('Message sent!');
-    res.status(200).send(mailOptions);
+    res.send(user.email);
+  }).catch((e) => {
+    res.status(400).send();
+  });
+});
+
+//Send user email with Token
+app.post('/api/updatePasswordEmail', (req, res) => {
+  var body = _.pick(req.body, ['email']);
+
+  User.findOne({email: body.email}).then((user) => {
+    user.generateAuthToken().then((token) => {
+      //Send email with token in link
+      let smtpTransport = nodemailer.createTransport({
+        host: 'smtp.office365.com',
+        secure: false,
+        port: 587,
+        name: 'Plusfolio',
+        auth: {
+          user: 'support@plusfolio.com',
+          pass: 'Fedexedef1_'
+        },
+        tls: {
+          ciphers: 'SSLv3'
+        }
+      });
+      
+      var mailOptions = {
+        from: 'support@plusfolio.com',
+        to: body.email,
+        subject: 'Password Reset for Plusfolio.com',
+        text: 'Please click the following link to reset your passworod: https://plusfolio.com/reset_password/' + token
+      };
+    
+      smtpTransport.sendMail(mailOptions, function(err) {
+        console.log('Message sent!');
+        res.status(200).send();
+      });
+      // res.header('xauth', token).send(user);
+    });
+  }).catch((e) => {
+    res.status(400).send();
   });
 });
 
