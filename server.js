@@ -12,6 +12,8 @@ const { mongoose } = require('./db/mongoose');
 const { ObjectID } = require('mongodb');
 mongoose.set('useCreateIndex', true);
 
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
 var { Ticker } = require('./models/ticker');
 var { User } = require('./models/user');
 var { Portfolio } = require('./models/portfolio');
@@ -943,7 +945,6 @@ app.post('/api/updatePasswordEmail', (req, res) => {
   User.findOne({email: body.email}).then((user) => {
     user.generateAuthToken().then((token) => {
       //Send email with token in link
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
       const msg = {
         to: body.email,
         from: 'support@plusfolio.com',
@@ -951,6 +952,7 @@ app.post('/api/updatePasswordEmail', (req, res) => {
         text: 'Use the following link to reset your password: https://plusfolio.com/reset_password/'+token
       };
       sgMail.send(msg);
+      res.status(200).send();
     });
   }).catch((e) => {
     res.status(400).send();
