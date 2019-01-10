@@ -949,7 +949,7 @@ app.post('/api/updatePasswordEmail', (req, res) => {
         to: body.email,
         from: 'support@plusfolio.com',
         subject: 'Reset Password for Plusfolio',
-        text: 'Use the following link to reset your password: https://plusfolio.com/reset_password/'+token
+        text: 'Use the following link to reset your password: https://www.plusfolio.com/reset_password/'+token
       };
       sgMail.send(msg);
       res.status(200).send();
