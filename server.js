@@ -947,7 +947,6 @@ app.post('/api/updatePasswordEmail', (req, res) => {
       let smtpTransport = nodemailer.createTransport({
         host: 'smtp.office365.com',
         secure: false,
-        port: 587,
         name: 'Plusfolio',
         auth: {
           user: 'support@plusfolio.com',
