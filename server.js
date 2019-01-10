@@ -6,8 +6,7 @@ const bodyParser = require('body-parser');
 const request = require('request');
 const axios = require('axios');
 const schedule = require('node-schedule');
-const nodemailer = require('nodemailer');
-const xoauth2 = require('xoauth2');
+const sgMail = require('@sendgrid/mail');
 
 const { mongoose } = require('./db/mongoose');
 const { ObjectID } = require('mongodb');
@@ -944,31 +943,18 @@ app.post('/api/updatePasswordEmail', (req, res) => {
   User.findOne({email: body.email}).then((user) => {
     user.generateAuthToken().then((token) => {
       //Send email with token in link
-      let smtpTransport = nodemailer.createTransport({
-        host: 'smtp.office365.com',
-        secure: false,
-        name: 'Plusfolio',
-        auth: {
-          user: 'support@plusfolio.com',
-          pass: 'Fedexedef1_'
-        },
-        tls: {
-          ciphers: 'SSLv3'
-        }
-      });
-      
-      var mailOptions = {
-        from: 'support@plusfolio.com',
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+      const msg = {
         to: body.email,
-        subject: 'Password Reset for Plusfolio.com',
-        text: 'Please click the following link to reset your passworod: https://plusfolio.com/reset_password/' + token
+        from: 'support@plusfolio.com',
+        subject: 'Reset Password for Plusfolio',
+        text: 'Use the following link to reset your password: https://plusfolio.com/reset_password/'+token
       };
-    
-      smtpTransport.sendMail(mailOptions, function(err) {
-        console.log('Message sent!');
+      sgMail.send(msg).then(result =>{
         res.status(200).send();
+      }).catch((e) =>{
+        res.status(400).send();
       });
-      // res.header('xauth', token).send(user);
     });
   }).catch((e) => {
     res.status(400).send();
