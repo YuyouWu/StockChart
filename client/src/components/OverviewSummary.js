@@ -178,6 +178,8 @@ class OverviewSummary extends React.Component {
 					/>
 					</Col>
 				</Row>
+				<Divider style={{marginTop:'20px'}}/>
+				<p style={{ fontSize: '12px' }}>Data provided for free by <a href="https://iextrading.com/developer">IEX</a>. View <a href="https://iextrading.com/api-exhibit-a/">IEX’s Terms of Use</a>.</p>
 				
 				{/* <h3 style={{marginTop: '50px'}}>Market Wide News</h3>	
 				<List

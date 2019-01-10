@@ -557,7 +557,7 @@ class CandleStickStockScaleChart extends React.Component {
 		var rsiHeight = this.state.showRSI ? 100 : 0;
 		var macdHeight = this.state.showMACD ? 100 : 0;
 		var volHeight = 100;
-		var stockchartHeight = window.innerHeight - 170 - (bottomMargin + rsiHeight + macdHeight);
+		var stockchartHeight = window.innerHeight - 180 - (bottomMargin + rsiHeight + macdHeight);
 		// var stockchartHeight = 500;
 
 		var showGrid = true;
@@ -669,7 +669,7 @@ class CandleStickStockScaleChart extends React.Component {
 						<Content style={{ background: '#fff', borderStyle: "solid", borderWidth: '1px', borderRadius: '5px', borderColor: '#DADADA' }} >
 							<ChartCanvas
 								// ref={this.saveCanvasNode}
-								height={window.innerHeight - 230}
+								height={window.innerHeight - 240}
 								ratio={ratio}
 								width={width - 50}
 								margin={{ left: 50, right: 50, top: 10, bottom: 30 }}

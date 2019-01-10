@@ -272,6 +272,7 @@ class Summary extends React.Component {
 								forceUpdate = {this.state.forceUpdate}
 							/>
 						</div>
+						<p style={{ fontSize: '12px' }}>Data provided for free by <a href="https://iextrading.com/developer">IEX</a>. View <a href="https://iextrading.com/api-exhibit-a/">IEX’s Terms of Use</a>.</p>
 					</div>
 				) : (
 						<div>
