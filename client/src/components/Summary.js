@@ -30,7 +30,6 @@ class Summary extends React.Component {
 		this.loadData = this.loadData.bind(this);
 
 		socket.on('message', (message) => {
-			console.log(message);
 			//Update price data 
 			if (this.state.priceData) {
 				var priceDataObj = this.state.priceData;

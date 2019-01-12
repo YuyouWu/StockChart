@@ -136,7 +136,6 @@ class CandleStickStockScaleChart extends React.Component {
 
 	// Not called at all?
 	componentWillReceiveProps(newProps) {
-        console.log('here2');
 		this.setState({
             currentTickerId: newProps.tickerId,
             data: newProps.data,
