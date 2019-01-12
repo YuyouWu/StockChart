@@ -943,6 +943,7 @@ app.post('/api/updatePasswordEmail', (req, res) => {
   var body = _.pick(req.body, ['email']);
 
   User.findOne({email: body.email}).then((user) => {
+    console.log(body.email);
     user.generateAuthToken().then((token) => {
       //Send email with token in link
       const msg = {
