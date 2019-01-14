@@ -357,7 +357,9 @@ class TickerList extends Component{
 			  				X
 			  			</Button>
 			  		):(
-			  			<p style={{marginTop:'5px', fontSize:'13px'}}>{price}</p>
+						price &&
+							<p style={{marginTop:'5px', fontSize:'13px'}}>{price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+						
 			  		)}
 			  	</td>
 			</tr>

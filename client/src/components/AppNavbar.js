@@ -34,6 +34,7 @@ class AppNavbar extends Component{
     }
     handleLogout(){
         this.props.logoutAction();
+        localStorage.removeItem('jwtToken');
     }
     render() {
         return (

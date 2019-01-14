@@ -189,7 +189,7 @@ class Summary extends React.Component {
 								this.state.priceData.extendedPriceTime === this.state.priceData.latestUpdate && this.state.priceData.price ? (
 									<div>
 										<Col span={2}>
-											<p style={{ color: this.state.textColor }}>${this.state.priceData.price}</p>
+											<p style={{ color: this.state.textColor }}>${this.state.priceData.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
 										</Col>
 										<Col span={2}>
 											<p style={{ color: this.state.textColor }}>{(this.state.priceData.price - this.state.priceData.previousClose).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
@@ -198,7 +198,7 @@ class Summary extends React.Component {
 								) : (
 										<div>
 											<Col span={2}>
-												<p style={{ color: this.state.textColor }}>${this.state.priceData.latestPrice}</p>
+												<p style={{ color: this.state.textColor }}>${this.state.priceData.latestPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
 											</Col>
 											<Col span={2}>
 												<p style={{ color: this.state.textColor }}>{this.state.priceData.change.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
