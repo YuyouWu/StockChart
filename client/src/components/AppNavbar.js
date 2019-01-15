@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { logoutAction, setCurrentUser } from '../actions/authActions';
+import { Link, Router } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {
     Collapse,
@@ -35,12 +36,15 @@ class AppNavbar extends Component{
     handleLogout(){
         this.props.logoutAction();
         localStorage.removeItem('jwtToken');
+        this.setState({
+            currentUser: null
+        });
     }
     render() {
         return (
           <div>
             <Navbar color="dark" dark expand="md">
-                    <NavbarBrand href="/">Plusfolio</NavbarBrand>
+                    <NavbarBrand tag={Link} href="/" to="/">Plusfolio</NavbarBrand>
                     <NavbarToggler onClick={this.toggle}/>
                     <Collapse isOpen={this.state.isOpen} navbar>
                         <Nav className="ml-auto" navbar>
@@ -48,14 +52,14 @@ class AppNavbar extends Component{
                                 <Row>
                                     <Col span={12}>
                                         <NavItem>
-                                            <NavLink href="/portfolio">
+                                            <NavLink tag={Link} href="/portfolio" to="/portfolio">
                                                 Portfolio
                                             </NavLink>
                                         </NavItem>
                                     </Col>
                                     <Col span={12}>
                                         <NavItem>
-                                            <NavLink onClick={this.handleLogout} href="/">
+                                            <NavLink tag={Link} onClick={this.handleLogout} href="/" to="/">
                                                 Logout
                                             </NavLink>
                                         </NavItem>
@@ -65,14 +69,14 @@ class AppNavbar extends Component{
                                 <Row>
                                     <Col span={12}>
                                         <NavItem>
-                                            <NavLink href="/login">
+                                            <NavLink tag={Link} href="/login" to="/login">
                                                 Login
                                             </NavLink>
                                         </NavItem>
                                     </Col>
                                     <Col span={12}>
                                         <NavItem>
-                                            <NavLink href="/register">
+                                            <NavLink tag={Link} href="/register" to="/register">
                                                 Register
                                             </NavLink>
                                         </NavItem>
