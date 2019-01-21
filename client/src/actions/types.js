@@ -16,6 +16,7 @@ export const GET_COMPANY_FINANCIAL_ANNUAL = 'GET_COMPANY_FINANCIAL_ANNUAL';
 export const GET_COMPANY_NEWS = 'GET_COMPANY_NEWS';
 
 export const NEW_DRAWING = 'NEW_DRAWING';
+export const LOAD_PREF = 'LOAD_PREF';
 
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';

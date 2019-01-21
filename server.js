@@ -18,6 +18,7 @@ var { Ticker } = require('./models/ticker');
 var { User } = require('./models/user');
 var { Portfolio } = require('./models/portfolio');
 var { Screener } = require('./models/screener');
+var { ChartPref } = require('./models/chartPref');
 
 var { authenticate } = require('./middleware/authenticate');
 
@@ -258,6 +259,42 @@ app.post('/api/newDrawing', authenticate, (req, res) => {
     res.status(400).send();
   });
 });
+
+//get chart preference 
+app.get('/api/chartpref', authenticate, (req, res)=>{
+  ChartPref.findOne({_creator: req.user._id}).then(pref => {
+    if (!pref) {
+      //create new pref if it doesnt exist
+      var newPref = new ChartPref({
+        showMACD: false,
+        showRSI: false,
+        _creator: req.user._id
+      });
+      newPref.save().then((doc) => {
+        res.status(200).send(doc);
+      }, (e) => {
+        res.status(400).send(e);
+      });  
+    }
+    res.status(200).send(pref);
+  })
+});
+
+// //change MACD Preference
+// app.post('/api/macd', authenticate, (req, res)=>{
+//   var body = _.pick(req.body, ['showMACD']);
+//   var pref = {
+//     showMACD: body.showMACD
+//   }
+//   ChartPref.findOneAndUpdate({_creator: req.user._id}, {$set: pref}, { new: true }).then((pref) => {
+//     if (!pref) {
+//       return res.status(404).send();
+//     }
+//     res.send({ pref });
+//   }).catch((e) => {
+//     res.status(400).send();
+//   });
+// });
 
 ////////////
 //Screener//

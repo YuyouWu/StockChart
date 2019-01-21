@@ -42,8 +42,10 @@ import {
 import { Button, ButtonGroup, Tooltip, Popover, Menu, MenuItem, MenuDivider, Position } from "@blueprintjs/core";
 import { Layout, Row, Col } from 'antd';
 import { connect } from 'react-redux';
-import { newDrawingAction } from '../actions/chartActions';
+
+import { newDrawingAction, loadChartPref } from '../actions/chartActions';
 import { getOneTicker } from '../actions/portfolioActions';
+import { setCurrentUser } from '../actions/authActions';
 
 const { Sider, Content } = Layout;
 
@@ -64,8 +66,8 @@ const candlesAppearance = {
 
 const macdAppearance = {
 	stroke: {
-		macd: "#FF0000",
-		signal: "#00F300",
+		macd: "#00F300",
+		signal: "#FF0000",
 	},
 	fill: {
 		divergence: "#4682B4"
@@ -128,13 +130,13 @@ class CandleStickStockScaleChart extends React.Component {
 
 	componentWillMount() {
 		this.loadDrawings();
+		this.loadInd();
 		this.setState({
 			suffix: 1
 		});
 		document.removeEventListener("keyup", this.onKeyPress);
 	}
 
-	// Not called at all?
 	componentWillReceiveProps(newProps) {
 		this.setState({
             currentTickerId: newProps.tickerId,
@@ -199,6 +201,21 @@ class CandleStickStockScaleChart extends React.Component {
 				}
 			});
 		}
+	}
+
+	loadInd() {
+		this.props.loadChartPref().then((res) => {
+			if(res.payload.showMACD){
+				this.setState({
+					showMACD: res.payload.showMACD
+				});
+			}
+			if(res.payload.showRSI){
+				this.setState({
+					showRSI: res.payload.showRSI
+				});
+			}
+		});
 	}
 
 	saveDrawings() {
@@ -895,5 +912,5 @@ CandleStickStockScaleChart.defaultProps = {
 CandleStickStockScaleChart = fitWidth(CandleStickStockScaleChart);
 
 const mapStateToProps = state => ({});
-export default connect(mapStateToProps, { newDrawingAction, getOneTicker })(CandleStickStockScaleChart);
+export default connect(mapStateToProps, { newDrawingAction, loadChartPref, getOneTicker, setCurrentUser })(CandleStickStockScaleChart);
 
