@@ -43,7 +43,7 @@ import { Button, ButtonGroup, Tooltip, Popover, Menu, MenuItem, MenuDivider, Pos
 import { Layout, Row, Col } from 'antd';
 import { connect } from 'react-redux';
 
-import { newDrawingAction, loadChartPref } from '../actions/chartActions';
+import { newDrawingAction, loadChartPref, updateMACDPref, updateRSIPref } from '../actions/chartActions';
 import { getOneTicker } from '../actions/portfolioActions';
 import { setCurrentUser } from '../actions/authActions';
 
@@ -507,13 +507,21 @@ class CandleStickStockScaleChart extends React.Component {
 	toggleMACD() {
 		this.setState(prevState => ({
 			showMACD: !prevState.showMACD
-		}));
+		}),() => {
+			this.props.updateMACDPref({
+				showMACD: this.state.showMACD
+			});
+		});
 	}
 
 	toggleRSI() {
 		this.setState(prevState => ({
 			showRSI: !prevState.showRSI
-		}));
+		}),() => {
+			this.props.updateRSIPref({
+				showRSI: this.state.showRSI
+			});
+		});
 	}
 
 	render() {
@@ -912,5 +920,5 @@ CandleStickStockScaleChart.defaultProps = {
 CandleStickStockScaleChart = fitWidth(CandleStickStockScaleChart);
 
 const mapStateToProps = state => ({});
-export default connect(mapStateToProps, { newDrawingAction, loadChartPref, getOneTicker, setCurrentUser })(CandleStickStockScaleChart);
+export default connect(mapStateToProps, { newDrawingAction, loadChartPref, updateMACDPref, updateRSIPref, getOneTicker, setCurrentUser })(CandleStickStockScaleChart);
 

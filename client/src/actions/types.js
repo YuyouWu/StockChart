@@ -17,6 +17,8 @@ export const GET_COMPANY_NEWS = 'GET_COMPANY_NEWS';
 
 export const NEW_DRAWING = 'NEW_DRAWING';
 export const LOAD_PREF = 'LOAD_PREF';
+export const UPDATE_MACD_PREF = 'UPDATE_MACD_PREF';
+export const UPDATE_RSI_PREF ='UPDATE_RSI_PREF';
 
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';

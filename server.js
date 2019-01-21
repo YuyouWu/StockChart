@@ -280,21 +280,37 @@ app.get('/api/chartpref', authenticate, (req, res)=>{
   })
 });
 
-// //change MACD Preference
-// app.post('/api/macd', authenticate, (req, res)=>{
-//   var body = _.pick(req.body, ['showMACD']);
-//   var pref = {
-//     showMACD: body.showMACD
-//   }
-//   ChartPref.findOneAndUpdate({_creator: req.user._id}, {$set: pref}, { new: true }).then((pref) => {
-//     if (!pref) {
-//       return res.status(404).send();
-//     }
-//     res.send({ pref });
-//   }).catch((e) => {
-//     res.status(400).send();
-//   });
-// });
+//change MACD Preference
+app.post('/api/macd', authenticate, (req, res)=>{
+  var body = _.pick(req.body, ['showMACD']);
+  var pref = {
+    showMACD: body.showMACD
+  }
+  ChartPref.findOneAndUpdate({_creator: req.user._id}, {$set: pref}, { new: true }).then((pref) => {
+    if (!pref) {
+      return res.status(404).send();
+    }
+    res.send({ pref });
+  }).catch((e) => {
+    res.status(400).send();
+  });
+});
+
+//change RSI Preference
+app.post('/api/rsi', authenticate, (req, res)=>{
+  var body = _.pick(req.body, ['showRSI']);
+  var pref = {
+    showRSI: body.showRSI
+  }
+  ChartPref.findOneAndUpdate({_creator: req.user._id}, {$set: pref}, { new: true }).then((pref) => {
+    if (!pref) {
+      return res.status(404).send();
+    }
+    res.send({ pref });
+  }).catch((e) => {
+    res.status(400).send();
+  });
+});
 
 ////////////
 //Screener//
