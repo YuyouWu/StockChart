@@ -8,8 +8,7 @@ import axios from 'axios';
 
 var tickerList = [];
 var totalQuantity = 0;
-var totalPercChange = 0;
-var avgPercChange = 0;
+var totalChange = 0;
 var totalValue = 0;
 //Class for rendering each individual tickers on portfolio
 class OverviewSummary extends React.Component {
@@ -20,6 +19,7 @@ class OverviewSummary extends React.Component {
 			totalQuantity: 0,
 			avgPercChange: 0,
 			totalValue: 0,
+			totalChange: 0,
 			textColor: 'green',
 			topGainers: [''],
 			topLosers: [''],
@@ -32,8 +32,7 @@ class OverviewSummary extends React.Component {
 	componentDidMount() {
 		tickerList = [];
 		totalQuantity = 0;
-		totalPercChange = 0;
-		avgPercChange = 0;
+		totalChange = 0;
 		totalValue = 0;
 
 		//Get tickers and total quantity of shares owned
@@ -56,15 +55,14 @@ class OverviewSummary extends React.Component {
 						tickerList.push(element);
 
 						totalValue = totalValue + element.value;
-						totalPercChange = totalPercChange + (res.payload.changePercent * element.quantity)
-						avgPercChange = totalPercChange / totalQuantity;
+						totalChange = totalChange + (res.payload.change * element.quantity)
 
 						this.setState({
 							forceUpdate: element,
-							avgPercChange: avgPercChange,
 							tickerList: tickerList,
 							totalQuantity: totalQuantity,
-							totalValue: totalValue
+							totalValue: totalValue,
+							totalChange: totalChange
 						});
 					});
 				}
@@ -172,7 +170,7 @@ class OverviewSummary extends React.Component {
 							<td style={{fontWeight:'bold'}}>Total</td>
 							<td></td>
 							{
-								this.state.avgPercChange > 0 ? (
+								this.state.totalChange > 0 ? (
 									<td 
 										style={{
 											color: 'green', 
@@ -180,7 +178,7 @@ class OverviewSummary extends React.Component {
 											fontWeight:'bold'
 										}}
 									>
-										{(this.state.totalValue/(1 - this.state.avgPercChange)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+										{(this.state.totalChange).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
 									</td>
 								):(
 									<td 
@@ -190,16 +188,30 @@ class OverviewSummary extends React.Component {
 											fontWeight:'bold'
 										}}
 									>
-										{(this.state.totalValue/(1 - this.state.avgPercChange)-this.state.totalValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+										{(this.state.totalChange).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
 									</td>	
 								)
 							}
 							{
-								this.state.avgPercChange > 0 ? (
-									<td style={{color: 'green', textAlign:'right', fontWeight:'bold'}}>{(this.state.avgPercChange * 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</td>
+								this.state.totalChange > 0 ? (
+									<td 
+										style={{
+											color: 'green', 
+											textAlign:'right', 
+											fontWeight:'bold'
+										}}>
+											{(this.state.totalChange/(this.state.totalValue - this.state.totalChange)*100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%
+									</td>
 									):(
-									<td style={{color: 'red', textAlign:'right', fontWeight:'bold'}}>{(this.state.avgPercChange * 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</td>
-								)
+									<td 
+										style={{
+											color: 'red', 
+											textAlign:'right', 
+											fontWeight:'bold'
+										}}>
+											{(this.state.totalChange/(this.state.totalValue - this.state.totalChange)*100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%
+									</td>
+									)
 							}
 							<td></td>
 							<td></td>
