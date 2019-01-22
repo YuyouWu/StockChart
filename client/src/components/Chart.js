@@ -583,17 +583,20 @@ class CandleStickStockScaleChart extends React.Component {
 		const sma1 = sma()
 			.options({ windowSize: this.state.smaWindow })
 			.merge((d, c) => {d.sma1 = c;})
-			.accessor(d => d.sma1);
+			.accessor(d => d.sma1)
+			.stroke("red"); // Optional
 
 		const wma1 = wma()
 			.options({ windowSize: this.state.wmaWindow })
 			.merge((d, c) => {d.wma1 = c;})
-			.accessor(d => d.wma1);
+			.accessor(d => d.wma1)
+			.stroke("green"); // Optional
 
 		const tma1 = tma()
 			.options({ windowSize: this.state.tmaWindow })
 			.merge((d, c) => {d.tma1 = c;})
-			.accessor(d => d.tma1);
+			.accessor(d => d.tma1)
+			.stroke("yellow"); // Optional
 
 		//RSI
 		const rsiCalculator = rsi()
