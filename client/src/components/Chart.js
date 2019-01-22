@@ -39,8 +39,9 @@ import {
 } from "./interactiveutils";
 
 
-import { Button, ButtonGroup, Tooltip, Popover, Menu, MenuItem, MenuDivider, Position } from "@blueprintjs/core";
+import { Button, ButtonGroup, FormGroup, InputGroup, Tooltip, Popover, Menu, MenuItem, MenuDivider, Position, Intent } from "@blueprintjs/core";
 import { Layout, Row, Col } from 'antd';
+import { Modal, ModalBody, ModalHeader } from 'reactstrap';
 import { connect } from 'react-redux';
 
 import { newDrawingAction, loadChartPref, updateMACDPref, updateRSIPref } from '../actions/chartActions';
@@ -110,7 +111,13 @@ class CandleStickStockScaleChart extends React.Component {
 			loading: true,
 			showMACD: false,
             showRSI: false,
-            data: this.props.data
+			data: this.props.data,
+			emaWindow: 20,
+			smaWindow: 20,
+			wmaWindow: 20,
+			tmaWindow: 20,
+			modal: false,
+			editingInd: ''
 		};
 
 		//Custom chart control
@@ -524,20 +531,69 @@ class CandleStickStockScaleChart extends React.Component {
 		});
 	}
 
+	toggleModal = () => {
+		this.setState({
+			modal: !this.state.modal
+		});	  
+	}
+
+	handleWindowSizeChange = (e) => {
+		if(this.state.editingInd === 'SMA'){
+			this.setState({
+				smaWindow: this.state.newWindowSize
+			});	
+		} else if (this.state.editingInd === 'EMA'){
+			this.setState({
+				emaWindow: this.state.newWindowSize
+			});	
+		} else if(this.state.editingInd === 'WMA'){
+			this.setState({
+				wmaWindow: this.state.newWindowSize
+			});	
+		} else if (this.state.editingInd === 'TMA'){
+			this.setState({
+				tmaWindow: this.state.newWindowSize
+			});	
+		}
+
+		this.toggleModal();
+	}
+
+	windowSizeOnChange = (e) => {
+		this.setState({
+			newWindowSize: Number(e.target.value)
+		});	
+	}
+
 	render() {
 		const { type, data: initialData, width, ratio } = this.props;
 
 		//Indicator
 		//EMA
-		const ema20 = ema()
+		const ema1 = ema()
 			.options({
-				windowSize: 20, // optional will default to 10
+				windowSize: this.state.emaWindow, // optional will default to 10
 				sourcePath: "close", // optional will default to close as the source
 			})
 			.skipUndefined(true) // defaults to true
-			.merge((d, c) => { d.ema20 = c; }) // Required, if not provided, log a error
-			.accessor(d => d.ema20) // Required, if not provided, log an error during calculation
+			.merge((d, c) => {d.ema1 = c;}) // Required, if not provided, log a error
+			.accessor(d => d.ema1) // Required, if not provided, log an error during calculation
 			.stroke("blue"); // Optional
+
+		const sma1 = sma()
+			.options({ windowSize: this.state.smaWindow })
+			.merge((d, c) => {d.sma1 = c;})
+			.accessor(d => d.sma1);
+
+		const wma1 = wma()
+			.options({ windowSize: this.state.wmaWindow })
+			.merge((d, c) => {d.wma1 = c;})
+			.accessor(d => d.wma1);
+
+		const tma1 = tma()
+			.options({ windowSize: this.state.tmaWindow })
+			.merge((d, c) => {d.tma1 = c;})
+			.accessor(d => d.tma1);
 
 		//RSI
 		const rsiCalculator = rsi()
@@ -555,7 +611,7 @@ class CandleStickStockScaleChart extends React.Component {
 			.accessor(d => d.macd);
 
 
-		const calculatedData = ema20(rsiCalculator(macdCalculator(initialData)));
+		const calculatedData = tma1(wma1(sma1(ema1(rsiCalculator(macdCalculator(initialData))))));
 
 		const xScaleProvider = discontinuousTimeScaleProvider
 			.inputDateAccessor(d => d.date);
@@ -709,7 +765,7 @@ class CandleStickStockScaleChart extends React.Component {
 								<Chart
 									id={1}
 									height={stockchartHeight}
-									yExtents={[d => [d.high, d.low - d.low * 0.1], ema20.accessor()]}
+									yExtents={[d => [d.high, d.low - d.low * 0.1], ema1.accessor(), sma1.accessor(), wma1.accessor(), tma1.accessor()]}
 								>
 									<XAxis axisAt="bottom" orient="bottom" showTicks={false} outerTickSize={0} {...xGrid} />
 									<YAxis axisAt="right" orient="right" ticks={10} {...yGrid} />
@@ -720,8 +776,30 @@ class CandleStickStockScaleChart extends React.Component {
 									/>
 									<CandlestickSeries {...candlesAppearance} />
 
-									<LineSeries yAccessor={ema20.accessor()} stroke={ema20.stroke()} />
-									<CurrentCoordinate yAccessor={ema20.accessor()} fill={ema20.stroke()} />
+									<LineSeries yAccessor={ema1.accessor()} stroke={ema1.stroke()} />
+									<LineSeries yAccessor={sma1.accessor()} stroke={sma1.stroke()}/>
+									<LineSeries yAccessor={wma1.accessor()} stroke={wma1.stroke()}/>
+									<LineSeries yAccessor={tma1.accessor()} stroke={tma1.stroke()}/>
+									<CurrentCoordinate yAccessor={ema1.accessor()} fill={ema1.stroke()} />
+									<CurrentCoordinate yAccessor={sma1.accessor()} fill={sma1.stroke()} />
+									<CurrentCoordinate yAccessor={wma1.accessor()} fill={wma1.stroke()} />
+									<CurrentCoordinate yAccessor={tma1.accessor()} fill={tma1.stroke()} />
+									
+									<Modal isOpen={this.state.modal} toggle={this.toggleModal} className={this.props.className}>
+										<ModalHeader>
+											{this.state.editingInd} Preference
+										</ModalHeader>
+										<ModalBody>
+											<FormGroup label="Window size: " labelFor="windowSize">
+												<InputGroup
+													id="windowSize"
+													placeholder=''
+													onChange={this.windowSizeOnChange}
+												/>
+											<Button text="Confirm" style={{ marginTop: "5px" }} intent={Intent.PRIMARY} onClick={this.handleWindowSizeChange} />
+											</FormGroup>
+										</ModalBody>
+									</Modal>
 
                                     <EdgeIndicator itemType="last" orient="right" edgeAt="right"
                                         yAccessor={d => d.close} fill={d => d.close > d.open ? "#6BA583" : "#FF0000"}/>
@@ -730,18 +808,44 @@ class CandleStickStockScaleChart extends React.Component {
 									<ZoomButtons
 										onReset={this.handleReset}
 									/>
+
+
 									<MovingAverageTooltip
 										onClick={(e) => {
 											console.log(e);
-											console.log(this.state.currentTickerId);
+											this.setState({
+												editingInd: e.type
+											})
+											this.toggleModal();
 										}}
 										origin={[-38, 15]}
 										options={[
 											{
-												yAccessor: ema20.accessor(),
+												yAccessor: sma1.accessor(),
+												type: "SMA",
+												stroke: sma1.stroke(),
+												windowSize: sma1.options().windowSize,
+												echo: "some echo here",
+											},
+											{
+												yAccessor: wma1.accessor(),
+												type: "WMA",
+												stroke: wma1.stroke(),
+												windowSize: wma1.options().windowSize,
+												echo: "some echo here",
+											},
+											{
+												yAccessor: tma1.accessor(),
+												type: "TMA",
+												stroke: tma1.stroke(),
+												windowSize: tma1.options().windowSize,
+												echo: "some echo here",
+											},
+											{
+												yAccessor: ema1.accessor(),
 												type: "EMA",
-												stroke: ema20.stroke(),
-												windowSize: ema20.options().windowSize,
+												stroke: ema1.stroke(),
+												windowSize: ema1.options().windowSize,
 												echo: "some echo here",
 											}
 										]}
