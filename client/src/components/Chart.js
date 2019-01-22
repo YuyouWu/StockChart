@@ -728,22 +728,23 @@ class CandleStickStockScaleChart extends React.Component {
 			}
 		];
 		var options = [];
+		var j = 0;
 		for(var i = 0; i< movingAvgState.length; i++){
 			if(movingAvgState[i].display === true){
-				options[i] = {
+				options[j] = {
 					yAccessor: movingAvgState[i].yAccessor,
 					type: movingAvgState[i].type,
 					stroke: movingAvgState[i].stroke,
 					windowSize: movingAvgState[i].windowSize
 				}
-			} 
-		}
-		console.log(options);
-		for( var i = 0; i < options.length; i++){ 
-			if ( options[i] === undefined) {
-				options.splice(i, 1); 
+				j++;
 			}
-		 }
+		}
+		// for( var i = 0; i < options.length; i++){ 
+		// 	if ( options[i] === undefined) {
+		// 		options.splice(i, 1); 
+		// 	}
+		// }
 	
 		//RSI
 		const rsiCalculator = rsi()
