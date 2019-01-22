@@ -11,6 +11,26 @@ var ChartPref = mongoose.model('ChartPref', {
     required: true,
     default: false
   },
+  showSMA: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
+  showEMA: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
+  showWMA: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
+  showTMA: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
   smaWindow: {
     type: Number,
     required: true,

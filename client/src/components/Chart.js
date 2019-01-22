@@ -44,7 +44,7 @@ import { Layout, Row, Col } from 'antd';
 import { Modal, ModalBody, ModalHeader } from 'reactstrap';
 import { connect } from 'react-redux';
 
-import { newDrawingAction, loadChartPref, updateMACDPref, updateRSIPref, updateWinSize } from '../actions/chartActions';
+import { newDrawingAction, loadChartPref, updateMACDPref, updateRSIPref, updateWinSize, toggleMA } from '../actions/chartActions';
 import { getOneTicker } from '../actions/portfolioActions';
 import { setCurrentUser } from '../actions/authActions';
 
@@ -116,6 +116,10 @@ class CandleStickStockScaleChart extends React.Component {
 			emaWindow: 20,
 			wmaWindow: 20,
 			tmaWindow: 20,
+			showSMA: false,
+			showEMA: false,
+			showWMA: false,
+			showTMA: false,
 			modal: false,
 			editingInd: ''
 		};
@@ -502,6 +506,26 @@ class CandleStickStockScaleChart extends React.Component {
 					showRSI: res.payload.showRSI
 				});
 			}
+			if(res.payload.showSMA){
+				this.setState({
+					showSMA: res.payload.showSMA
+				});
+			}
+			if(res.payload.showEMA){
+				this.setState({
+					showEMA: res.payload.showEMA
+				});
+			}
+			if(res.payload.showWMA){
+				this.setState({
+					showWMA: res.payload.showWMA
+				});
+			}
+			if(res.payload.showTMA){
+				this.setState({
+					showTMA: res.payload.showTMA
+				});
+			}
 			if(res.payload.smaWindow){
 				this.setState({
 					smaWindow: res.payload.smaWindow
@@ -550,6 +574,46 @@ class CandleStickStockScaleChart extends React.Component {
 		this.setState({
 			modal: !this.state.modal
 		});
+	}
+
+	toggleMA = (e) => {
+		if(e.target.textContent === 'SMA'){
+			this.setState({
+				showSMA: !this.state.showSMA
+			}, () => {
+				this.props.toggleMA({
+					ind: 'SMA',
+					showValue: this.state.showSMA
+				})
+			})
+		} else if (e.target.textContent ==='EMA'){
+			this.setState({
+				showEMA: !this.state.showEMA
+			}, () => {
+				this.props.toggleMA({
+					ind: 'EMA',
+					showValue: this.state.showEMA
+				})
+			})
+		} else if (e.target.textContent ==='WMA'){
+			this.setState({
+				showWMA: !this.state.showWMA
+			}, () => {
+				this.props.toggleMA({
+					ind: 'WMA',
+					showValue: this.state.showWMA
+				})
+			})
+		} else if (e.target.textContent ==='TMA'){
+			this.setState({
+				showTMA: !this.state.showTMA
+			}, () => {
+				this.props.toggleMA({
+					ind: 'TMA',
+					showValue: this.state.showTMA
+				})
+			})
+		}
 	}
 
 	handleWindowSizeChange = (e) => {
@@ -758,8 +822,22 @@ class CandleStickStockScaleChart extends React.Component {
 								<Popover
 									content={
 										<Menu>
-											<MenuItem text='SMA'></MenuItem>
-											<MenuItem text='EMA'></MenuItem>
+											<MenuItem 
+												text='SMA'
+												onClick={this.toggleMA}
+											/>
+											<MenuItem 
+												text='EMA'
+												onClick={this.toggleMA}
+											/>
+											<MenuItem 
+												text='WMA'
+												onClick={this.toggleMA}
+											/>
+											<MenuItem 
+												text='TMA'
+												onClick={this.toggleMA}
+											/>
 											<MenuDivider />
 											<MenuItem
 												text='RSI'
@@ -813,16 +891,35 @@ class CandleStickStockScaleChart extends React.Component {
 										displayFormat={format(".2f")}
 									/>
 									<CandlestickSeries {...candlesAppearance} />
+									{
+										this.state.showEMA &&
+										<div>
+											<LineSeries yAccessor={ema1.accessor()} stroke={ema1.stroke()} />
+											<CurrentCoordinate yAccessor={ema1.accessor()} fill={ema1.stroke()} />
+										</div>									
+									}
+									{
+										this.state.showSMA &&
+										<div>
+											<LineSeries yAccessor={sma1.accessor()} stroke={sma1.stroke()}/>
+											<CurrentCoordinate yAccessor={sma1.accessor()} fill={sma1.stroke()} />
+										</div>									
+									}
+									{
+										this.state.showWMA &&
+										<div>
+											<LineSeries yAccessor={wma1.accessor()} stroke={wma1.stroke()}/>
+											<CurrentCoordinate yAccessor={wma1.accessor()} fill={wma1.stroke()} />
+										</div>									
+									}
+									{
+										this.state.showTMA &&
+										<div>
+											<LineSeries yAccessor={tma1.accessor()} stroke={tma1.stroke()}/>
+											<CurrentCoordinate yAccessor={tma1.accessor()} fill={tma1.stroke()} />
+										</div>									
+									}
 
-									<LineSeries yAccessor={ema1.accessor()} stroke={ema1.stroke()} />
-									<LineSeries yAccessor={sma1.accessor()} stroke={sma1.stroke()}/>
-									<LineSeries yAccessor={wma1.accessor()} stroke={wma1.stroke()}/>
-									<LineSeries yAccessor={tma1.accessor()} stroke={tma1.stroke()}/>
-									<CurrentCoordinate yAccessor={ema1.accessor()} fill={ema1.stroke()} />
-									<CurrentCoordinate yAccessor={sma1.accessor()} fill={sma1.stroke()} />
-									<CurrentCoordinate yAccessor={wma1.accessor()} fill={wma1.stroke()} />
-									<CurrentCoordinate yAccessor={tma1.accessor()} fill={tma1.stroke()} />
-									
 									<Modal isOpen={this.state.modal} toggle={this.toggleModal} className={this.props.className}>
 										<ModalHeader>
 											{this.state.editingInd} Preference
@@ -1062,5 +1159,5 @@ CandleStickStockScaleChart.defaultProps = {
 CandleStickStockScaleChart = fitWidth(CandleStickStockScaleChart);
 
 const mapStateToProps = state => ({});
-export default connect(mapStateToProps, { newDrawingAction, loadChartPref, updateMACDPref, updateRSIPref, updateWinSize, getOneTicker, setCurrentUser })(CandleStickStockScaleChart);
+export default connect(mapStateToProps, { newDrawingAction, loadChartPref, updateMACDPref, updateRSIPref, updateWinSize, toggleMA, getOneTicker, setCurrentUser })(CandleStickStockScaleChart);
 

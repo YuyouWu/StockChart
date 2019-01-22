@@ -20,6 +20,7 @@ export const LOAD_PREF = 'LOAD_PREF';
 export const UPDATE_MACD_PREF = 'UPDATE_MACD_PREF';
 export const UPDATE_RSI_PREF = 'UPDATE_RSI_PREF';
 export const UPDATE_WIN_SIZE = 'UPDATE_WIN_SIZE';
+export const TOGGLE_MA = 'TOGGLE_MA';
 
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';

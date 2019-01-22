@@ -344,6 +344,37 @@ app.post('/api/windowSize', authenticate, (req, res)=>{
   });
 });
 
+//toggling MA lines
+app.post('/api/toggleMA', authenticate, (req, res)=>{
+  var body = _.pick(req.body, ['ind', 'showValue']);
+  if(body.ind === 'SMA'){
+	  var pref = {
+	    showSMA: body.showValue
+	  }
+  } else if (body.ind === 'EMA'){
+	  var pref = {
+	    showEMA: body.showValue
+	  }
+  } else if (body.ind === 'WMA'){
+	  var pref = {
+	    showWMA: body.showValue
+	  }
+  } else if (body.ind === 'TMA'){
+	  var pref = {
+	    showTMA: body.showValue
+	  }
+  }
+
+  ChartPref.findOneAndUpdate({_creator: req.user._id}, {$set: pref}, { new: true }).then((pref) => {
+    if (!pref) {
+      return res.status(404).send();
+    }
+    res.send({ pref });
+  }).catch((e) => {
+    res.status(400).send();
+  });
+});
+
 
 ////////////
 //Screener//
