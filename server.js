@@ -312,6 +312,39 @@ app.post('/api/rsi', authenticate, (req, res)=>{
   });
 });
 
+//change window size for MA lines
+app.post('/api/windowSize', authenticate, (req, res)=>{
+  var body = _.pick(req.body, ['editingInd', 'newWindowSize']);
+
+  if(body.editingInd === 'SMA'){
+	  var pref = {
+	    smaWindow: body.newWindowSize
+	  }
+  } else if (body.editingInd === 'EMA'){
+	  var pref = {
+	    emaWindow: body.newWindowSize
+	  }
+  } else if (body.editingInd === 'WMA'){
+	  var pref = {
+	    wmaWindow: body.newWindowSize
+	  }
+  } else if (body.editingInd === 'TMA'){
+	  var pref = {
+	    tmaWindow: body.newWindowSize
+	  }
+  }
+
+  ChartPref.findOneAndUpdate({_creator: req.user._id}, {$set: pref}, { new: true }).then((pref) => {
+    if (!pref) {
+      return res.status(404).send();
+    }
+    res.send({ pref });
+  }).catch((e) => {
+    res.status(400).send();
+  });
+});
+
+
 ////////////
 //Screener//
 ////////////

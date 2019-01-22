@@ -44,7 +44,7 @@ import { Layout, Row, Col } from 'antd';
 import { Modal, ModalBody, ModalHeader } from 'reactstrap';
 import { connect } from 'react-redux';
 
-import { newDrawingAction, loadChartPref, updateMACDPref, updateRSIPref } from '../actions/chartActions';
+import { newDrawingAction, loadChartPref, updateMACDPref, updateRSIPref, updateWinSize } from '../actions/chartActions';
 import { getOneTicker } from '../actions/portfolioActions';
 import { setCurrentUser } from '../actions/authActions';
 
@@ -112,8 +112,8 @@ class CandleStickStockScaleChart extends React.Component {
 			showMACD: false,
             showRSI: false,
 			data: this.props.data,
-			emaWindow: 20,
 			smaWindow: 20,
+			emaWindow: 20,
 			wmaWindow: 20,
 			tmaWindow: 20,
 			modal: false,
@@ -127,8 +127,6 @@ class CandleStickStockScaleChart extends React.Component {
 		this.handleEqChannel = this.handleEqChannel.bind(this);
 		this.handleStdChannel = this.handleStdChannel.bind(this);
 		this.handleClearDrawings = this.handleClearDrawings.bind(this);
-		this.toggleMACD = this.toggleMACD.bind(this);
-		this.toggleRSI = this.toggleRSI.bind(this);
 	}
 
 	componentDidMount() {
@@ -209,22 +207,6 @@ class CandleStickStockScaleChart extends React.Component {
 			});
 		}
 	}
-
-	loadInd() {
-		this.props.loadChartPref().then((res) => {
-			if(res.payload.showMACD){
-				this.setState({
-					showMACD: res.payload.showMACD
-				});
-			}
-			if(res.payload.showRSI){
-				this.setState({
-					showRSI: res.payload.showRSI
-				});
-			}
-		});
-	}
-
 	saveDrawings() {
 		if (this.state.currentTickerId && this.state.currentTickerId !== '0') {
 			var drawingObj = {
@@ -263,7 +245,6 @@ class CandleStickStockScaleChart extends React.Component {
 			this.props.newDrawingAction(drawingObj);
 		}
 	}
-
 	handleSelection(interactives) {
 		//console.log(interactives)
 		if (interactives[0].type === "Trendline") {
@@ -299,7 +280,6 @@ class CandleStickStockScaleChart extends React.Component {
 
 		this.saveDrawings();
 	}
-
 	onDrawComplete(trends) {
 		this.setState({
 			enableTrendLine: false,
@@ -433,7 +413,7 @@ class CandleStickStockScaleChart extends React.Component {
 		}
 	}
 
-	//Custom chart control
+	//Chart control
 	handleTrendLine() {
 		this.setState({
 			enableTrendLine: true
@@ -509,9 +489,44 @@ class CandleStickStockScaleChart extends React.Component {
 		});
 	}
 
+	//Loading Indicators
+	loadInd() {
+		this.props.loadChartPref().then((res) => {
+			if(res.payload.showMACD){
+				this.setState({
+					showMACD: res.payload.showMACD
+				});
+			}
+			if(res.payload.showRSI){
+				this.setState({
+					showRSI: res.payload.showRSI
+				});
+			}
+			if(res.payload.smaWindow){
+				this.setState({
+					smaWindow: res.payload.smaWindow
+				});
+			}
+			if(res.payload.emaWindow){
+				this.setState({
+					emaWindow: res.payload.emaWindow
+				});
+			}
+			if(res.payload.wmaWindow){
+				this.setState({
+					wmaWindow: res.payload.wmaWindow
+				});
+			}
+			if(res.payload.tmaWindow){
+				this.setState({
+					tmaWindow: res.payload.tmaWindow
+				});
+			}
+		});
+	}
 
 	//Indicator Control
-	toggleMACD() {
+	toggleMACD = () => {
 		this.setState(prevState => ({
 			showMACD: !prevState.showMACD
 		}),() => {
@@ -521,7 +536,7 @@ class CandleStickStockScaleChart extends React.Component {
 		});
 	}
 
-	toggleRSI() {
+	toggleRSI = () => {
 		this.setState(prevState => ({
 			showRSI: !prevState.showRSI
 		}),() => {
@@ -534,26 +549,46 @@ class CandleStickStockScaleChart extends React.Component {
 	toggleModal = () => {
 		this.setState({
 			modal: !this.state.modal
-		});	  
+		});
 	}
 
 	handleWindowSizeChange = (e) => {
 		if(this.state.editingInd === 'SMA'){
 			this.setState({
 				smaWindow: this.state.newWindowSize
-			});	
+			}, () => {
+				this.props.updateWinSize({
+					editingInd: this.state.editingInd,
+					newWindowSize: this.state.newWindowSize
+				})
+			});
 		} else if (this.state.editingInd === 'EMA'){
 			this.setState({
 				emaWindow: this.state.newWindowSize
-			});	
+			}, () => {
+				this.props.updateWinSize({
+					editingInd: this.state.editingInd,
+					newWindowSize: this.state.newWindowSize
+				})
+			});
 		} else if(this.state.editingInd === 'WMA'){
 			this.setState({
 				wmaWindow: this.state.newWindowSize
-			});	
+			}, () => {
+				this.props.updateWinSize({
+					editingInd: this.state.editingInd,
+					newWindowSize: this.state.newWindowSize
+				})
+			});
 		} else if (this.state.editingInd === 'TMA'){
 			this.setState({
 				tmaWindow: this.state.newWindowSize
-			});	
+			}, () => {
+				this.props.updateWinSize({
+					editingInd: this.state.editingInd,
+					newWindowSize: this.state.newWindowSize
+				})
+			});
 		}
 
 		this.toggleModal();
@@ -1027,5 +1062,5 @@ CandleStickStockScaleChart.defaultProps = {
 CandleStickStockScaleChart = fitWidth(CandleStickStockScaleChart);
 
 const mapStateToProps = state => ({});
-export default connect(mapStateToProps, { newDrawingAction, loadChartPref, updateMACDPref, updateRSIPref, getOneTicker, setCurrentUser })(CandleStickStockScaleChart);
+export default connect(mapStateToProps, { newDrawingAction, loadChartPref, updateMACDPref, updateRSIPref, updateWinSize, getOneTicker, setCurrentUser })(CandleStickStockScaleChart);
 

@@ -11,6 +11,26 @@ var ChartPref = mongoose.model('ChartPref', {
     required: true,
     default: false
   },
+  smaWindow: {
+    type: Number,
+    required: true,
+    default: 20
+  },
+  emaWindow: {
+    type: Number,
+    required: true,
+    default: 20
+  },
+  wmaWindow: {
+    type: Number,
+    required: true,
+    default: 20
+  },
+  tmaWindow: {
+    type: Number,
+    required: true,
+    default: 20
+  },
   _creator: {
   	type: mongoose.Schema.Types.ObjectId,
   	required: true

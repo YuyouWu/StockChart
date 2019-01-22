@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { NEW_DRAWING, LOAD_PREF, UPDATE_MACD_PREF, UPDATE_RSI_PREF } from './types';
+import { NEW_DRAWING, LOAD_PREF, UPDATE_MACD_PREF, UPDATE_RSI_PREF, UPDATE_WIN_SIZE } from './types';
 
 var headers = {
   'xauth': localStorage.getItem('jwtToken')
@@ -43,6 +43,17 @@ export const updateRSIPref = pref => dispatch => {
     axios.post('/api/rsi', pref, {headers: headers}).then(res =>
       dispatch({
         type: UPDATE_RSI_PREF,
+        payload: res.data
+      })
+    )
+  )
+};
+
+export const updateWinSize = pref => dispatch => {
+  return (
+    axios.post('/api/windowSize', pref, {headers: headers}).then(res =>
+      dispatch({
+        type: UPDATE_WIN_SIZE,
         payload: res.data
       })
     )
