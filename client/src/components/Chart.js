@@ -697,6 +697,54 @@ class CandleStickStockScaleChart extends React.Component {
 			.accessor(d => d.tma1)
 			.stroke("yellow"); // Optional
 
+		var movingAvgState = [
+			{
+				display: this.state.showSMA,
+				yAccessor: sma1.accessor(),
+				type: "SMA",
+				stroke: sma1.stroke(),
+				windowSize: sma1.options().windowSize
+			}, 
+			{
+				display: this.state.showEMA,
+				yAccessor: ema1.accessor(),
+				type: "EMA",
+				stroke: ema1.stroke(),
+				windowSize: ema1.options().windowSize
+			}, 
+			{
+				display: this.state.showWMA,
+				yAccessor: wma1.accessor(),
+				type: "WMA",
+				stroke: wma1.stroke(),
+				windowSize: wma1.options().windowSize
+			}, 
+			{
+				display: this.state.showTMA,
+				yAccessor: tma1.accessor(),
+				type: "TMA",
+				stroke: tma1.stroke(),
+				windowSize: tma1.options().windowSize
+			}
+		];
+		var options = [];
+		for(var i = 0; i< movingAvgState.length; i++){
+			if(movingAvgState[i].display === true){
+				options[i] = {
+					yAccessor: movingAvgState[i].yAccessor,
+					type: movingAvgState[i].type,
+					stroke: movingAvgState[i].stroke,
+					windowSize: movingAvgState[i].windowSize
+				}
+			} 
+		}
+		console.log(options);
+		for( var i = 0; i < options.length; i++){ 
+			if ( options[i] === undefined) {
+				options.splice(i, 1); 
+			}
+		 }
+	
 		//RSI
 		const rsiCalculator = rsi()
 			.options({ windowSize: 14 })
@@ -925,14 +973,14 @@ class CandleStickStockScaleChart extends React.Component {
 											{this.state.editingInd} Preference
 										</ModalHeader>
 										<ModalBody>
-											<FormGroup label="Window size: " labelFor="windowSize">
+											<FormGroup label="Window size: " labelFor="windowSize" inline={true}>
 												<InputGroup
 													id="windowSize"
 													placeholder=''
 													onChange={this.windowSizeOnChange}
 												/>
-											<Button text="Confirm" style={{ marginTop: "5px" }} intent={Intent.PRIMARY} onClick={this.handleWindowSizeChange} />
 											</FormGroup>
+											<Button text="Confirm" style={{ marginTop: "5px" }} intent={Intent.PRIMARY} onClick={this.handleWindowSizeChange} />
 										</ModalBody>
 									</Modal>
 
@@ -944,47 +992,17 @@ class CandleStickStockScaleChart extends React.Component {
 										onReset={this.handleReset}
 									/>
 
-
 									<MovingAverageTooltip
 										onClick={(e) => {
-											console.log(e);
 											this.setState({
 												editingInd: e.type
 											})
 											this.toggleModal();
 										}}
 										origin={[-38, 15]}
-										options={[
-											{
-												yAccessor: sma1.accessor(),
-												type: "SMA",
-												stroke: sma1.stroke(),
-												windowSize: sma1.options().windowSize,
-												echo: "some echo here",
-											},
-											{
-												yAccessor: wma1.accessor(),
-												type: "WMA",
-												stroke: wma1.stroke(),
-												windowSize: wma1.options().windowSize,
-												echo: "some echo here",
-											},
-											{
-												yAccessor: tma1.accessor(),
-												type: "TMA",
-												stroke: tma1.stroke(),
-												windowSize: tma1.options().windowSize,
-												echo: "some echo here",
-											},
-											{
-												yAccessor: ema1.accessor(),
-												type: "EMA",
-												stroke: ema1.stroke(),
-												windowSize: ema1.options().windowSize,
-												echo: "some echo here",
-											}
-										]}
+										options={options}
 									/>
+
 									<TrendLine
 										ref={this.saveInteractiveNodes("Trendline", 1)}
 										enabled={this.state.enableTrendLine}
