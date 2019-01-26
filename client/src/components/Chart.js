@@ -121,6 +121,8 @@ class CandleStickStockScaleChart extends React.Component {
 			showWMA: false,
 			showTMA: false,
 			modal: false,
+			showCandle: true,
+			showLine: false,
 			editingInd: ''
 		};
 
@@ -417,7 +419,7 @@ class CandleStickStockScaleChart extends React.Component {
 		}
 	}
 
-	//Chart control
+	//Drawing control
 	handleTrendLine() {
 		this.setState({
 			enableTrendLine: true
@@ -491,6 +493,21 @@ class CandleStickStockScaleChart extends React.Component {
 			}
 			this.props.newDrawingAction(drawingObj);
 		});
+	}
+
+	//Chart Style Control
+	toggleCandle = () => {
+		this.setState({
+			showCandle:true,
+			showLine: false
+		})
+	}
+
+	toggleLine = () => {
+		this.setState({
+			showCandle:false,
+			showLine: true
+		})
 	}
 
 	//Loading Indicators
@@ -822,6 +839,32 @@ class CandleStickStockScaleChart extends React.Component {
 
 						<Row>
 							<ButtonGroup style={{ marginRight: '10px' }}>
+								<Popover
+									content={
+										<Menu>
+											<MenuItem 
+												text='Candles'
+												onClick={this.toggleCandle}
+											/>
+											<MenuItem 
+												text='Line'
+												onClick={this.toggleLine}
+											/>
+										</Menu>
+									}
+									position={Position.BOTTOM}
+								>
+									<Tooltip
+										content={<p>Chart Style</p>}
+										position={Position.BOTTOM}
+										usePortal={false}
+									>
+										<Button icon="waterfall-chart"></Button>
+									</Tooltip>
+								</Popover>
+							</ButtonGroup>
+
+							<ButtonGroup style={{ marginRight: '10px' }}>
 								<Tooltip
 									content={<p>Trend Line</p>}
 									position={Position.BOTTOM}
@@ -939,7 +982,20 @@ class CandleStickStockScaleChart extends React.Component {
 										orient="right"
 										displayFormat={format(".2f")}
 									/>
-									<CandlestickSeries {...candlesAppearance} />
+
+									{this.state.showCandle && 
+										<CandlestickSeries {...candlesAppearance} />
+									}
+
+									{this.state.showLine && 
+										<LineSeries
+											yAccessor={d => d.close}
+											stroke="#33acff"
+											strokeDasharray="Solid" 
+											strokeWidth="3"
+										/>
+									}
+
 									{
 										this.state.showEMA &&
 										<div>
