@@ -873,7 +873,15 @@ class CandleStickStockScaleChart extends React.Component {
 										position={Position.BOTTOM}
 										usePortal={false}
 									>
-										<Button icon="waterfall-chart"></Button>
+									
+									<Button 
+										icon= {this.state.showCandle ? (
+											"waterfall-chart"
+										):(
+											"timeline-line-chart"
+										)}
+									/>
+
 									</Tooltip>
 								</Popover>
 							</ButtonGroup>
@@ -962,7 +970,7 @@ class CandleStickStockScaleChart extends React.Component {
 										position={Position.BOTTOM}
 										usePortal={false}
 									>
-										<Button icon="timeline-line-chart"></Button>
+										<Button icon="info-sign"></Button>
 									</Tooltip>
 								</Popover>
 							</ButtonGroup>
