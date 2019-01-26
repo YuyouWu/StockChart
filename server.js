@@ -375,6 +375,30 @@ app.post('/api/toggleMA', authenticate, (req, res)=>{
   });
 });
 
+app.post('/api/toggleChartStyle', authenticate, (req, res)=> {
+  var body = _.pick(req.body, ['style']);
+  
+  if(body.style === 'Candle'){
+    var pref = {
+      showCandle: true,
+      showLine: false
+    }
+  } else if(body.style === 'Line'){
+    var pref = {
+      showLine: true,
+      showCandle: false
+    }
+  }
+
+  ChartPref.findOneAndUpdate({_creator: req.user._id}, {$set: pref}, { new: true }).then((pref) => {
+    if (!pref) {
+      return res.status(404).send();
+    }
+    res.send({ pref });
+  }).catch((e) => {
+    res.status(400).send();
+  });
+});
 
 ////////////
 //Screener//

@@ -44,7 +44,7 @@ import { Layout, Row, Col } from 'antd';
 import { Modal, ModalBody, ModalHeader } from 'reactstrap';
 import { connect } from 'react-redux';
 
-import { newDrawingAction, loadChartPref, updateMACDPref, updateRSIPref, updateWinSize, toggleMA } from '../actions/chartActions';
+import { newDrawingAction, loadChartPref, updateMACDPref, updateRSIPref, updateWinSize, toggleMA, toggleChartStyle } from '../actions/chartActions';
 import { getOneTicker } from '../actions/portfolioActions';
 import { setCurrentUser } from '../actions/authActions';
 
@@ -121,7 +121,7 @@ class CandleStickStockScaleChart extends React.Component {
 			showWMA: false,
 			showTMA: false,
 			modal: false,
-			showCandle: true,
+			showCandle: false,
 			showLine: false,
 			editingInd: ''
 		};
@@ -500,14 +500,18 @@ class CandleStickStockScaleChart extends React.Component {
 		this.setState({
 			showCandle:true,
 			showLine: false
-		})
+		}, () => {
+			this.props.toggleChartStyle({style: 'Candle'});
+		});
 	}
 
 	toggleLine = () => {
 		this.setState({
 			showCandle:false,
 			showLine: true
-		})
+		}, () => {
+			this.props.toggleChartStyle({style: 'Line'});
+		});
 	}
 
 	//Loading Indicators
@@ -561,6 +565,16 @@ class CandleStickStockScaleChart extends React.Component {
 			if(res.payload.tmaWindow){
 				this.setState({
 					tmaWindow: res.payload.tmaWindow
+				});
+			}
+			if(res.payload.showCandle){
+				this.setState({
+					showCandle: res.payload.showCandle
+				});
+			}
+			if(res.payload.showLine){
+				this.setState({
+					showLine: res.payload.showLine
 				});
 			}
 		});
@@ -1234,5 +1248,5 @@ CandleStickStockScaleChart.defaultProps = {
 CandleStickStockScaleChart = fitWidth(CandleStickStockScaleChart);
 
 const mapStateToProps = state => ({});
-export default connect(mapStateToProps, { newDrawingAction, loadChartPref, updateMACDPref, updateRSIPref, updateWinSize, toggleMA, getOneTicker, setCurrentUser })(CandleStickStockScaleChart);
+export default connect(mapStateToProps, { newDrawingAction, loadChartPref, updateMACDPref, updateRSIPref, updateWinSize, toggleMA, getOneTicker, setCurrentUser, toggleChartStyle })(CandleStickStockScaleChart);
 

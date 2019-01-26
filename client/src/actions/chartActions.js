@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { NEW_DRAWING, LOAD_PREF, UPDATE_MACD_PREF, UPDATE_RSI_PREF, UPDATE_WIN_SIZE, TOGGLE_MA } from './types';
+import { NEW_DRAWING, LOAD_PREF, UPDATE_MACD_PREF, UPDATE_RSI_PREF, UPDATE_WIN_SIZE, TOGGLE_MA, TOGGLE_CHART_STYLE } from './types';
 
 var headers = {
   'xauth': localStorage.getItem('jwtToken')
@@ -65,6 +65,17 @@ export const toggleMA = pref => dispatch => {
     axios.post('/api/toggleMA', pref, {headers: headers}).then(res =>
       dispatch({
         type: TOGGLE_MA,
+        payload: res.data
+      })
+    )
+  )
+};
+
+export const toggleChartStyle = pref => dispatch => {
+  return (
+    axios.post('/api/toggleChartStyle', pref, {headers: headers}).then(res =>
+      dispatch({
+        type: TOGGLE_CHART_STYLE,
         payload: res.data
       })
     )

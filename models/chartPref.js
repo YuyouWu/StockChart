@@ -31,6 +31,16 @@ var ChartPref = mongoose.model('ChartPref', {
     required: true,
     default: false
   },
+  showCandle:{
+    type: Boolean,
+    required: true,
+    default: true
+  },
+  showLine:{
+    type: Boolean,
+    required: true,
+    default: false
+  },
   smaWindow: {
     type: Number,
     required: true,
