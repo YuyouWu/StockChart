@@ -3,7 +3,7 @@ import { changeEmail, setCurrentUser, changePassword } from '../actions/authActi
 import { FormGroup, InputGroup, Button } from "@blueprintjs/core";
 import { connect } from 'react-redux';
 import { Alert } from 'reactstrap';
-import { Icon } from 'antd';
+import { message } from 'antd';
 import axios from 'axios';
 
 class Profile extends React.Component {
@@ -42,7 +42,12 @@ class Profile extends React.Component {
 			newEmail: this.state.newEmail
 		}).then(res => {
 			if(res.payload.email){
-				console.log('Email Changed');
+				this.setState({
+					email: this.state.newEmail
+				});
+				message.success('Email has been updated to ' + this.state.newEmail);
+			} else {
+				message.error('An error has occured. Please try again.');
 			}
 		});
 	}
@@ -72,10 +77,14 @@ class Profile extends React.Component {
 				password: this.state.oldPassword,
 				newPassword: this.state.newPassword
 			}).then(res => {
-				console.log(res.payload);
+				if(res.payload.email){
+					message.success('Password has been updated. You are now logged out of all other sessions.');
+				} else {
+					message.error('An error has occured. Please try again.');
+				}
 			});	
 		} else {
-			console.log('Passwords do not match');
+			message.error('New passwords do not match.');
 		}
 
 	}
@@ -101,6 +110,7 @@ class Profile extends React.Component {
 					labelFor="oldPassword"
 				>
 					<InputGroup	
+						type="password"
 						id="oldPassword"
 						style={{width:'500px'}}
 						onChange={this.enterOldPassword}
@@ -111,6 +121,7 @@ class Profile extends React.Component {
 					labelFor="newPassword"
 				>
 					<InputGroup 
+						type="password"
 						id="newPassword" 
 						style={{width:'500px'}}
 						onChange={this.enterNewPassword}
@@ -121,6 +132,7 @@ class Profile extends React.Component {
 					labelFor="confirmPassword"
 				>
 					<InputGroup 
+						type="password"
 						id="confirmPassword" 
 						style={{width:'500px'}}
 						onChange={this.confirmNewPassword}
