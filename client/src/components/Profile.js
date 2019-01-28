@@ -26,7 +26,6 @@ class Profile extends React.Component {
 					email: res.payload.email
 				});
 				// window.location.href = '/portfolio'
-				console.log(res.payload);
 			} 
 		});
 	}
