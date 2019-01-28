@@ -8,6 +8,7 @@ import AppNavbar from './components/AppNavbar'
 import MainScreen from './components/MainScreen'
 import Register from './components/Register';
 import Login from './components/Login';
+import Profile from './components/Profile';
 import LandingPage from './components/LandingPage/LandingPage';
 import ResetPasswordWithToken from './components/ResetPasswordWithToken';
 import ForgetPassword from './components/ForgetPassword';
@@ -30,6 +31,7 @@ class App extends Component {
                 <AppNavbar />
                 <Route exact path="/" component={LandingPage} />
                 <Route exact path="/portfolio" component={MainScreen} />
+                <Route exact path="/profile" component={Profile} />
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/register" component={Register} />
                 <Route exact path="/forget_password" component={ForgetPassword} />

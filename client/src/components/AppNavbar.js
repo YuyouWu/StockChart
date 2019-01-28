@@ -9,31 +9,32 @@ import {
     NavbarBrand,
     Nav,
     NavItem,
-    NavLink } from 'reactstrap';
+    NavLink
+} from 'reactstrap';
 import { Row, Col } from 'antd';
 
-class AppNavbar extends Component{
-    constructor(props){
+class AppNavbar extends Component {
+    constructor(props) {
         super(props);
-        
+
         this.toggle = this.toggle.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
         this.state = {
             isOpen: false,
             currentUser: null
         };
-        this.props.setCurrentUser().then((res) =>{
+        this.props.setCurrentUser().then((res) => {
             this.setState({
-              currentUser: res.payload._id
+                currentUser: res.payload._id
             });
         });
     }
     toggle() {
         this.setState({
-          isOpen: !this.state.isOpen
+            isOpen: !this.state.isOpen
         });
     }
-    handleLogout(){
+    handleLogout() {
         this.props.logoutAction();
         localStorage.removeItem('jwtToken');
         this.setState({
@@ -42,56 +43,51 @@ class AppNavbar extends Component{
     }
     render() {
         return (
-          <div>
-            <Navbar color="dark" dark expand="md">
+            <div>
+                <Navbar color="dark" dark expand="md">
                     <NavbarBrand tag={Link} href="/" to="/">Plusfolio</NavbarBrand>
-                    <NavbarToggler onClick={this.toggle}/>
+                    <NavbarToggler onClick={this.toggle} />
                     <Collapse isOpen={this.state.isOpen} navbar>
-                        <Nav className="ml-auto" navbar>
-                            {this.state.currentUser ? (
-                                <Row>
-                                    <Col span={12}>
-                                        <NavItem>
-                                            <NavLink tag={Link} href="/portfolio" to="/portfolio">
-                                                Portfolio
+                        {this.state.currentUser ? (
+                            <Nav className="ml-auto" navbar>
+                                <NavItem>
+                                    <NavLink tag={Link} href="/portfolio" to="/portfolio">
+                                        Portfolio
                                             </NavLink>
-                                        </NavItem>
-                                    </Col>
-                                    <Col span={12}>
-                                        <NavItem>
-                                            <NavLink tag={Link} onClick={this.handleLogout} href="/" to="/">
-                                                Logout
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink tag={Link} href="/profile" to="/profile">
+                                        Profile
                                             </NavLink>
-                                        </NavItem>
-                                    </Col>
-                                </Row>
-                            ) : (
-                                <Row>
-                                    <Col span={12}>
-                                        <NavItem>
-                                            <NavLink tag={Link} href="/login" to="/login">
-                                                Login
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink tag={Link} onClick={this.handleLogout} href="/" to="/">
+                                        Logout
                                             </NavLink>
-                                        </NavItem>
-                                    </Col>
-                                    <Col span={12}>
-                                        <NavItem>
-                                            <NavLink tag={Link} href="/register" to="/register">
-                                                Register
+                                </NavItem>
+                            </Nav>
+                        ) : (
+                                <Nav className="ml-auto" navbar>
+                                    <NavItem>
+                                        <NavLink tag={Link} href="/login" to="/login">
+                                            Login
                                             </NavLink>
-                                        </NavItem>
-                                    </Col>
-                                </Row>
+                                    </NavItem>
+                                    <NavItem>
+                                        <NavLink tag={Link} href="/register" to="/register">
+                                            Register
+                                            </NavLink>
+                                    </NavItem>
+                                </Nav>
                             )}
-                        </Nav>
                     </Collapse>
-            </Navbar>
-          </div>
+                </Navbar>
+            </div>
         );
-    }    
+    }
 }
 
 const mapStateToProps = state => ({
-  tickers: state.tickers
+    tickers: state.tickers
 });
-export default connect(mapStateToProps,{logoutAction,setCurrentUser})(AppNavbar);
+export default connect(mapStateToProps, { logoutAction, setCurrentUser })(AppNavbar);

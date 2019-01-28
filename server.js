@@ -1043,8 +1043,24 @@ app.post('/api/users/email', (req, res) => {
   });
 });
 
+app.post('/api/changeEmail', authenticate, (req, res) => {
+  var body = _.pick(req.body, ['id', 'newEmail']);
+  User.findById(body.id).then((user)=> {
+    if(!user) {
+      return res.status(404).send();
+    }
+
+    user.email = body.newEmail;
+    user.save();
+
+    res.send(user);
+  }).catch((e) => {
+    res.status(400).send();
+  });
+});
+
 //Update Password with old password
-app.post('/api/updatePassword', (req, res) => {
+app.post('/api/changePassword', (req, res) => {
   var body = _.pick(req.body, ['email', 'password', 'newPassword']);
   User.findByCredentials(body.email, body.password).then((user) => {
     if (!user) {
