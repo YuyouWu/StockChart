@@ -1,11 +1,12 @@
 import React from 'react';
 import { Jumbotron, Card, CardTitle, CardText, CardImg, Row, Col, Button } from 'reactstrap';
+import { Layout } from 'antd';
 import { Link } from 'react-router-dom';
 import data from './Asset/data.png';
 import chart from './Asset/chart.png';
 import screener from './Asset/screener.png';
 import jumbotronImg from './Asset/jumbotronImg.png';
-
+const { Footer } = Layout;
 //Class for rendering each individual tickers on portfolio
 class LandingPage extends React.Component {
   render() {
@@ -43,6 +44,10 @@ class LandingPage extends React.Component {
 				    </Card>
 			    </Col>
 		    </Row>
+			<Footer style={{ textAlign: 'center', marginTop: '20px' }}>
+				<p style={{ fontSize: '12px' }}>Plusfolio ©2019</p>
+				<p style={{ fontSize: '12px' }}>Data provided for free by <a href="https://iextrading.com/developer">IEX</a>. View <a href="https://iextrading.com/api-exhibit-a/">IEX’s Terms of Use</a>.</p>
+			</Footer>
 		</div>
     );
   }
