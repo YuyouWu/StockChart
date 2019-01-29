@@ -9,7 +9,11 @@ import {
     NavbarBrand,
     Nav,
     NavItem,
-    NavLink
+    NavLink,
+    UncontrolledDropdown,
+    DropdownToggle,
+    DropdownMenu,
+    DropdownItem
 } from 'reactstrap';
 import { Row, Col } from 'antd';
 
@@ -60,16 +64,19 @@ class AppNavbar extends Component {
                                         Help
                                     </NavLink>
                                 </NavItem>
-                                <NavItem>
-                                    <NavLink tag={Link} href="/profile" to="/profile">
-                                        Profile
-                                    </NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink tag={Link} onClick={this.handleLogout} href="/" to="/">
-                                        Logout
-                                    </NavLink>
-                                </NavItem>
+                                <UncontrolledDropdown nav inNavbar>
+                                    <DropdownToggle nav caret>
+                                        Account
+                                    </DropdownToggle>
+                                    <DropdownMenu right>
+                                        <DropdownItem tag={Link} href="/profile" to="/profile">
+                                            Profile
+                                        </DropdownItem>
+                                        <DropdownItem tag={Link} onClick={this.handleLogout} href="/" to="/">
+                                            Logout
+                                        </DropdownItem>
+                                    </DropdownMenu>
+                                </UncontrolledDropdown>
                             </Nav>
                         ) : (
                                 <Nav className="ml-auto" navbar>
