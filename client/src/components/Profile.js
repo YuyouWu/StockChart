@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { Alert } from 'reactstrap';
 import { message } from 'antd';
 import axios from 'axios';
+import validator from 'email-validator';
 
 class Profile extends React.Component {
   	constructor(props) {
@@ -37,19 +38,23 @@ class Profile extends React.Component {
 	}
 
 	updateEmail = () => {
-		this.props.changeEmail({
-			id: this.state.id,
-			newEmail: this.state.newEmail
-		}).then(res => {
-			if(res.payload.email){
-				this.setState({
-					email: this.state.newEmail
-				});
-				message.success('Email has been updated to ' + this.state.newEmail);
-			} else {
-				message.error('An error has occured. Please try again.');
-			}
-		});
+		if (validator.validate(this.state.newEmail)){
+			this.props.changeEmail({
+				id: this.state.id,
+				newEmail: this.state.newEmail
+			}).then(res => {
+				if(res.payload.email){
+					this.setState({
+						email: this.state.newEmail
+					});
+					message.success('Email has been updated to ' + this.state.newEmail);
+				} else {
+					message.error('An error has occured. Please try again.');
+				}
+			});
+		} else {
+			message.error('Please enter a valid email address.');
+		}
 	}
 
 	enterOldPassword = (e) => {
@@ -71,22 +76,25 @@ class Profile extends React.Component {
 	}
 
 	updatePassword = () => {
-		if(this.state.newPassword === this.state.confirmPassword){
-			this.props.changePassword({
-				email: this.state.email,
-				password: this.state.oldPassword,
-				newPassword: this.state.newPassword
-			}).then(res => {
-				if(res.payload.email){
-					message.success('Password has been updated. You are now logged out of all other sessions.');
-				} else {
-					message.error('An error has occured. Please try again.');
-				}
-			});	
+		if(this.state.newPassword.length < 6){
+			message.error('Password must be at least 6 characters long.');
 		} else {
-			message.error('New passwords do not match.');
+			if(this.state.newPassword === this.state.confirmPassword){
+				this.props.changePassword({
+					email: this.state.email,
+					password: this.state.oldPassword,
+					newPassword: this.state.newPassword
+				}).then(res => {
+					if(res.payload.email){
+						message.success('Password has been updated. You are now logged out of all other sessions.');
+					} else {
+						message.error('An error has occured. Please try again.');
+					}
+				});	
+			} else {
+				message.error('New passwords do not match.');
+			}	
 		}
-
 	}
 
 	render() {
@@ -94,7 +102,8 @@ class Profile extends React.Component {
 			<div className="container" style={{marginTop:'20px'}}>
 				<h3>Change Email</h3>
 				<InputGroup 
-					id="email" 
+					type="email"
+					id="email"
 					placeholder={this.state.email} 
 					style={{width:'500px'}}
 					onChange={this.onEmailChange}
@@ -119,6 +128,7 @@ class Profile extends React.Component {
 				<FormGroup
 					label="New Password"
 					labelFor="newPassword"
+					labelInfo="(password must be at least 6 characters long)"
 				>
 					<InputGroup 
 						type="password"
