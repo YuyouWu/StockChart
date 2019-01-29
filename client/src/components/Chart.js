@@ -726,7 +726,7 @@ class CandleStickStockScaleChart extends React.Component {
 			.options({ windowSize: this.state.tmaWindow })
 			.merge((d, c) => {d.tma1 = c;})
 			.accessor(d => d.tma1)
-			.stroke("yellow"); // Optional
+			.stroke("purple"); // Optional
 
 		var movingAvgState = [
 			{
