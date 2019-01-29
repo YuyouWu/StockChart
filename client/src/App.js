@@ -12,6 +12,7 @@ import Profile from './components/Profile';
 import LandingPage from './components/LandingPage/LandingPage';
 import ResetPasswordWithToken from './components/ResetPasswordWithToken';
 import ForgetPassword from './components/ForgetPassword';
+import Help from './components/Help';
 
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -35,6 +36,7 @@ class App extends Component {
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/register" component={Register} />
                 <Route exact path="/forget_password" component={ForgetPassword} />
+                <Route exact path="/help" component={Help} />
                 <Route exact path="/reset_password/:token" component={ResetPasswordWithToken} />
               </div>
             </Router>

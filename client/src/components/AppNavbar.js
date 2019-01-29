@@ -53,17 +53,22 @@ class AppNavbar extends Component {
                                 <NavItem>
                                     <NavLink tag={Link} href="/portfolio" to="/portfolio">
                                         Portfolio
-                                            </NavLink>
+                                    </NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink tag={Link} href="/help" to="/help">
+                                        Help
+                                    </NavLink>
                                 </NavItem>
                                 <NavItem>
                                     <NavLink tag={Link} href="/profile" to="/profile">
                                         Profile
-                                            </NavLink>
+                                    </NavLink>
                                 </NavItem>
                                 <NavItem>
                                     <NavLink tag={Link} onClick={this.handleLogout} href="/" to="/">
                                         Logout
-                                            </NavLink>
+                                    </NavLink>
                                 </NavItem>
                             </Nav>
                         ) : (
@@ -71,12 +76,12 @@ class AppNavbar extends Component {
                                     <NavItem>
                                         <NavLink tag={Link} href="/login" to="/login">
                                             Login
-                                            </NavLink>
+                                        </NavLink>
                                     </NavItem>
                                     <NavItem>
                                         <NavLink tag={Link} href="/register" to="/register">
                                             Register
-                                            </NavLink>
+                                        </NavLink>
                                     </NavItem>
                                 </Nav>
                             )}

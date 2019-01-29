@@ -69,6 +69,7 @@ class TickerList extends Component{
 
 	componentDidMount(){
 		socket.on('message', (message) => {
+			//console.log(message);
 			var symbol = JSON.parse(message).symbol;
 			var price = JSON.parse(message).price;
 			this.updatePrice(symbol, price);
