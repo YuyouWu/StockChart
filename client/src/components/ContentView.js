@@ -6,7 +6,8 @@ import NewsList from './NewsList';
 import Overview from './Overview';
 import Screener from './Screener';
 import AddTickerSubMenu from './AddTickerSubMenu';
-import EditQuantityMenu from './EditQuantityMenu';
+import SellingMenu from './SellingMenu';
+import BuyingMenu from './BuyingMenu';
 
 // const TabPane = Tabs.TabPane;
 
@@ -38,8 +39,12 @@ class ContentView extends Component{
 			<AddTickerSubMenu ticker={this.state.currentTicker} currentPortfolioId={this.state.currentPortfolioId} currentPortfolio={this.state.currentPortfolio} getTickersList={this.props.getTickersList}/>
 		)
 
-		const editQuantityMenu = (
-			<EditQuantityMenu ticker={this.state.currentTicker} tickerId={this.state.currentTickerId} quantity={this.state.currentQuantity} getTickersList={this.props.getTickersList}/>
+		const sellingMenu = (
+			<SellingMenu ticker={this.state.currentTicker} tickerId={this.state.currentTickerId} quantity={this.state.currentQuantity} getTickersList={this.props.getTickersList}/>
+		)
+
+		const buyingMenu = (
+			<BuyingMenu ticker={this.state.currentTicker} tickerId={this.state.currentTickerId} quantity={this.state.currentQuantity} getTickersList={this.props.getTickersList}/>
 		)
 
 		return(
@@ -56,21 +61,30 @@ class ContentView extends Component{
 								<Tab id="Financial" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>Financial</p>} panel={<Financial ticker = {this.state.currentTicker}/>} />
 								<Tab id="News" title={<p style={{fontSize:'15px', marginBottom: '10px'}}>News</p>} panel={<NewsList ticker = {this.state.currentTicker}/>} />
 								<Popover content={addTickerMenu} position={Position.BOTTOM}>
-									<Button 
-										intent = {Intent.PRIMARY} 
+									<Button
+										intent = {Intent.PRIMARY}
 										style={{marginBottom:'5px'}}
 										disabled={this.state.currentPortfolio === 'Holding' ? true : false}
 									>
 										Add {this.state.currentTicker}
 									</Button>
 								</Popover>
-								<Popover content={editQuantityMenu} position={Position.BOTTOM}>
-									<Button 
-										intent = {Intent.PRIMARY} 
+								<Popover content={buyingMenu} position={Position.BOTTOM}>
+									<Button
+										intent = {Intent.PRIMARY}
 										style={{marginBottom:'5px'}}
 										disabled={this.state.currentTickerId === '' ? true : false}
 									>
-										Edit Quantity
+										Buy
+									</Button>
+								</Popover>
+								<Popover content={sellingMenu} position={Position.BOTTOM}>
+									<Button 
+										intent = {Intent.PRIMARY}
+										style={{marginBottom:'5px'}}
+										disabled={this.state.currentTickerId === '' ? true : false}
+									>
+										Sell
 									</Button>
 								</Popover>
 							</Tabs>				

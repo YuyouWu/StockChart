@@ -11,6 +11,14 @@ var Ticker = mongoose.model('Ticker', {
     type: Number,
     required: false
   },
+  buyPrice: {
+    type: Number,
+    required: false
+  },
+  sellPrice: {
+    type: Number,
+    required: false
+  },
   index:{
     type: Number,
     required: true
