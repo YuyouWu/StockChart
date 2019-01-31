@@ -15,7 +15,7 @@ class LandingPage extends React.Component {
 		    <Jumbotron style={{marginTop: 25+'px', backgroundImage:'url('+ jumbotronImg +')', backgroundRepeat:'no-repeat', backgroundSize:'cover', height:'500px', maxWidth:'100%'}}>
 		        <h2 className="display-4">Manage Your Investment with Plusfolio</h2>
 		        <p className="lead">
-		        	Plusfolio is an online stock portfolio that provides easy access to market information, portfolio optimization, and techical analysis. 
+		        	Plusfolio is an online stock portfolio that provides easy access to market information, stock market simulator, and techical analysis. 
 		        </p>
 		        <p className="lead">
 					<Button size="lg" color="primary" tag={Link} href="/register" to="/register">Start for free</Button>
@@ -38,9 +38,9 @@ class LandingPage extends React.Component {
 			    </Col>
 			    <Col sm="4">
 				    <Card body style={{height: '300px'}}>
-						<CardTitle>Screener</CardTitle>
+						<CardTitle>Paper Trading</CardTitle>
 						<CardImg top width="100%" src={screener} alt="data" />
-				        <CardText>Pick the right stock for your portfolio with our stock screener</CardText>
+				        <CardText>Simulate the stock market to perfect your strategy</CardText>
 				    </Card>
 			    </Col>
 		    </Row>
