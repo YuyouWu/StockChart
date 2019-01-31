@@ -19,6 +19,7 @@ class ContentView extends Component{
 			currentTicker: this.props.ticker,
 			currentTickerId: this.props.tickerId,
 			currentQuantity: this.props.quantity,
+			avgCost: this.props.avgCost,
 			currentPortfolio: this.props.portfolio,
 			currentPortfolioId: this.props.portfolioId
 		}
@@ -29,6 +30,7 @@ class ContentView extends Component{
 			currentTicker: newProps.ticker,
 			currentTickerId: newProps.tickerId,
 			currentQuantity: newProps.quantity,
+			avgCost: newProps.avgCost,
 			currentPortfolio: newProps.portfolio,
 			currentPortfolioId: newProps.portfolioId
 		});
@@ -40,11 +42,11 @@ class ContentView extends Component{
 		)
 
 		const sellingMenu = (
-			<SellingMenu ticker={this.state.currentTicker} tickerId={this.state.currentTickerId} quantity={this.state.currentQuantity} getTickersList={this.props.getTickersList}/>
+			<SellingMenu ticker={this.state.currentTicker} tickerId={this.state.currentTickerId} quantity={this.state.currentQuantity} avgCost={this.state.avgCost} getTickersList={this.props.getTickersList}/>
 		)
 
 		const buyingMenu = (
-			<BuyingMenu ticker={this.state.currentTicker} tickerId={this.state.currentTickerId} quantity={this.state.currentQuantity} getTickersList={this.props.getTickersList}/>
+			<BuyingMenu ticker={this.state.currentTicker} tickerId={this.state.currentTickerId} quantity={this.state.currentQuantity} avgCost={this.state.avgCost} getTickersList={this.props.getTickersList}/>
 		)
 
 		return(

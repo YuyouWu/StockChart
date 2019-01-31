@@ -19,6 +19,10 @@ var Ticker = mongoose.model('Ticker', {
     type: Number,
     required: false
   },
+  avgCost: {
+    type: Number,
+    required: false
+  },
   index:{
     type: Number,
     required: true

@@ -87,9 +87,13 @@ app.post('/api/portfolio/add', authenticate, (req, res) => {
 //Edit quantity of shares
 app.patch('/api/editQuantity/', authenticate, (req, res) => {
   if(req.body.buyPrice){
-    var body = _.pick(req.body, ['_id', 'quantity', 'buyPrice']);
+    var body = _.pick(req.body, ['_id', 'quantity', 'buyPrice', 'avgCost']);
   } else {
     var body = _.pick(req.body, ['_id', 'quantity', 'sellPrice']);
+
+    if (body.quantity === 0){
+      body.avgCost = 0;
+    }
   }
   var id = body._id;
 

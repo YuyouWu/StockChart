@@ -53,6 +53,7 @@ class TickerList extends Component{
 			portfolios: ['Loading'],
 			currentPortfolio: 'Watch List',
 			currentPortfolioId: 'WatchList',
+			avgCost:'',
 			allTickers: [''],
 	    	currentTicker: 'Overview',
 	    	currentTickerId: 0,
@@ -319,7 +320,7 @@ class TickerList extends Component{
 	render() {
 		const { isLoading, value, results } = this.state;
 		
-		const SortableItem = SortableElement(({ticker, change, price, id, quantity}) =>
+		const SortableItem = SortableElement(({ticker, change, price, id, quantity, avgCost}) =>
 			<tr>
 			  	<td>
 					<div style={{width:'50px'}}>
@@ -329,8 +330,9 @@ class TickerList extends Component{
 								this.setState({
 									currentTicker: ticker,
 									currentTickerId: id,
-									currentQuantity: quantity
-								})			  				
+									currentQuantity: quantity,
+									avgCost: avgCost
+								});		  				
 							}}
 							style={{cursor: 'pointer'}}
 						>
@@ -376,8 +378,8 @@ class TickerList extends Component{
 					style={{width:'225px', marginLeft: '5px', marginTop: '-1px', marginRight: '5px'}}
 				>
 					<tbody>
-						{items.map(({ticker, change, price, _id, quantity}, index) => (
-					    	<SortableItem key={`item-${index}`} index={index} ticker={ticker} change={change} price={price} quantity={quantity} id={_id}/>
+						{items.map(({ticker, change, price, _id, quantity, avgCost}, index) => (
+					    	<SortableItem key={`item-${index}`} index={index} ticker={ticker} change={change} price={price} quantity={quantity} avgCost={avgCost} id={_id}/>
 					    ))}
 					</tbody>
 				</HTMLTable>
@@ -502,6 +504,7 @@ class TickerList extends Component{
 							ticker={this.state.currentTicker} 
 							tickerId={this.state.currentTickerId} 
 							quantity={this.state.currentQuantity}
+							avgCost={this.state.avgCost}
 							portfolio={this.state.currentPortfolio}
 							portfolioId={this.state.currentPortfolioId}
 							setCurrentTicker={this.setCurrentTicker}

@@ -130,10 +130,10 @@ class OverviewSummary extends React.Component {
 				>
 					<thead>
 						<tr>
-							<th style={{width:'100px'}}>Symbol</th>
+							<th style={{width:'80px'}}>Symbol</th>
 							<th style={{width:'100px', textAlign:'right'}}>Price</th>
-							<th style={{width:'100px', textAlign:'right'}}>Change</th>
-							<th style={{width:'100px', textAlign:'right'}}>Change %</th>
+							<th style={{width:'110px', textAlign:'right'}}>Day Change</th>
+							<th style={{width:'120px', textAlign:'right'}}>Day Change %</th>
 							<th style={{width:'100px', textAlign:'center'}}>Shares</th>
 							<th style={{width:'100px'}}>Weight</th>
 							<th style={{width:'120px', textAlign:'right'}}>Market Value</th>

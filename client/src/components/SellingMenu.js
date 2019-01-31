@@ -58,7 +58,7 @@ class SellingMenu extends React.Component {
 	
 			this.props.editQuantity(tickerObj).then((res) => {
 				this.props.getTickersList();
-				message.success(this.state.sellQuantity + 'shares of ' + this.state.ticker + ' have been deducted');
+				message.success(this.state.sellQuantity + ' shares of ' + this.state.ticker + ' have been deducted');
 			});	
 		}
 	}
