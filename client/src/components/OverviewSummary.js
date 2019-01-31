@@ -8,8 +8,9 @@ import axios from 'axios';
 
 var tickerList = [];
 var totalQuantity = 0;
-var totalChange = 0;
+var dayChange = 0;
 var totalValue = 0;
+var totalChange = 0;
 //Class for rendering each individual tickers on portfolio
 class OverviewSummary extends React.Component {
 	constructor() {
@@ -20,6 +21,7 @@ class OverviewSummary extends React.Component {
 			avgPercChange: 0,
 			totalValue: 0,
 			totalChange: 0,
+			dayChange: 0,
 			textColor: 'green',
 			topGainers: [''],
 			topLosers: [''],
@@ -32,6 +34,7 @@ class OverviewSummary extends React.Component {
 	componentDidMount() {
 		tickerList = [];
 		totalQuantity = 0;
+		dayChange = 0;
 		totalChange = 0;
 		totalValue = 0;
 
@@ -51,17 +54,20 @@ class OverviewSummary extends React.Component {
 						element.change = res.payload.change;
 						element.changePercent = res.payload.changePercent;
 						element.value = res.payload.latestPrice * element.quantity;
+						element.lifetimeChange = element.value - (parseFloat(element.avgCost) * element.quantity);
 
 						tickerList.push(element);
 
 						totalValue = totalValue + element.value;
-						totalChange = totalChange + (res.payload.change * element.quantity)
+						dayChange = dayChange + (res.payload.change * element.quantity)
+						totalChange = parseFloat(totalChange) + parseFloat(element.lifetimeChange);
 
 						this.setState({
 							forceUpdate: element,
 							tickerList: tickerList,
 							totalQuantity: totalQuantity,
 							totalValue: totalValue,
+							dayChange: dayChange,
 							totalChange: totalChange
 						});
 					});
@@ -111,7 +117,7 @@ class OverviewSummary extends React.Component {
 			key: 'changePercent',
 			render: (text) => {
 				return (
-					text > 0 ? (
+					text >= 0 ? (
 						<p style={{ color: 'green' }}>{(text * 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</p>
 					) : (
 							<p style={{ color: 'red' }}>{(text * 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</p>
@@ -130,8 +136,10 @@ class OverviewSummary extends React.Component {
 				>
 					<thead>
 						<tr>
-							<th style={{width:'80px'}}>Symbol</th>
+							<th style={{width:'50px'}}>Symbol</th>
 							<th style={{width:'100px', textAlign:'right'}}>Price</th>
+							<th style={{width:'100px', textAlign:'right'}}>Avg Cost</th>
+							<th style={{width:'120px', textAlign:'right'}}>Total Change</th>
 							<th style={{width:'110px', textAlign:'right'}}>Day Change</th>
 							<th style={{width:'120px', textAlign:'right'}}>Day Change %</th>
 							<th style={{width:'100px', textAlign:'center'}}>Shares</th>
@@ -145,16 +153,23 @@ class OverviewSummary extends React.Component {
 								<tr>
 									<td>{element.ticker}</td>
 									<td style={{textAlign:'right'}}>{element.latestPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+									<td style={{textAlign:'right'}}>{element.avgCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
 									{
-										element.change > 0 ? (
+										element.lifetimeChange >= 0 ? (
+											<td style={{color: 'green', textAlign:'right'}}>{element.lifetimeChange.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+										):(
+											<td style={{color: 'red', textAlign:'right'}}>{element.lifetimeChange.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+										)
+									}
+									{
+										element.change >= 0 ? (
 											<td style={{color: 'green', textAlign:'right'}}>{element.change.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
 										):(
 											<td style={{color: 'red', textAlign:'right'}}>{element.change.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
 										)
 									}
-
 									{
-										element.changePercent > 0 ? (
+										element.changePercent >= 0 ? (
 											<td style={{color: 'green', textAlign:'right'}}>{(element.changePercent * 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</td>
 										):(
 											<td style={{color: 'red', textAlign:'right'}}>{(element.changePercent * 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</td>
@@ -169,8 +184,16 @@ class OverviewSummary extends React.Component {
 						<tr>
 							<td style={{fontWeight:'bold'}}>Total</td>
 							<td></td>
+							<td></td>
 							{
-								this.state.totalChange > 0 ? (
+								this.state.totalChange >= 0 ? (
+									<td style={{color: 'green', textAlign:'right', fontWeight:'bold'}}>{this.state.totalChange.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+								):(
+									<td style={{color: 'red', textAlign:'right', fontWeight:'bold'}}>{this.state.totalChange.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+								)
+							}
+							{
+								this.state.dayChange >= 0 ? (
 									<td 
 										style={{
 											color: 'green', 
@@ -178,7 +201,7 @@ class OverviewSummary extends React.Component {
 											fontWeight:'bold'
 										}}
 									>
-										{(this.state.totalChange).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+										{(this.state.dayChange).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
 									</td>
 								):(
 									<td 
@@ -188,19 +211,19 @@ class OverviewSummary extends React.Component {
 											fontWeight:'bold'
 										}}
 									>
-										{(this.state.totalChange).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+										{(this.state.dayChange).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
 									</td>	
 								)
 							}
 							{
-								this.state.totalChange > 0 ? (
+								this.state.dayChange >= 0 ? (
 									<td 
 										style={{
 											color: 'green', 
 											textAlign:'right', 
 											fontWeight:'bold'
 										}}>
-											{(this.state.totalChange/(this.state.totalValue - this.state.totalChange)*100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%
+											{(this.state.dayChange/(this.state.totalValue - this.state.dayChange)*100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%
 									</td>
 									):(
 									<td 
@@ -209,7 +232,7 @@ class OverviewSummary extends React.Component {
 											textAlign:'right', 
 											fontWeight:'bold'
 										}}>
-											{(this.state.totalChange/(this.state.totalValue - this.state.totalChange)*100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%
+											{(this.state.dayChange/(this.state.totalValue - this.state.dayChange)*100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%
 									</td>
 									)
 							}
