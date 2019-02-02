@@ -41,7 +41,7 @@ class Summary extends React.Component {
 			}
 
 			//Update Chart data
-			if (this.state.chartData) {
+			if (this.state.chartData && priceDataObj) {
 				var chartDataObj = this.state.chartData;
 				var chartDate = this.state.chartData[this.state.chartData.length - 1].date;
 				var priceDate = new Date(this.state.priceData.latestUpdate);

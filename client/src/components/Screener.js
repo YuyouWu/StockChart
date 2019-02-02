@@ -339,7 +339,7 @@ class Screener extends React.Component {
                 {
                     this.state.filterResult !== '' ? (
                         this.state.filterResult !== 'loading' ? (
-                            <div style={{marginTop:'10px', width:'1100px'}}>
+                            <div style={{marginTop:'10px', width:'1050px'}}>
                                 <Table 
                                     dataSource={this.state.filterResult} 
                                     columns={columns}

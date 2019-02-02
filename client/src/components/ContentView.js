@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Tab, Tabs, FocusStyleManager, Button, Intent, Popover, Position} from '@blueprintjs/core';
+import { Tab, Tabs, FocusStyleManager, Button, Intent, Popover, Position, Tooltip} from '@blueprintjs/core';
 import Summary from './Summary';
 import Financial from './Financial';
 import NewsList from './NewsList';
@@ -75,16 +75,17 @@ class ContentView extends Component{
 									<Button
 										intent = {Intent.PRIMARY}
 										style={{marginBottom:'5px'}}
-										disabled={this.state.currentTickerId === '' ? true : false}
+										hidden={this.state.currentTickerId === '' ? true : false}
 									>
 										Buy
 									</Button>
 								</Popover>
+
 								<Popover content={sellingMenu} position={Position.BOTTOM}>
 									<Button 
 										intent = {Intent.PRIMARY}
 										style={{marginBottom:'5px'}}
-										disabled={this.state.currentTickerId === '' ? true : false}
+										hidden={this.state.currentTickerId === '' ? true : false}
 									>
 										Sell
 									</Button>
