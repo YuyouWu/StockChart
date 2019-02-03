@@ -14,7 +14,10 @@ import {
   GET_COMPANY_STAT, 
   GET_COMPANY_FINANCIAL, 
   GET_COMPANY_FINANCIAL_ANNUAL, 
-  GET_COMPANY_NEWS } from './types';
+  GET_COMPANY_NEWS,
+  GET_TRANSACTION,
+  ADD_TRANSACTION 
+} from './types';
 
 var headers = {
   'xauth': localStorage.getItem('jwtToken')
@@ -175,6 +178,28 @@ export const getCompanyNews = ticker => dispatch => {
     axios.get('https://api.iextrading.com/1.0/stock/' + ticker +'/news').then(res =>
       dispatch({
         type: GET_COMPANY_NEWS,
+        payload: res.data
+      })
+    )
+  )
+};
+
+export const getTransaction = () => dispatch => {
+  return (
+    axios.get('/api/getTransaction', {headers: headers}).then(res =>
+      dispatch({
+        type: GET_TRANSACTION,
+        payload: res.data
+      })
+    )
+  )
+};
+
+export const addTransaction = (transaction) => dispatch => {
+  return (
+    axios.post('/api/addTransaction', transaction, {headers: headers}).then(res =>
+      dispatch({
+        type: ADD_TRANSACTION,
         payload: res.data
       })
     )

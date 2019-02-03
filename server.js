@@ -19,6 +19,7 @@ var { User } = require('./models/user');
 var { Portfolio } = require('./models/portfolio');
 var { Screener } = require('./models/screener');
 var { ChartPref } = require('./models/chartPref');
+var { Transaction } = require('./models/transaction');
 
 var { authenticate } = require('./middleware/authenticate');
 
@@ -149,6 +150,41 @@ app.patch('/api/portfolio/index', authenticate, (req, res) => {
   }).catch((e) => {
     res.status(400).send();
   })
+});
+
+///////////////
+//Transaction//
+///////////////
+
+//Get a list of tickers inside portfolio with authentication
+app.get('/api/getTransaction', authenticate, (req, res) => {
+  Transaction.find({
+    _creator: req.user._id
+  }).then((transactions) => {
+    res.send({ transactions });
+  }, (e) => {
+    res.status(400).send(e);
+  });
+});
+
+//Add ticker to portfolio
+app.post('/api/addTransaction', authenticate, (req, res) => {
+  var body = _.pick(req.body, ['ticker', 'quantity', 'date', 'action', 'price']);
+
+  //create new ticker obj with new index
+  var transaction = new Transaction({
+    ticker: body.ticker,
+    quantity: body.quantity,
+    _creator: req.user._id,
+    date: body.date,
+    action: body.action,
+    price: body.price
+  });
+  transaction.save().then((doc) => {
+    res.send(doc);
+  }, (e) => {
+    res.status(400).send(e);
+  });
 });
 
 ////////////////////////

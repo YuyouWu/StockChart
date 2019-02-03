@@ -47,7 +47,7 @@ class Summary extends React.Component {
 				var priceDate = new Date(this.state.priceData.latestUpdate);
 				//Check if date of price is the same the last element of chart
 				if (chartDate.toDateString() === priceDate.toDateString()) {
-					var chartDataObj = this.state.chartData;
+					chartDataObj = this.state.chartData;
 					//update last element of chartData
 					chartDataObj[chartDataObj.length - 1] = {
 						date: new Date(this.state.priceData.latestUpdate),

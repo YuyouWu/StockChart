@@ -1,5 +1,5 @@
 import React from 'react';
-import { editQuantity, getCurrentPrice } from '../actions/portfolioActions';
+import { editQuantity, getCurrentPrice, addTransaction } from '../actions/portfolioActions';
 import { Menu, FormGroup, InputGroup, Button, Intent } from "@blueprintjs/core";
 import { message } from 'antd';
 import { connect } from 'react-redux';
@@ -60,9 +60,18 @@ class BuyingMenu extends React.Component {
 			"buyPrice": this.state.latestPrice,
 			"avgCost": newAvgCost
 		}
+
+		var transactionObj = {
+			"ticker": this.state.ticker,
+			"quantity": this.state.buyQuantity,
+			"date": new Date(),
+			"action": "Buy",
+			"price": this.state.latestPrice
+		}
 		this.props.editQuantity(tickerObj).then((res) => {
 			this.props.getTickersList();
 			message.success(this.state.buyQuantity + ' shares of ' + this.state.ticker + ' have been added');
+			this.props.addTransaction(transactionObj);
 		});
 	}
 
@@ -93,4 +102,4 @@ class BuyingMenu extends React.Component {
 }
 
 const mapStateToProps = state => ({});
-export default connect(mapStateToProps,{editQuantity, getCurrentPrice})(BuyingMenu);
+export default connect(mapStateToProps,{editQuantity, getCurrentPrice, addTransaction})(BuyingMenu);
