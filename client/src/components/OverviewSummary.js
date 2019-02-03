@@ -109,7 +109,10 @@ class OverviewSummary extends React.Component {
 			dataIndex: 'date',
 			key: 'date',
 			defaultSortOrder: 'ascend',
-			sorter: (a, b) => new Date(b.date) - new Date(a.date)
+			sorter: (a, b) => new Date(b.date) - new Date(a.date),
+			render: (text) => {
+				return new Date(text).toLocaleDateString() + " - " + new Date(text).toLocaleTimeString()
+			}
 		}];
   
 		return (
