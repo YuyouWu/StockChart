@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { LOGIN, REGISTER, LOGOUT, SET_CURRENT_USER, CHANGE_EMAIL, CHANGE_PASSWORD } from './types';
+import { LOGIN, REGISTER, LOGOUT, SET_CURRENT_USER, UPDATE_LOGIN_DATE, CHANGE_EMAIL, CHANGE_PASSWORD } from './types';
 
 var headers = {
   'xauth': localStorage.getItem('jwtToken')
@@ -49,6 +49,17 @@ export const setCurrentUser = () => dispatch => {
     axios.get('/api/users/me', {headers: headers}).then(res =>
       dispatch({
         type: SET_CURRENT_USER,
+        payload: res.data
+      })
+    )
+  )
+};
+
+export const updateLoginDate = () => dispatch => {
+  return(
+    axios.post('/api/users/date', {}, {headers: headers}).then(res =>
+      dispatch({
+        type: UPDATE_LOGIN_DATE,
         payload: res.data
       })
     )

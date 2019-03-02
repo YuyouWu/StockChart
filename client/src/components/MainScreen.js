@@ -5,7 +5,7 @@ import AddTickerMenu from './AddTickerMenu';
 import NewPortfolioModal from './NewPortfolioModal';
 import DeletePortfolioModal from './DeletePortfolioModal';
 import { getTickers, getCurrentPrice, addTicker, deleteTicker, getAllPortfolio, updateIndex } from '../actions/portfolioActions';
-import { setCurrentUser } from '../actions/authActions';
+import { setCurrentUser, updateLoginDate } from '../actions/authActions';
 import { Button } from 'reactstrap';
 import { Layout, Row, Col, message } from 'antd';
 import { Search} from 'semantic-ui-react';
@@ -69,6 +69,8 @@ class TickerList extends Component{
 	}
 
 	componentDidMount(){
+		this.props.updateLoginDate();
+		
 		socket.on('message', (message) => {
 			//console.log(message);
 			var symbol = JSON.parse(message).symbol;
@@ -518,4 +520,4 @@ class TickerList extends Component{
 }
 
 const mapStateToProps = state => ({});
-export default connect(mapStateToProps,{getTickers, getCurrentPrice, addTicker, deleteTicker, updateIndex, getAllPortfolio, setCurrentUser})(TickerList);
+export default connect(mapStateToProps,{getTickers, getCurrentPrice, addTicker, deleteTicker, updateIndex, getAllPortfolio, updateLoginDate, setCurrentUser})(TickerList);

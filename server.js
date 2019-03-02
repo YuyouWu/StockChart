@@ -1072,6 +1072,20 @@ app.get('/api/users/me', authenticate, (req, res) => {
   res.send(req.user);
 });
 
+//update login date
+app.post('/api/users/date', authenticate, (req, res) => {
+  User.findOne({ email: req.user.email}).then((user) => {
+    var today = new Date().toLocaleDateString("en-US");
+    if (user && user.lastLogin!== today) {
+      user.lastLogin = today;
+      user.save();
+    }
+    res.send(user);
+  }).catch(e => {
+    res.status(400).send();
+  });
+});
+
 //Find user by email
 app.post('/api/users/email', (req, res) => {
   var body = req.body;
