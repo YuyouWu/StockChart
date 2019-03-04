@@ -5,6 +5,7 @@ import { Row, Col, Divider as AntDivider, Button } from 'antd';
 import { Divider, Spinner, NonIdealState } from '@blueprintjs/core';
 import axios from 'axios';
 import Chart from './Chart';
+import currentWeekNumber from 'current-week-number';
 
 const socket = require('socket.io-client')('https://ws-api.iextrading.com/1.0/last');
 // socket.on('connect', () => {
@@ -25,7 +26,8 @@ class Summary extends React.Component {
 			afterHourColor: 'green',
 			currentTickerId: this.props.tickerId,
 			currentTicker: this.props.ticker,
-			forceUpdate: ''
+			forceUpdate: '',
+			timeframe: 'day'
 		}
 		this.loadData = this.loadData.bind(this);
 
@@ -90,6 +92,31 @@ class Summary extends React.Component {
 		socket.emit('unsubscribe', this.state.currentTicker.toString());
 	}
 
+	setTimeframeDay = () => {
+		this.setState({
+			timeframe: 'day'
+		},() => {
+			this.loadData(this.state.currentTicker);
+		});
+	}
+
+	setTimeframeWeek = () => {
+		this.setState({
+			timeframe: 'week'
+		},() => {
+			this.loadData(this.state.currentTicker);
+		});
+	}
+
+	setTimeframeMonth = () => {
+		this.setState({
+			timeframe: 'month'
+		},() => {
+			this.loadData(this.state.currentTicker);
+		});
+	}
+
+
 	loadData(ticker) {
 		// socket.emit('unsubscribe', this.props.ticker.toString());
 		socket.emit('subscribe', ticker.toString());
@@ -150,22 +177,89 @@ class Summary extends React.Component {
 				this.setState({
 					chartData: res.data
 				}, () => {
-					var chartDate = this.state.chartData[this.state.chartData.length - 1].date;
-					var priceDate = new Date(this.state.priceData.latestUpdate);
-					//Push current priceData to chartData if priceData is one day ahead
-					if (chartDate.toDateString() !== priceDate.toDateString()) {
-						var chartDataObj = this.state.chartData;
-						chartDataObj.push({
-							date: new Date(this.state.priceData.latestUpdate),
-							open: this.state.priceData.open,
-							high: this.state.priceData.high,
-							low: this.state.priceData.low,
-							close: this.state.priceData.latestPrice,
-							volume: this.state.priceData.latestVolume
-						});
+					//Setting timeframe
+					if(this.state.timeframe == 'week'){
+						var weekDataArr = [];
+						var tempData = {};
+						for (var i = 0; i < this.state.chartData.length; i++){
+							if (i == 0){
+								tempData.date = this.state.chartData[i].date;
+								tempData.open = this.state.chartData[i].open;
+								tempData.high = this.state.chartData[i].high;
+								tempData.low = this.state.chartData[i].low;
+								tempData.volume = parseInt(this.state.chartData[i].volume);
+							} else if (currentWeekNumber(this.state.chartData[i].date)!==currentWeekNumber(this.state.chartData[i-1].date)){
+								weekDataArr.push(tempData);
+								tempData = {volume: 0};
+								tempData.date = this.state.chartData[i].date;
+								tempData.open = this.state.chartData[i].open;
+								tempData.high = this.state.chartData[i].high;
+								tempData.low = this.state.chartData[i].low;
+								tempData.volume = parseInt(this.state.chartData[i].volume) + parseInt(tempData.volume);
+							} else {
+								tempData.close = this.state.chartData[i].close;
+								tempData.volume = parseInt(this.state.chartData[i].volume) + parseInt(tempData.volume);
+								if(tempData.high < this.state.chartData[i].high){
+									tempData.high = this.state.chartData[i].high;
+								}
+								if(tempData.low > this.state.chartData[i].low){
+									tempData.low = this.state.chartData[i].low;
+								}
+							}
+						}
 						this.setState({
-							chartData: chartDataObj
+							chartData: weekDataArr
 						});
+					} else if (this.state.timeframe == 'month') {
+						var monthDataArr = [];
+						var tempData = {};
+						for (var i = 0; i < this.state.chartData.length; i++){
+							if (i == 0){
+								tempData.date = this.state.chartData[i].date;
+								tempData.open = this.state.chartData[i].open;
+								tempData.high = this.state.chartData[i].high;
+								tempData.low = this.state.chartData[i].low;
+								tempData.volume = parseInt(this.state.chartData[i].volume);
+							} else if (this.state.chartData[i].date.getMonth() !== this.state.chartData[i-1].date.getMonth()){
+								monthDataArr.push(tempData);
+								tempData = {volume: 0};
+								tempData.date = this.state.chartData[i].date;
+								tempData.open = this.state.chartData[i].open;
+								tempData.high = this.state.chartData[i].high;
+								tempData.low = this.state.chartData[i].low;
+								tempData.volume = parseInt(this.state.chartData[i].volume) + parseInt(tempData.volume);
+							} else {
+								tempData.close = this.state.chartData[i].close;
+								tempData.volume = parseInt(this.state.chartData[i].volume) + parseInt(tempData.volume);
+								if(tempData.high < this.state.chartData[i].high){
+									tempData.high = this.state.chartData[i].high;
+								}
+								if(tempData.low > this.state.chartData[i].low){
+									tempData.low = this.state.chartData[i].low;
+								}
+							}
+						}
+						this.setState({
+							chartData: monthDataArr
+						});
+					} else if (this.state.timeframe == 'day') {
+						var chartDate = this.state.chartData[this.state.chartData.length - 1].date;
+						var priceDate = new Date(this.state.priceData.latestUpdate);
+						//Push current priceData to chartData if priceData is one day ahead
+						if (chartDate.toDateString() !== priceDate.toDateString()) {
+							var chartDataObj = this.state.chartData;
+							chartDataObj.push({
+								date: new Date(this.state.priceData.latestUpdate),
+								open: this.state.priceData.open,
+								high: this.state.priceData.high,
+								low: this.state.priceData.low,
+								close: this.state.priceData.latestPrice,
+								volume: this.state.priceData.latestVolume
+							});
+							this.setState({
+								chartData: chartDataObj
+							});
+						}	
 					}
 				});
 			}
@@ -269,6 +363,9 @@ class Summary extends React.Component {
 								data={this.state.chartData}
 								tickerId={this.state.currentTickerId}
 								forceUpdate = {this.state.forceUpdate}
+								setTimeframeDay = {this.setTimeframeDay}
+								setTimeframeWeek = {this.setTimeframeWeek}
+								setTimeframeMonth = {this.setTimeframeMonth}
 							/>
 						</div>
 						<p style={{ fontSize: '12px' }}>Data provided for free by <a href="https://iextrading.com/developer">IEX</a>. View <a href="https://iextrading.com/api-exhibit-a/">IEX’s Terms of Use</a>.</p>

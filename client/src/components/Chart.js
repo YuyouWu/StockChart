@@ -804,10 +804,22 @@ class CandleStickStockScaleChart extends React.Component {
 			displayXAccessor,
 		} = xScaleProvider(calculatedData);
 
-		const xExtents = [
+		var xExtents = [
 			xAccessor(last(data)),
 			xAccessor(data[data.length - 100])
 		];
+		if(data.length > 100){
+			xExtents = [
+				xAccessor(last(data)),
+				xAccessor(data[data.length - 100])
+			];
+		} else {
+			xExtents = [
+				xAccessor(last(data)),
+				xAccessor(data[0])
+			];
+		} 
+		
 
 		const gheight = window.innerHeight - 200;
 
@@ -884,6 +896,9 @@ class CandleStickStockScaleChart extends React.Component {
 
 									</Tooltip>
 								</Popover>
+								<Button text="D" onClick={this.props.setTimeframeDay}></Button>
+								<Button text="W" onClick={this.props.setTimeframeWeek}></Button>
+								<Button text="M" onClick={this.props.setTimeframeMonth}></Button>
 							</ButtonGroup>
 
 							<ButtonGroup style={{ marginRight: '10px' }}>
