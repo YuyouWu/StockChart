@@ -123,7 +123,10 @@ class CandleStickStockScaleChart extends React.Component {
 			modal: false,
 			showCandle: false,
 			showLine: false,
-			editingInd: ''
+			editingInd: '',
+			dayBtnColor: '#51a8ff',
+			weekBtnColor: '#5c707f',
+			monthBtnColor: '#5c707f'
 		};
 
 		//Custom chart control
@@ -896,9 +899,36 @@ class CandleStickStockScaleChart extends React.Component {
 
 									</Tooltip>
 								</Popover>
-								<Button text="D" onClick={this.props.setTimeframeDay}></Button>
-								<Button text="W" onClick={this.props.setTimeframeWeek}></Button>
-								<Button text="M" onClick={this.props.setTimeframeMonth}></Button>
+								<Button onClick={() => {
+									this.props.setTimeframeDay();
+									this.setState({
+										dayBtnColor: '#51a8ff',
+										weekBtnColor: '#5c707f',
+										monthBtnColor: '#5c707f'							
+									});
+								}}>
+									<p style={{color: this.state.dayBtnColor}}>D</p>
+								</Button>
+								<Button onClick={() => {
+									this.props.setTimeframeWeek();
+									this.setState({
+										dayBtnColor: '#5c707f',
+										weekBtnColor: '#51a8ff',
+										monthBtnColor: '#5c707f'							
+									});
+								}}>
+									<p style={{color: this.state.weekBtnColor}}>W</p>
+								</Button>
+								<Button onClick={() => {
+									this.props.setTimeframeMonth();
+									this.setState({
+										dayBtnColor: '#5c707f',
+										weekBtnColor: '#5c707f',
+										monthBtnColor: '#51a8ff'							
+									});
+								}}>
+									<p style={{color: this.state.monthBtnColor}}>M</p>
+								</Button>
 							</ButtonGroup>
 
 							<ButtonGroup style={{ marginRight: '10px' }}>
