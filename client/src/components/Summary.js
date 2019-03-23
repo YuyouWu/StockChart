@@ -205,6 +205,9 @@ class Summary extends React.Component {
 								if(tempData.low > this.state.chartData[i].low){
 									tempData.low = this.state.chartData[i].low;
 								}
+								if(i === this.state.chartData.length - 1){
+									weekDataArr.push(tempData);
+								}
 							}
 						}
 						this.setState({
@@ -236,6 +239,9 @@ class Summary extends React.Component {
 								}
 								if(tempData.low > this.state.chartData[i].low){
 									tempData.low = this.state.chartData[i].low;
+								}
+								if(i === this.state.chartData.length - 1){
+									monthDataArr.push(tempData);
 								}
 							}
 						}
